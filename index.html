@@ -42,11 +42,7 @@
 
         <main class="central-content">
             <div class="match-filters">
-                <button class="filter-button active">Canlı</button>
-                <button class="filter-button">Bitti</button>
-                <button class="filter-button">Yaklaşan</button>
-                <button class="filter-button">Favorilerim</button>
-            </div>
+                <button class="filter-button active" data-filter="live">Canlı</button> <button class="filter-button" data-filter="finished">Bitti</button> <button class="filter-button" data-filter="upcoming">Yaklaşan</button> <button class="filter-button" data-filter="favorites">Favorilerim</button> </div>
 
             <div id="matches-list">
                 <div class="league-section">
@@ -70,15 +66,6 @@
                          <span class="header-team-names"></span> <img src="placeholder-logo.png" alt="Deplasman Logo" class="header-team-logo away-logo">
                      </div>
                      <hr>
-
-                     <div class="match-details-odds">
-                         <h4>Oranlar (Mevcut Değil)</h4>
-                         <div class="odds-list">
-                             <p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Oran bilgisi mevcut değil.</p>
-                         </div>
-                     </div>
-                     <hr>
-
 
                      <div class="match-tabs">
                         <button class="tab-button active" data-tab="events">Olaylar</button>
