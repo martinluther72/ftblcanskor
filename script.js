@@ -264,7 +264,7 @@ async function fetchMatchesByDate(dateString) {
     } catch (error) {
         console.error(`Maç verisi çekme hatası (${dateString}):`, error);
         if (matchesListContainer) {
-             matchesListContainer.innerHTML = '<p style="color:red; text-align:center;">Maç verileri yüklenemedi. Lütfen konsolu kontrol edin ve API bilgilerinizi/limitlerinizi kontrol edin.</p>';
+             matchesListContainer.innerHTML = '<p style="color:red; text-align:center;">Maç verileri yüklenemedi. Lütfen konsolu kontrol edin ve API bilgilerinizi/limitlerini kontrol edin.</p>';
         }
          allMatchesData = []; // Hata durumunda listeyi temizle
         return null;
@@ -501,9 +501,9 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
      const teamStatistics = statisticsData && Array.isArray(statisticsData.response) ? statisticsData.response : [];
 
-     if (teamStatistics.length === 0 || (!teamStatistics[0].statistics && !teamStatistics[1]?.statistics)) {
+     if (teamStatistics.length === 0 || (!teamStatistics[0]?.statistics && !teamStatistics[1]?.statistics)) { // Hem 0 eleman hem de istatistik alanı boşsa
         statisticsSectionInPane.innerHTML += '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için istatistik bilgisi bulunamadı.</p>';
-         console.log('İstatistik listesi boş.');
+         console.log('İstatistik listesi boş veya veri formatı beklenenden farklı.');
          return;
      }
 
@@ -539,16 +539,14 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
              awayStats = team2.statistics;
              // awayTeamLogo = team2.team.logo || 'placeholder-logo.png';
          }
-     } else {
-         console.warn('Beklenmeyen istatistik yanıt yapısı: response dizisi 2 veya daha fazla eleman içermiyor. Gelen eleman sayısı:', teamStatistics.length);
-         statisticsSectionInPane.innerHTML += '<p style="color:orange; text-align:center; font-size: 14px;">İstatistikler beklenenden farklı formatte geldi veya eksik takım bilgisi.</p>';
-          if(teamStatistics.length > 0 && teamStatistics[0].statistics) {
-              // Tek takım istatistiği varsa
-             homeStats = teamStatistics[0].statistics; // Varsayılan olarak ilk takımı ev sahibi gibi göster
-          }
+     } else if (teamStatistics.length > 0 && teamStatistics[0]?.statistics) {
+          // Sadece tek takımın istatistiği geldiyse (beklenmeyen durum)
+          console.warn("Beklenmeyen istatistik yanıt yapısı: Sadece bir takımın istatistiği geldi.");
+          homeStats = teamStatistics[0].statistics; // Varsayılan olarak ilk takımı ev sahibi gibi göster
      }
 
-     if (!homeStats && !awayStats) {
+
+     if (!homeStats && !awayStats) { // Hala geçerli istatistik yoksa
           statisticsSectionInPane.innerHTML += '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">İstatistik verisi işlenirken bir sorun oluştu veya eksik.</p>';
          return;
      }
@@ -570,8 +568,8 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
          "Offsides": "", "Ball Possession": "", "Yellow Cards": "", "Red Cards": "",
          "Goalkeeper Saves": "", "Total passes": "", "Passes accurate": "", "Passes %": "",
          "Expected Goals (xG)": "", "Expected Goals against (xGA)": "", "Expected Points (xP)": "",
-         "Big Chance Created": "", "Big Chance Missed": "", "Clearances": "", "Interceptions": "",
-         "Tackles": "", "Duels Total": "", "Duels won": "", "Dribble Attempts": "",
+         "Big Chance Created": "Önemli Fırsat", "Big Chance Missed": "Harcanan Fırsat", // İkon olmasa da metin için farklılık
+         "Clearances": "", "Interceptions": "", "Tackles": "", "Duels Total": "", "Duels won": "", "Dribble Attempts": "",
          "Dribble Success": "", "Dispossessed": "", "Saves": "", "Passes accurate %": ""
      };
 
@@ -1345,11 +1343,11 @@ function startLiveUpdates() {
                                 if (activeTab === 'events') {
                                     fetchMatchEvents(selectedFixtureId).then(eventsData => {
                                         if(eventsData && eventsSectionInPane) displayMatchDetails(selectedFixtureId, eventsData);
-                                    });
+                                    }).catch(err => console.error("Canlı güncelleme olay çekme hatası:", err));
                                 } else if (activeTab === 'statistics') {
                                      fetchMatchStatistics(selectedFixtureId).then(statsData => {
                                           if(statsData && statisticsSectionInPane) displayMatchStatistics(selectedFixtureId, statsData, selectedMatchData.teams.home.name, selectedMatchData.teams.away.name);
-                                     });
+                                     }).catch(err => console.error("Canlı güncelleme istatistik çekme hatası:", err));
                                 }
                                 // Kadrolar ve Puan Durumu genellikle maç sırasında çok sık değişmez, bu yüzden canlı güncellemede yeniden çekilmeleri şart değil.
                                 // Eğer istenseydi buraya eklenebilirlerdi.
@@ -1542,7 +1540,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      } else {
          console.error("İlk veri çekme başarısız oldu.");
           if (matchesListContainer) {
-               matchesListContainer.innerHTML = '<p style="color:red; text-align:center;">Maç verileri yüklenemedi. Lütfen konsolu kontrol edin ve API bilgilerinizi/limitlerinizi kontrol edin.</p>';
+               matchesListContainer.innerHTML = '<p style="color:red; text-align:center;">Maç verileri yüklenemedi. Lütfen konsolu kontrol edin ve API bilgilerinizi/limitlerini kontrol edin.</p>';
           }
           if (initialMessage) initialMessage.textContent = 'Maç verileri yüklenemedi.';
           if (selectedMatchInfo) selectedMatchInfo.style.display = 'none';
