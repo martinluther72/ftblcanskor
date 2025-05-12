@@ -392,7 +392,7 @@ body {
      color: gold;
 }
 .match-favorite-icon:hover {
-     color: var(--primary-color);
+    color: var(--primary-color);
 }
 
 
@@ -929,7 +929,7 @@ body {
          margin-top: 5px;
          /* Oranlar kaldırıldığı için buradaki justify-content: center, sadece favori ikonunu ortalar */
     }
-    /* Ana Listedeki Oranların Stilleri (TAMAMEN KALDIRILDI) */
+    /* Ana Listedeki Oranların Stilleri (TAMEN KALDIRILDI) */
     /*
     .odds { ... }
     .odd { ... }
