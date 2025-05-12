@@ -415,37 +415,37 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
      // İstatistikler için ikon haritası (isteğe bağlı olarak daha fazla ikon eklenebilir)
      // NOT: Buradaki Unicode semboller şimdilik yer tutucu. CSS ile gerçek ikonlar gösterilecek.
      const statIcons = {
-         "Shots on Goal": "🎯", // Kaleye Şut
-         "Shots off Goal": "🚫", // Kaleyi Bulan Şut Değil
-         "Total Shots": "⚽", // Toplam Şut
-         "Blocked Shots": "🛡️", // Engellenen Şut
-         "Shots insidebox": "📦", // Ceza Sahası İçi Şut
-         "Shots outsidebox": "🛣️", // Ceza Sahası Dışı Şut
-         "Fouls": "🚨", // Faul
-         "Corner Kicks": "🚩", // Korner
-         "Offsides": "📏", // Ofsayt
-         "Ball Possession": "%", // Topla Oynama (Yüzde işareti)
-         "Yellow Cards": "📒", // Sarı Kart
-         "Red Cards": "🟥", // Kırmızı Kart
-         "Goalkeeper Saves": "🧤", // Kaleci Kurtarışı
-         "Total passes": "➡️", // Toplam Pas
-         "Passes accurate": "✅", // Başarılı Pas (Ok işareti ile birleşebilir CSS'te)
-         "Passes %": "%", // Pas Başarı Yüzdesi (Yüzde işareti)
-         "Expected Goals (xG)": "📈", // Beklenen Gol
-          "Expected Goals against (xGA)": "📉", // Yenilen Beklenen Gol
-          "Expected Points (xP)": "📍", // Beklenen Puan
-          "Big Chance Created": "✨", // Büyük Fırsat Yarattı
-          "Big Chance Missed": "💔", // Büyük Fırsat Kaçırdı
-          "Clearances": "🧹", // Uzaklaştırma
-          "Interceptions": "✋", // Top Kapma (İntersepsiyon)
-          "Tackles": "💪", // Top Kapma (Müdahele)
-          "Duels Total": "⚔️", // Toplam İkili Mücadele
-          "Duels won": "🏆", // Kazanılan İkili Mücadele
-          "Dribble Attempts": "💨", // Çalım Girişimi
-          "Dribble Success": "✅💨", // Başarılı Çalım
-          "Dispossessed": "🚫⚽", // Top Kaybı
-          "Saves": "🧤", // Kurtarış (Kaleci Kurtarışı ile aynı olabilir)
-          "Passes accurate %": "%" // Başarılı Pas Yüzdesi
+         "Shots on Goal":  // Kaleye Şut
+         "Shots off Goal":  // Kaleyi Bulan Şut Değil
+         "Total Shots":  // Toplam Şut
+         "Blocked Shots":  // Engellenen Şut
+         "Shots insidebox":  // Ceza Sahası İçi Şut
+         "Shots outsidebox":  // Ceza Sahası Dışı Şut
+         "Fouls": // Faul
+         "Corner Kicks":  // Korner
+         "Offsides":  // Ofsayt
+         "Ball Possession":  // Topla Oynama (Yüzde işareti)
+         "Yellow Cards": // Sarı Kart
+         "Red Cards": // Kırmızı Kart
+         "Goalkeeper Saves":  // Kaleci Kurtarışı
+         "Total passes":  // Toplam Pas
+         "Passes accurate":  // Başarılı Pas (Ok işareti ile birleşebilir CSS'te)
+         "Passes %":  // Pas Başarı Yüzdesi (Yüzde işareti)
+         "Expected Goals (xG)": // Beklenen Gol
+          "Expected Goals against (xGA)":  // Yenilen Beklenen Gol
+          "Expected Points (xP)":  // Beklenen Puan
+          "Big Chance Created":  // Büyük Fırsat Yarattı
+          "Big Chance Missed": // Büyük Fırsat Kaçırdı
+          "Clearances":  // Uzaklaştırma
+          "Interceptions":  // Top Kapma (İntersepsiyon)
+          "Tackles":  // Top Kapma (Müdahele)
+          "Duels Total": , // Toplam İkili Mücadele
+          "Duels won":  // Kazanılan İkili Mücadele
+          "Dribble Attempts":  // Çalım Girişimi
+          "Dribble Success":  // Başarılı Çalım
+          "Dispossessed":  // Top Kaybı
+          "Saves": // Kurtarış (Kaleci Kurtarışı ile aynı olabilir)
+          "Passes accurate %":  // Başarılı Pas Yüzdesi
      };
 
 
