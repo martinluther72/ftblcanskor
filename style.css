@@ -12,7 +12,7 @@ body {
     width: 90%;
     margin: 0 auto;
     max-width: 1200px;
-    padding: 0 15px; /* Mobil görünümde kenarlardan boşluk bırakmak için ekledik */
+    padding: 0 15px;
 }
 
 /* Header Stilleri */
@@ -82,7 +82,7 @@ body {
     display: grid;
     grid-template-columns: 200px 1fr 300px; /* Masaüstü düzeni */
     gap: 20px;
-    padding: 0 15px; /* Container'daki padding ile uyumlu */
+    padding: 0 15px;
 }
 
 /* Sol Sidebar Stilleri */
@@ -721,17 +721,17 @@ body {
 
     /* Sağ Sidebar (Detay Paneli) Telefonlarda - Overlay Yapısı */
      .sidebar-right {
-         position: fixed; /* Ekrana sabitle */
-         top: 0; /* Ekranın üstüne hizala */
-         left: 0; /* Ekranın soluna hizala */
-         width: 100%; /* Tam genişlik */
-         height: 100%; /* Tam yükseklik */
-         z-index: 1000; /* Diğer içeriklerin üstünde görünmesini sağla */
-         overflow-y: auto; /* İçerik sığmazsa dikey kaydırma çubuğu çıkar */
-         background-color: #fff; /* Arka plan rengi (altında kalanları kapatır) */
-         padding: 15px; /* İç boşluk */
-         box-shadow: none; /* Gölgeyi kaldır (isteğe bağlı) */
-         border-radius: 0; /* Köşe yuvarlaklığını kaldır (isteğe bağlı) */
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         z-index: 1000;
+         overflow-y: auto;
+         background-color: #fff;
+         padding: 15px;
+         box-shadow: none;
+         border-radius: 0;
 
          display: none; /* Varsayılan olarak gizli */
      }
@@ -743,31 +743,33 @@ body {
 
      /* Başlangıç mesajı overlay'de göründüğünde ortaya hizala */
      .sidebar-right.is-visible-on-mobile .initial-message {
-         position: absolute; /* Panele göre konumlandır */
-         top: 50%; /* Dikeyde ortala */
-         left: 50%; /* Yatayda ortala */
-         transform: translate(-50%, -50%); /* Tam merkeze al */
-         width: calc(100% - 30px); /* Paddingi düşerek genişlik ayarla */
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+         width: calc(100% - 30px);
          text-align: center;
      }
       /* Maç detayları yüklenince başlangıç mesajını gizle */
      .sidebar-right.is-visible-on-mobile .selected-match-info {
          /* JS zaten display: block yapıyor. Eğer overlay'de görünürse ekstra stil gerekirse buraya */
+         /* display: block !important; // Gerekirse zorla görünür yap */
      }
 
 
      /* Mobil İçin Kapat Düğmesi */
      .close-details-panel {
          display: block; /* Mobil görünümde göster */
-         position: absolute; /* Sağ panele göre konumlandır */
-         top: 10px; /* Üstten boşluk */
-         right: 10px; /* Sağdan boşluk */
-         background-color: transparent; /* Şeffaf arka plan */
-         border: none; /* Kenarlık yok */
-         font-size: 24px; /* Boyut */
-         cursor: pointer; /* İmleç değişsin */
-         z-index: 1001; /* Overlay'in üstünde olsun */
-         color: #555; /* Renk */
+         position: absolute;
+         top: 10px;
+         right: 10px;
+         background-color: transparent;
+         border: none;
+         font-size: 24px;
+         cursor: pointer;
+         z-index: 1001;
+         color: #555;
+         padding: 5px; /* Tıklama alanını genişlet */
      }
 
 
@@ -782,7 +784,7 @@ body {
         flex-direction: row;
         justify-content: space-between;
         width: 100%;
-        margin-bottom: 10px; /* Mobil için boşluk */
+        margin-bottom: 10px;
     }
 
     .team-info {
@@ -811,7 +813,7 @@ body {
     .match-actions {
         width: 100%;
         justify-content: center;
-         margin-top: 5px; /* Üstüne boşluk */
+         margin-top: 5px;
     }
     .odds {
         margin-right: 10px;
