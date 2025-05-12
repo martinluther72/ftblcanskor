@@ -290,7 +290,7 @@ async function fetchLiveMatchesForUpdate() {
       }
 
 
-     // console.log('Canlı maç verileri güncellemeler için çekiliyor...', liveFixturesUrl); // Çok fazla log olabilir, devre dışı bırakıldı
+     // console.log('Canlı güncellemeler için veri çekiliyor...', liveFixturesUrl); // Çok fazla log olabilir, devre dışı bırakıldı
      try {
          const response = await fetch(liveFixturesUrl, options);
 
@@ -356,6 +356,42 @@ async function fetchLeagueStandings(leagueId, seasonYear) {
         return null;
     }
 }
+
+
+// --- İstatistik Türleri İçin İngilizce'den Türkçe'ye Çeviri Haritası ---
+const statTypeTranslations = {
+    "Shots on Goal": "İsabetli Şut",
+    "Shots off Goal": "İsabetsiz Şut",
+    "Total Shots": "Toplam Şut",
+    "Blocked Shots": "Engellenen Şut",
+    "Shots insidebox": "Ceza Sahası İçi Şut",
+    "Shots outsidebox": "Ceza Sahası Dışı Şut",
+    "Fouls": "Faul",
+    "Corner Kicks": "Korner",
+    "Offsides": "Ofsayt",
+    "Ball Possession": "Topa Sahip Olma",
+    "Yellow Cards": "Sarı Kart",
+    "Red Cards": "Kırmızı Kart",
+    "Goalkeeper Saves": "Kaleci Kurtarışı",
+    "Total passes": "Toplam Pas",
+    "Passes accurate": "Başarılı Pas",
+    "Passes %": "Pas Başarı %",
+    "Expected Goals (xG)": "Beklenen Gol (xG)",
+    "Expected Goals against (xGA)": "Yenilen Beklenen Gol (xGA)",
+    "Expected Points (xP)": "Beklenen Puan (xP)",
+    "Big Chance Created": "Önemli Fırsat Yaratan",
+    "Big Chance Missed": "Harcanan Önemli Fırsat",
+    "Clearances": "Uzaklaştırmalar",
+    "Interceptions": "Top Kapma",
+    "Tackles": "Müdahale", // Veya "İkili Mücadele Kazanma"
+    "Duels Total": "Toplam İkili Mücadele",
+    "Duels won": "Kazanılan İkili Mücadele",
+    "Dribble Attempts": "Dribbling Girişimi",
+    "Dribble Success": "Başarılı Dribbling",
+    "Dispossessed": "Top Kaybı",
+    "Saves": "Kurtarışlar", // Genel kurtarışlar
+    "Passes accurate %": "Pas Başarı %" // Hem "Passes %" hem de "Passes accurate %" aynı anlama gelebilir
+};
 
 
 // --- Maç detayları/olaylarını sağ panele yerleştirir ---
