@@ -10,12 +10,7 @@ const eventsUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures/events';
 
 // --- Maç İstatistikleri için API Bilgileri ---
 // RapidAPI'deki İstatistikler (Statistics) uç noktasının URL'si
-const statisticsUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures/statistics'; // İstatistik URL'si (Önceki versiyon)
-
-// --- Oranlar için API Bilgileri ---
-// Oranlar özelliği şimdilik devre dışı bırakıldı, bu yüzden URL tanımlanmadı.
-// Eğer eklemek isterseniz buraya odds URL'sini ekleyebilirsiniz.
-// const oddsUrl = 'https://api-football-v1.p.rapidapi.com/v3/odds';
+const statisticsUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures/statistics';
 
 
 const options = {
@@ -29,7 +24,6 @@ const options = {
 };
 
 // --- Element Referansları ---
-// HTML'deki elementlere daha kolay erişmek için referansları alalım
 const matchesListContainer = document.getElementById('matches-list');
 const detailsPanel = document.getElementById('match-details-panel');
 const sidebarRight = document.querySelector('.sidebar-right');
@@ -43,21 +37,39 @@ const headerTeamNames = matchHeaderTeams ? matchHeaderTeams.querySelector('.head
 const headerAwayLogo = matchHeaderTeams ? matchHeaderTeams.querySelector('.away-logo') : null;
 
 const tabButtons = detailsPanel ? detailsPanel.querySelectorAll('.tab-button') : null;
-const tabPanes = detailsPanel ? detailsPanel.querySelectorAll('.tab-pane') : null;
+const tabPanes = detailsPanel ? detailsPanels.querySelectorAll('.tab-pane') : null; // Hata düzeltildi
 
 const eventsTabContent = detailsPanel ? document.getElementById('events-tab-content') : null;
 const statisticsTabContent = detailsPanel ? document.getElementById('statistics-tab-content') : null;
 const eventsSectionInPane = eventsTabContent ? eventsTabContent.querySelector('.events-section') : null;
 const statisticsSectionInPane = statisticsTabContent ? statisticsTabContent.querySelector('.statistics-section') : null;
 
-// Oranlar bölümü referansları (HTML'de duruyor ama JS'te kullanılmıyor şimdilik)
-const matchDetailsOddsSection = detailsPanel ? detailsPanel.querySelector('.match-details-odds') : null;
-const oddsListContainer = matchDetailsOddsSection ? matchDetailsOddsSection.querySelector('.odds-list') : null;
+// Oranlar bölümü referansları (KALDIRILDI)
+// const matchDetailsOddsSection = detailsPanel ? detailsPanel.querySelector('.match-details-odds') : null;
+// const oddsListContainer = matchDetailsOddsSection ? matchDetailsOddsSection.querySelector('.odds-list') : null;
 
-
-// Mobil kapat düğmesi referansı
 const closeDetailsButton = document.querySelector('.close-details-panel');
 
+// Filtre butonları referansları
+const filterButtons = document.querySelectorAll('.match-filters button');
+
+// --- Favoriler İçin localStorage Key ---
+const FAVORITES_STORAGE_KEY = 'favoriteMatchIds';
+
+// --- Favori Maç ID'lerini Yükleme ve Kaydetme ---
+function loadFavorites() {
+    const favorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
+    return favorites ? JSON.parse(favorites) : [];
+}
+
+function saveFavorites(favoriteIds) {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoriteIds));
+}
+
+// --- Favori Durumunu Kontrol Etme ---
+function isMatchFavorite(matchId, favoriteIds) {
+    return favoriteIds.includes(matchId);
+}
 
 // Paneller ve önemli elementler bulunamazsa uyarı verelim
 if (!matchesListContainer) console.error("HTML'de #matches-list ID'li container bulunamadı!");
@@ -80,10 +92,12 @@ if (!statisticsTabContent) console.warn("HTML'de #statistics-tab-content element
 if (!eventsSectionInPane) console.warn("HTML'de .events-section (olaylar paneli içinde) elementi bulunamadı.");
 if (!statisticsSectionInPane) console.warn("HTML'de .statistics-section (istatistikler paneli içinde) elementi bulunamadı.");
 
-if (!matchDetailsOddsSection) console.warn("HTML'de .match-details-odds elementi bulunamadı.");
-if (!oddsListContainer) console.warn("HTML'de .odds-list elementi bulunamadı.");
+// Oran referansları kaldırıldı.
+// if (!matchDetailsOddsSection) console.warn("HTML'de .match-details-odds elementi bulunamadı.");
+// if (!oddsListContainer) console.warn("HTML'de .odds-list elementi bulunamadı.");
 
 if (!closeDetailsButton) console.warn("HTML'de .close-details-panel elementi bulunamadı.");
+if (filterButtons.length === 0) console.warn("HTML'de filtre butonları (.filter-button) bulunamadı.");
 
 
 // Ekranın mobil görünümde olup olmadığını kontrol eden fonksiyon
@@ -128,11 +142,18 @@ if (closeDetailsButton && sidebarRight) {
     closeDetailsButton.addEventListener('click', () => {
         sidebarRight.classList.remove('is-visible-on-mobile');
          document.body.style.overflow = '';
+         // Favoriler filtresi aktifse kapatınca diğerlerine geç
+         const favoritesButton = document.querySelector('.filter-button[data-filter="favorites"]');
+         if (favoritesButton && favoritesButton.classList.contains('active')) {
+             // Canlı maçlar butonunu aktif yap ve listeyi güncelle
+             const liveButton = document.querySelector('.filter-button[data-filter="live"]');
+             if (liveButton) liveButton.click(); // Canlı butonuna tıklama simüle et
+         }
     });
 }
 
 
-// Canlı maç verilerini çeken fonksiyon
+// Canlı maç verilerini çeken fonksiyon (Değişiklik Yok)
 async function fetchLiveMatches() {
     console.log('API\'den canlı maç verileri çekiliyor...', fixturesUrl);
     try {
@@ -155,7 +176,7 @@ async function fetchLiveMatches() {
     }
 }
 
-// Belirli bir maçın olaylarını çeken fonksiyon
+// Belirli bir maçın olaylarını çeken fonksiyon (Değişiklik Yok)
 async function fetchMatchEvents(fixtureId) {
     const urlWithFixture = `${eventsUrl}?fixture=${fixtureId}`;
     console.log(`Maç olayları çekiliyor (ID: ${fixtureId})...`, urlWithFixture);
@@ -180,7 +201,7 @@ async function fetchMatchEvents(fixtureId) {
     }
 }
 
-// Belirli bir maçın istatistiklerini çeken fonksiyon
+// Bel belirli bir maçın istatistiklerini çeken fonksiyon (Değişiklik Yok)
 async function fetchMatchStatistics(fixtureId) {
     const urlWithFixture = `${statisticsUrl}?fixture=${fixtureId}`;
     console.log(`Maç istatistikleri çekiliyor (ID: ${fixtureId})...`, urlWithFixture);
@@ -205,10 +226,8 @@ async function fetchMatchStatistics(fixtureId) {
     }
 }
 
-// Oran çekme fonksiyonu (Şimdilik kullanılmıyor)
-// async function fetchMatchOdds(fixtureId) { ... }
 
-// --- Maç detayları/olaylarını sağ panele yerleştiren fonksiyon ---
+// --- Maç detayları/olaylarını sağ panele yerleştiren fonksiyon (Değişiklik Yok) ---
 function displayMatchDetails(matchId, eventsData) {
     console.log('Maç olayları sağ panele yerleştiriliyor. Veri:', eventsData);
 
@@ -517,32 +536,70 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
      console.log('İstatistikler sağ panele yerleştirildi.');
 }
 
-// Oran verisini sağ panele yerleştirir (Şimdilik kullanılmıyor)
-// function displayMatchOdds(oddsData) { ... }
 
+// API'den gelen veriyi alıp HTML'i dolduran fonksiyon (Favori Ekleme Mantığı Eklendi)
+let allMatchesData = []; // Tüm maçları saklamak için global değişken
 
-// API'den gelen veriyi alıp HTML'i dolduran fonksiyon
 function displayMatches(data) {
     console.log('Veri işleniyor ve HTML güncelleniyor.');
+
+    allMatchesData = data && Array.isArray(data.response) ? data.response : []; // Tüm veriyi sakla
 
     if (!matchesListContainer) {
         console.error("HTML'de #matches-list ID'li container bulunamadı!");
         return;
     }
 
+    // Aktif filtreyi bul
+    const activeFilterButton = document.querySelector('.filter-button.active');
+    const activeFilter = activeFilterButton ? activeFilterButton.dataset.filter : 'live'; // Varsayılan canlı
+
+
+    let matchesToDisplay = [];
+    const favoriteMatchIds = loadFavorites(); // Favori ID'lerini yükle
+
+    if (activeFilter === 'favorites') {
+        // Favori maçları filtrele
+        matchesToDisplay = allMatchesData.filter(match =>
+            match.fixture && isMatchFavorite(String(match.fixture.id), favoriteMatchIds)
+        );
+    } else {
+        // Diğer filtreler (şimdilik sadece 'live' API'den geliyor)
+         // Gelecekte 'finished' ve 'upcoming' için API çağrıları buraya eklenecek
+         if(activeFilter === 'live') {
+             matchesToDisplay = allMatchesData.filter(match =>
+                 match.fixture && match.fixture.status &&
+                 (match.fixture.status.short === '1H' || match.fixture.status.short === '2H' ||
+                  match.fixture.status.short === 'ET' || match.fixture.status.short === 'BT' ||
+                  match.fixture.status.short === 'LIVE' || match.fixture.status.short === 'HT') // HT de canlı sayılabilir
+             );
+         } else {
+             // Bilinmeyen veya henüz uygulanmamış filtreler için boş liste
+             matchesToDisplay = [];
+         }
+
+    }
+
+
     matchesListContainer.innerHTML = '';
 
-    const matches = data && Array.isArray(data.response) ? data.response : [];
-
-    if (matches.length === 0) {
-        matchesListContainer.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Şu anda canlı maç bulunmuyor.</p>';
-        console.log('API\'den gelen yanıtta hiç maç bulunamadı.');
+    if (matchesToDisplay.length === 0) {
+        let message = 'Şu anda canlı maç bulunmuyor.';
+        if(activeFilter === 'favorites') {
+             message = 'Henüz favori maçınız yok.';
+        } else if (activeFilter === 'finished') {
+             message = 'Biten maçlar yüklenemedi veya mevcut değil.'; // API'den çekme eklenmedi
+        } else if (activeFilter === 'upcoming') {
+             message = 'Yaklaşan maçlar yüklenemedi veya mevcut değil.'; // API'den çekme eklenmedi
+        }
+        matchesListContainer.innerHTML = `<p style="text-align:center; color: var(--secondary-text-color);">${message}</p>`;
+        console.log('Görüntülenecek maç listesi boş. Aktif filtre:', activeFilter);
         return;
     }
 
     const groupedMatches = {};
 
-    matches.forEach(match => {
+    matchesToDisplay.forEach(match => {
         const leagueId = match.league && match.league.id ? match.league.id : 'unknown-league-' + (match.fixture ? match.fixture.id : Math.random());
         const leagueName = match.league && match.league.name ? match.league.name : 'Bilinmeyen Lig';
         const countryName = match.league && match.league.country ? match.league.country : '';
@@ -570,15 +627,18 @@ function displayMatches(data) {
              // Lig adını kullan (API'den gelen)
             leagueTitle.innerHTML = `
                 <span class="league-name">${leagueData.country ? leagueData.country + ' - ' : ''}${leagueData.name}</span>
-                <span class="favorite-icon">☆</span>
-            `;
+                <span class="favorite-icon league-favorite" data-league-id="${leagueId}">☆</span>
+            `; // Lig favori butonu eklendi (işlevi yok şimdilik)
             leagueSection.appendChild(leagueTitle);
 
             if (leagueData.matches) {
                 leagueData.matches.forEach(match => {
+                    const matchId = String(match.fixture && match.fixture.id); // matchId string olarak saklanmalı
+                    const isFavorite = isMatchFavorite(matchId, favoriteMatchIds);
+
                     const matchItem = document.createElement('div');
                     matchItem.classList.add('match-item');
-                     matchItem.dataset.matchId = match.fixture && match.fixture.id ? match.fixture.id : 'match-id-unknown';
+                    matchItem.dataset.matchId = matchId;
 
                     const homeTeamName = match.teams && match.teams.home ? match.teams.home.name : 'Ev Sahibi';
                     const awayTeamName = match.teams && match.teams.away ? match.teams.away.name : 'Deplasman';
@@ -596,10 +656,8 @@ function displayMatches(data) {
                      const matchTime = matchDateObj ? matchDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Saat Belirtilmemiş';
                      const matchDate = matchDateObj ? matchDateObj.toLocaleDateString() : '';
 
-                    // Ana listedeki oran yer tutucuları
-                    let odds1 = '-';
-                    let oddsX = '-';
-                    let odds2 = '-';
+                    // Ana listedeki oran yer tutucuları (KALDIRILDI)
+                    // let odds1 = '-'; let oddsX = '-'; let odds2 = '-';
 
 
                     matchItem.innerHTML = `
@@ -610,7 +668,7 @@ function displayMatches(data) {
                             </div>
                             <div class="score-status">
                                 ${statusShort === '1H' || statusShort === '2H' || statusShort === 'ET' || statusShort === 'BT' || statusShort === 'LIVE' ?
-                                    `<span class="score">${homeScore} - ${awayScore}</span><span class="match-status live">${elapsedTime || statusLong}</span>` : // Canlı ise 'live' class'ı eklendi
+                                    `<span class="score">${homeScore} - ${awayScore}</span><span class="match-status live">${elapsedTime || statusLong}</span>` :
                                      statusShort === 'HT' || statusShort === 'FT' || statusShort === 'AET' || statusShort === 'PEN' ?
                                     `<span class="score">${homeScore} - ${awayScore}</span><span class="match-status">${statusLong}</span>` :
                                      statusShort === 'NS' || statusShort === 'TBD' ?
@@ -624,28 +682,27 @@ function displayMatches(data) {
                             </div>
                         </div>
                         <div class="match-actions">
-                             <div class="odds">
-                                <div class="odd">${odds1}</div>
-                                <div class="odd">${oddsX}</div>
-                                <div class="odd">${odds2}</div>
-                            </div>
-                            <span class="match-favorite-icon">☆</span>
-                        </div>
+                            <span class="match-favorite-icon ${isFavorite ? 'is-favorite' : ''}" data-match-id="${matchId}">☆</span> </div>
                     `;
 
+                    // Maç öğesi tıklama olayı (detayları göstermek için)
                     matchItem.addEventListener('click', () => {
-                        const selectedFixtureId = matchItem.dataset.matchId;
-                        console.log(`Maç öğesine tıklandı. ID: ${selectedFixtureId}`);
+                        const clickedMatchId = matchItem.dataset.matchId;
+                        console.log(`Maç öğesine tıklandı. ID: ${clickedMatchId}`);
 
                          if(sidebarRight && isMobileView()){
                              sidebarRight.classList.add('is-visible-on-mobile');
+                             document.body.style.overflow = 'hidden';
+                         } else if (sidebarRight && !isMobileView()) {
+                             sidebarRight.style.display = 'block'; // Masaüstünde görünür yap (CSS grid ile çakışabilir, kontrol et)
                          }
 
-                         if (detailsPanel && initialMessage && selectedMatchInfo && matchDetailTitle && matchHeaderTeams && headerHomeLogo && headerTeamNames && headerAwayLogo && oddsListContainer) {
+
+                         if (detailsPanel && initialMessage && selectedMatchInfo && matchDetailTitle && matchHeaderTeams && headerHomeLogo && headerTeamNames && headerAwayLogo) { // Oran container kontrolü kaldırıldı
                              initialMessage.style.display = 'none';
                              selectedMatchInfo.style.display = 'block';
 
-                            const clickedMatch = matches.find(m => (m.fixture && m.fixture.id) == selectedFixtureId);
+                            const clickedMatch = allMatchesData.find(m => (m.fixture && String(m.fixture.id)) === clickedMatchId); // allMatchesData'dan bul
                              let homeTeamName = 'Ev Sahibi';
                              let awayTeamName = 'Deplasman';
                              let homeTeamLogoUrl = 'placeholder-logo.png';
@@ -656,8 +713,7 @@ function displayMatches(data) {
                                   homeTeamName = clickedMatch.teams && clickedMatch.teams.home ? clickedMatch.teams.home.name : 'Ev Sahibi';
                                  awayTeamName = clickedMatch.teams && clickedMatch.teams.away ? clickedMatch.teams.away.name : 'Deplasman';
                                   homeTeamLogoUrl = (clickedMatch.teams && clickedMatch.teams.home ? clickedMatch.teams.home.logo : null) || 'placeholder-logo.png';
-                                 awayTeamUrl = (clickedMatch.teams && clickedMatch.teams.away ? clickedMatch.teams.away.logo : null) || 'placeholder-logo.png'; // Hata düzeltildi
-                                  awayTeamLogoUrl = (clickedMatch.teams && clickedMatch.teams.away ? clickedMatch.teams.away.logo : null) || 'placeholder-logo.png'; // Hata düzeltildi
+                                 awayTeamLogoUrl = (clickedMatch.teams && clickedMatch.teams.away ? clickedMatch.teams.away.logo : null) || 'placeholder-logo.png';
                                   leagueName = clickedMatch.league && clickedMatch.league.name ? clickedMatch.league.name : 'Maç Detayları';
 
                                  matchDetailTitle.textContent = `${leagueName}`;
@@ -678,8 +734,10 @@ function displayMatches(data) {
 
                              if(eventsSectionInPane) eventsSectionInPane.innerHTML = '';
                              if(statisticsSectionInPane) statisticsSectionInPane.innerHTML = '';
-                              // Oran listesini temizle ve yükleniyor mesajı koy (Oranlar çekilmediği için burada sabit mesaj duracak)
-                             if(oddsListContainer) oddsListContainer.innerHTML = '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Oran bilgisi mevcut değil.</p>';
+                              // Oran listesini temizle ve sabit mesajı koy (Oranlar kaldırıldığı için)
+                             if(matchDetailsOddsSection && matchDetailsOddsSection.querySelector('.odds-list')) {
+                                  matchDetailsOddsSection.querySelector('.odds-list').innerHTML = '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Oran bilgisi mevcut değil.</p>';
+                             }
 
 
                              switchTab('events');
@@ -689,9 +747,9 @@ function displayMatches(data) {
                               if (detailsPanel) detailsPanel.innerHTML = '<h3>Detaylar Yükleniyor...</h3><p>Gerekli panel elementleri bulunamadı.</p>';
                          }
 
-                        fetchMatchEvents(selectedFixtureId).then(eventsData => {
+                        fetchMatchEvents(clickedMatchId).then(eventsData => {
                              if(eventsData){
-                                 displayMatchDetails(selectedFixtureId, eventsData);
+                                 displayMatchDetails(clickedMatchId, eventsData);
                              } else {
                                    if (eventsSectionInPane) {
                                         eventsSectionInPane.innerHTML = '<h4>Maç Olayları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maçta henüz bir olay yok veya yüklenemedi.</p>';
@@ -699,9 +757,9 @@ function displayMatches(data) {
                              }
                         });
 
-                         fetchMatchStatistics(selectedFixtureId).then(statsData => {
+                         fetchMatchStatistics(clickedMatchId).then(statsData => {
                              if(statsData){
-                                 displayMatchStatistics(selectedFixtureId, statsData, homeTeamName, awayTeamName);
+                                 displayMatchStatistics(clickedMatchId, statsData, homeTeamName, awayTeamName);
                              } else {
                                    if (statisticsSectionInPane) {
                                         statisticsSectionInPane.innerHTML = '<h4>İstatistikler</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için istatistik bilgisi bulunamadı veya yüklenemedi.</p>';
@@ -709,14 +767,47 @@ function displayMatches(data) {
                              }
                          });
 
-                         // Oranları çekme fonksiyonu burada çağrılmıyor artık.
-                         // fetchMatchOdds(selectedFixtureId).then(oddsData => { ... });
-
-
                          const allMatchItems = document.querySelectorAll('.match-item');
                          allMatchItems.forEach(item => item.classList.remove('selected-match'));
                          matchItem.classList.add('selected-match');
                     });
+
+                    // !!! Favori ikonuna tıklama olayı !!!
+                    const favoriteIcon = matchItem.querySelector('.match-favorite-icon');
+                    if (favoriteIcon) {
+                        favoriteIcon.addEventListener('click', (event) => {
+                            event.stopPropagation(); // Maç öğesinin tıklama olayını engelle
+
+                            const currentMatchId = favoriteIcon.dataset.matchId;
+                            let favoriteIds = loadFavorites(); // Mevcut favorileri yükle
+
+                            const index = favoriteIds.indexOf(currentMatchId);
+
+                            if (index > -1) {
+                                // Zaten favoriyse kaldır
+                                favoriteIds.splice(index, 1);
+                                favoriteIcon.classList.remove('is-favorite');
+                                console.log(`Favorilerden Kaldırıldı: ${currentMatchId}`);
+                            } else {
+                                // Favori değilse ekle
+                                favoriteIds.push(currentMatchId);
+                                favoriteIcon.classList.add('is-favorite');
+                                console.log(`Favorilere Eklendi: ${currentMatchId}`);
+                            }
+
+                            saveFavorites(favoriteIds); // Favorileri kaydet
+
+                            // Eğer Favorilerim filtresi aktifse, listeyi yeniden çiz
+                            const activeFilterButton = document.querySelector('.filter-button.active');
+                            if (activeFilterButton && activeFilterButton.dataset.filter === 'favorites') {
+                                // Eğer kaldırılan favori, favori listesindeyse, listenin güncellenmesi gerekir.
+                                // En basit yol, listeyi tamamen yeniden çizmek.
+                                displayMatches({ response: allMatchesData }); // Tüm veriyi kullanarak listeyi filtreleyip yeniden çiz
+                            }
+
+                        });
+                    }
+
 
                     leagueSection.appendChild(matchItem);
                 });
@@ -725,23 +816,76 @@ function displayMatches(data) {
             matchesListContainer.appendChild(leagueSection);
         }
     }
-     console.log('Maç öğeleri görüntülendi ve tıklama olayları eklendi.');
+     console.log('Maç öğeleri görüntülendi ve tıklama olayları eklendi (Favori mantığı dahil).');
+}
+
+
+// --- Filtre Butonlarına Olay Dinleyicisi Ekle ---
+if(filterButtons) {
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const filterType = button.dataset.filter;
+
+            // Aktif sınıfını güncelle
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            console.log(`Filtre tıklandı: ${filterType}`);
+
+            // Filtreye göre maçları yeniden görüntüle
+            // Şu an sadece 'live' filtrelemesi API'den gelen veriyle çalışır.
+            // 'favorites' filtresi localStorage ve allMatchesData kullanır.
+            // 'finished' ve 'upcoming' için API çağrıları ve displayMatches içinde filtreleme eklenmeli.
+            if (filterType === 'live' || filterType === 'favorites') {
+                 displayMatches({ response: allMatchesData }); // allMatchesData üzerinden filtreleme yap
+            } else {
+                // Henüz uygulanmamış filtreler için boş liste veya bilgilendirme
+                matchesListContainer.innerHTML = `<p style="text-align:center; color: var(--secondary-text-color);">"${filterType}" filtresi henüz aktif değil veya veri mevcut değil.</p>`;
+                console.warn(`"${filterType}" filtresi henüz uygulanmadı.`);
+            }
+
+             // Sağ paneli gizle (isteğe bağlı, filtre değişince detaylar kapanabilir)
+             if (sidebarRight) {
+                 sidebarRight.classList.remove('is-visible-on-mobile');
+                 if(!isMobileView()) { // Masaüstünde paneli tamamen gizle
+                      sidebarRight.style.display = 'none';
+                      // Başlangıç mesajını geri göster
+                     if (initialMessage) initialMessage.style.display = 'block';
+                      if (selectedMatchInfo) selectedMatchInfo.style.display = 'none';
+                 }
+             }
+
+        });
+    });
 }
 
 
 // Belirli aralıklarla veri çekme fonksiyonunu çağırıp listeyi güncelleyen fonksiyon
 function startLiveUpdates() {
+    // İlk yüklemeden sonra sadece canlı filtre aktifse güncelleme yap
     const updateInterval = setInterval(() => {
-        console.log('Maç verileri güncelleniyor...');
-        fetchLiveMatches().then(data => {
-            if (data) {
-                 displayMatches(data);
-                 console.log('Ekran verisi güncellendi.');
-            } else {
-                 console.error('Veri güncelleme sırasında API\'den veri alınamadı.');
-            }
-        });
-    }, 15000);
+         const activeFilterButton = document.querySelector('.filter-button.active');
+         const activeFilter = activeFilterButton ? activeFilterButton.dataset.filter : 'live';
+
+         // Eğer aktif filtre 'live' veya 'favorites' ise güncelleme yap (favoriler de canlı veriye dayanır)
+         if (activeFilter === 'live' || activeFilter === 'favorites') {
+             console.log('Canlı maç verileri güncelleniyor...');
+             fetchLiveMatches().then(data => {
+                 if (data) {
+                      // Güncel veriyi allMatchesData'ya kaydet ve aktif filtreye göre listeyi yeniden çiz
+                     allMatchesData = data.response || [];
+                      displayMatches({ response: allMatchesData }); // Güncellenmiş veriyle listeyi yeniden çiz
+                      console.log('Ekran verisi güncellendi.');
+                 } else {
+                      console.error('Veri güncelleme sırasında API\'den veri alınamadı.');
+                 }
+             });
+         } else {
+             console.log('Canlı güncelleme duraklatıldı (Aktif filtre canlı değil).');
+         }
+
+
+    }, 15000); // Her 15 saniyede bir
 
     // window.addEventListener('beforeunload', () => {
     //     clearInterval(updateInterval);
@@ -753,14 +897,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (initialMessage) initialMessage.style.display = 'block';
     if (selectedMatchInfo) selectedMatchInfo.style.display = 'none';
-     // Oran listesini başlangıçta temizle ve sabit mesajı göster
-     if(oddsListContainer) oddsListContainer.innerHTML = '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Oran bilgisi mevcut değil.</p>';
+     // Oran listesini başlangıçta temizle ve sabit mesajı göster (Kaldırıldı)
+     // if(oddsListContainer) oddsListContainer.innerHTML = '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Oran bilgisi mevcut değil.</p>';
+
+     // Masaüstünde sağ paneli başlangıçta gizle
+     if (sidebarRight && !isMobileView()) {
+         sidebarRight.style.display = 'none';
+     }
 
 
     fetchLiveMatches().then(data => {
         if (data) {
-             displayMatches(data);
-             startLiveUpdates();
+             displayMatches(data); // İlk yüklemede tüm veriyi gösterir (varsayılan filtre canlı)
+             startLiveUpdates(); // Canlı güncellemeyi başlat
          } else {
              console.error("İlk veri çekme başarısıız oldu.");
               if (initialMessage) initialMessage.textContent = 'Maç verileri yüklenemedi.';
@@ -768,5 +917,3 @@ document.addEventListener('DOMContentLoaded', () => {
          }
     });
 });
-
-// Not: Favorileme işlevselliği henüz tamamlanmadı.
