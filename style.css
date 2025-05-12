@@ -4,6 +4,8 @@ body {
     margin: 0;
     background-color: #f4f4f4;
     color: #333;
+    /* Overlay açıldığında body'nin kaymasını engellemek için */
+     overflow-x: hidden;
 }
 
 .container {
@@ -25,36 +27,36 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Küçük ekranda alt satıra geçsinler */
+    flex-wrap: wrap;
 }
 
 .site-header h1 {
     margin: 0;
     font-size: 24px;
-     width: 100%; /* Küçük ekranda tam genişlik kaplasın */
-    text-align: center; /* Ortala */
-    margin-bottom: 10px; /* Altına boşluk */
+     width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 .header-right {
     display: flex;
     align-items: center;
-    width: 100%; /* Küçük ekranda tam genişlik kaplasın */
-    justify-content: center; /* Ortala */
+    width: 100%;
+    justify-content: center;
     flex-wrap: wrap;
 }
 
 .sport-selection {
-    margin-bottom: 10px; /* Arama kutusuyla arasına boşluk */
+    margin-bottom: 10px;
     display: flex;
     justify-content: center;
-    width: 100%; /* Küçük ekranda tam genişlik */
+    width: 100%;
 }
 
 .sport-selection a {
     color: #fff;
     text-decoration: none;
-    margin: 0 10px; /* Boşlukları ayarla */
+    margin: 0 10px;
     font-size: 16px;
     opacity: 0.8;
     transition: opacity 0.3s ease;
@@ -66,13 +68,13 @@ body {
 }
 
 .search-box input {
-    margin: 0; /* Boşluğu kaldır */
-    padding: 8px; /* Paddingi artır */
+    margin: 0;
+    padding: 8px;
     border: none;
     border-radius: 3px;
-     width: calc(100% - 16px); /* Tam genişlik */
-    box-sizing: border-box; /* Padding genişliğe dahil */
-    text-align: center; /* Yazıyı ortala */
+     width: calc(100% - 16px);
+    box-sizing: border-box;
+    text-align: center;
 }
 
 /* Ana Layout Stilleri */
@@ -133,14 +135,14 @@ body {
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex; /* Filtre düğmeleri yan yana */
-    flex-wrap: wrap; /* Küçük ekranda alt satıra geçsin */
-    justify-content: center; /* Ortala */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .match-filters button {
     padding: 8px 15px;
-    margin: 5px; /* Boşlukları ayarla */
+    margin: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: #eee;
@@ -201,7 +203,7 @@ body {
     border-bottom: 1px solid #eee;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    flex-wrap: wrap; /* Küçük ekranda içeriğin kaymasına izin ver */
+    flex-wrap: wrap;
 }
 
 .match-item:last-child {
@@ -223,15 +225,15 @@ body {
     display: flex;
     align-items: center;
     flex-grow: 1;
-    flex-basis: 100%; /* Küçük ekranda tam genişlik kaplasın */
-    justify-content: center; /* Ortala */
-    margin-bottom: 10px; /* Altına boşluk */
+    /* flex-basis: 100%; */ /* Küçük ekranda ayarlandı */
+    justify-content: center;
+    margin-bottom: 0; /* Mobil için 0, masaüstü için ayarlandı */
 }
 
 .team-info {
     display: flex;
     align-items: center;
-    width: 120px; /* Takım alanı için sabit genişlik (küçük ekran için daraltıldı) */
+    width: 150px; /* Masaüstü genişlik */
     flex-shrink: 0;
 }
 /* Takım isimlerinin sağa yaslanması (ev sahibi) ve sola yaslanması (deplasman) için */
@@ -266,8 +268,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 15px; /* Skor-durum bloğu etrafında boşluk (daraltıldı) */
-     width: 50px; /* Skor ve durum alanı için sabit genişlik (daraltıldı) */
+    margin: 0 20px;
+     width: 60px;
      flex-shrink: 0;
 }
 
@@ -293,8 +295,8 @@ body {
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    width: 100%; /* Küçük ekranda tam genişlik kaplasın */
-    justify-content: center; /* Ortala */
+     width: auto; /* Masaüstü için otomatik genişlik */
+     justify-content: flex-end; /* Sağa yasla */
 }
 
 .odds {
@@ -334,6 +336,7 @@ body {
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative; /* Kapat düğmesi için konumlandırma */
 }
 
 .sidebar-right h2 {
@@ -357,9 +360,8 @@ body {
 }
 
 /* Maç seçildikten sonraki içerik alanı */
-/* JS, maç seçildiğinde display: block yapacak */
 .selected-match-info {
-    /* display: none; // HTML'de başlangıçta gizli olabilir */
+    /* display: none; // JS ile yönetilir */
 }
 
 /* Sağ panel başlığındaki takım isimleri ve logoları */
@@ -385,9 +387,9 @@ body {
 .selected-match-info .header-team-names {
     font-size: 16px;
     font-weight: bold;
-    text-align: center; /* Takım isimlerini ortala */
-    flex-grow: 1; /* Ortadaki alan tam genişlik kaplasın */
-    white-space: nowrap; /* Tek satırda kalması için */
+    text-align: center;
+    flex-grow: 1;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -473,7 +475,7 @@ body {
     border-bottom: 1px dashed #eee;
     font-size: 14px;
     color: #555;
-    word-break: break-word; /* Uzun kelimelerin kırılmasına izin ver */
+    word-break: break-word;
 }
 
 .match-events-list li:last-child {
@@ -481,16 +483,14 @@ body {
 }
 
 /* Olay Tipine Göre Stil */
-.event-item span:first-child { /* Zaman */
+.event-item span:first-child {
     font-weight: bold;
     margin-right: 5px;
     color: #333;
 }
 
-.event-item .event-icon { /* İkon için span */
+.event-item .event-icon {
     margin-right: 5px;
-    /* İkon kütüphanesi kullanıyorsanız burada ikon sınıfı ayarları yapılabilir */
-    /* font-family, font-weight, display: inline-block gibi */
 }
 
 .event-goal {
@@ -542,7 +542,6 @@ body {
      padding: 6px 0;
     border-bottom: 1px dashed #eee;
     font-size: 14px;
-    /* Flex display child div'lere uygulandı */
 }
 
 .match-statistics-list .stat-item:last-child {
@@ -554,7 +553,6 @@ body {
      display: flex;
      justify-content: space-between;
      align-items: center;
-     /* flex-wrap: wrap; // Küçük ekranda alt satıra geçsin (Media query'de ayarlandı) */
 }
 
 /* İstatistik türü ikonları */
@@ -609,7 +607,7 @@ body {
 .match-statistics-list .stat-progress-bar {
     width: calc(100% - 10px);
     margin: 0 auto;
-    height: 10px; /* Bar yüksekliği */
+    height: 10px;
     background-color: #e9ecef;
     border-radius: 5px;
     overflow: hidden;
@@ -670,35 +668,35 @@ body {
 /* Küçük Ekranlar (Telefonlar) */
 @media (max-width: 768px) {
     .container {
-        padding: 0 10px; /* Telefonlarda kenar boşluklarını azalt */
+        padding: 0 10px;
     }
 
     .site-header .container {
-        flex-direction: column; /* Başlık ve sağ taraf alt alta */
-         align-items: stretch; /* Genişliği kaplasınlar */
+        flex-direction: column;
+         align-items: stretch;
     }
     .site-header h1 {
-         font-size: 20px; /* Başlık fontunu küçült */
+         font-size: 20px;
     }
     .header-right {
-         flex-direction: column; /* Navigasyon ve arama kutusu alt alta */
+         flex-direction: column;
          align-items: stretch;
     }
     .sport-selection {
-        flex-wrap: wrap; /* Spor seçimi alt alta geçsin */
+        flex-wrap: wrap;
         justify-content: center;
          margin-bottom: 10px;
     }
      .sport-selection a {
-         margin: 5px 8px; /* Boşlukları ayarla */
+         margin: 5px 8px;
          font-size: 15px;
      }
      .search-box {
-         width: 100%; /* Arama kutusu tam genişlik kaplasın */
+         width: 100%;
          margin-left: 0;
      }
      .search-box input {
-         width: 100%; /* Input tam genişlik kaplasın */
+         width: 100%;
          padding: 8px;
          box-sizing: border-box;
      }
@@ -706,129 +704,179 @@ body {
 
     /* Ana Layout Telefonlarda */
     .main-layout {
-        grid-template-columns: 1fr; /* Tek sütun */
-        gap: 15px; /* Boşlukları ayarla */
-         padding: 0 10px; /* Container ile uyumlu */
+        grid-template-columns: 1fr;
+        gap: 15px;
+         padding: 0 10px;
     }
 
     /* Sidebar'lar Telefonlarda */
     .sidebar-left,
     .central-content,
     .sidebar-right {
-        width: 100%; /* Tam genişlik */
-        margin-top: 0; /* Üst marjı kaldır (gap boşluk bırakır) */
-        padding: 10px; /* Paddingi azalt */
-        box-sizing: border-box; /* Padding genişliğe dahil */
+        width: 100%;
+        margin-top: 0;
+        padding: 10px;
+        box-sizing: border-box;
     }
 
-    /* Sağ Sidebar (Detay Paneli) Telefonlarda - İsteğe bağlı olarak gizlenip açılabilir */
-     /* Şu an sadece tam genişlikte görünür halde kalıyor */
+    /* Sağ Sidebar (Detay Paneli) Telefonlarda - Overlay Yapısı */
      .sidebar-right {
-         /* Maça tıklayınca tam ekran overlay olması için buraya display: none; eklenebilir
-            ve JavaScript ile tıklanınca display: block ve positioning ayarları yapılabilir */
+         position: fixed; /* Ekrana sabitle */
+         top: 0; /* Ekranın üstüne hizala */
+         left: 0; /* Ekranın soluna hizala */
+         width: 100%; /* Tam genişlik */
+         height: 100%; /* Tam yükseklik */
+         z-index: 1000; /* Diğer içeriklerin üstünde görünmesini sağla */
+         overflow-y: auto; /* İçerik sığmazsa dikey kaydırma çubuğu çıkar */
+         background-color: #fff; /* Arka plan rengi (altında kalanları kapatır) */
+         padding: 15px; /* İç boşluk */
+         box-shadow: none; /* Gölgeyi kaldır (isteğe bağlı) */
+         border-radius: 0; /* Köşe yuvarlaklığını kaldır (isteğe bağlı) */
+
+         display: none; /* Varsayılan olarak gizli */
+     }
+
+     /* JavaScript ile .sidebar-right elementine 'is-visible-on-mobile' sınıfı eklendiğinde görünür olacak */
+     .sidebar-right.is-visible-on-mobile {
+         display: block;
+     }
+
+     /* Başlangıç mesajı overlay'de göründüğünde ortaya hizala */
+     .sidebar-right.is-visible-on-mobile .initial-message {
+         position: absolute; /* Panele göre konumlandır */
+         top: 50%; /* Dikeyde ortala */
+         left: 50%; /* Yatayda ortala */
+         transform: translate(-50%, -50%); /* Tam merkeze al */
+         width: calc(100% - 30px); /* Paddingi düşerek genişlik ayarla */
+         text-align: center;
+     }
+      /* Maç detayları yüklenince başlangıç mesajını gizle */
+     .sidebar-right.is-visible-on-mobile .selected-match-info {
+         /* JS zaten display: block yapıyor. Eğer overlay'de görünürse ekstra stil gerekirse buraya */
+     }
+
+
+     /* Mobil İçin Kapat Düğmesi */
+     .close-details-panel {
+         display: block; /* Mobil görünümde göster */
+         position: absolute; /* Sağ panele göre konumlandır */
+         top: 10px; /* Üstten boşluk */
+         right: 10px; /* Sağdan boşluk */
+         background-color: transparent; /* Şeffaf arka plan */
+         border: none; /* Kenarlık yok */
+         font-size: 24px; /* Boyut */
+         cursor: pointer; /* İmleç değişsin */
+         z-index: 1001; /* Overlay'in üstünde olsun */
+         color: #555; /* Renk */
      }
 
 
     /* Maç Öğesi Stilleri Telefonlarda */
     .match-item {
-        flex-direction: column; /* İçeriği alt alta yığ */
-        align-items: center; /* Ortala */
+        flex-direction: column;
+        align-items: center;
         padding: 10px 0;
     }
 
     .match-summary {
-        flex-direction: row; /* Skor ve takım bilgisi yan yana kalsın (iç yapıyı bozmayalım) */
+        flex-direction: row;
         justify-content: space-between;
-        width: 100%; /* Tam genişlik kaplasın */
-        margin-bottom: 10px;
+        width: 100%;
+        margin-bottom: 10px; /* Mobil için boşluk */
     }
 
     .team-info {
-        width: 120px; /* Takım alanı genişliği */
-        justify-content: flex-start; /* Logolar başta, isimler sonra */
+        width: 120px;
+        justify-content: flex-start;
          text-align: left;
-         margin: 0; /* Marjları kaldır */
+         margin: 0;
     }
     .match-summary .team-info:first-child {
-         justify-content: flex-end; /* Ev sahibi sağa yaslanır */
+         justify-content: flex-end;
          text-align: right;
          margin-right: 10px;
     }
      .match-summary .team-info:last-child {
-         justify-content: flex-start; /* Deplasman sola yaslanır */
+         justify-content: flex-start;
          text-align: left;
          margin-left: 10px;
      }
 
 
     .score-status {
-        margin: 0 10px; /* Marjları ayarla */
-         width: 50px; /* Genişliği ayarla */
+        margin: 0 10px;
+         width: 50px;
     }
 
     .match-actions {
-        width: 100%; /* Tam genişlik */
+        width: 100%;
         justify-content: center;
+         margin-top: 5px; /* Üstüne boşluk */
     }
     .odds {
-        margin-right: 10px; /* Marjı daralt */
+        margin-right: 10px;
     }
     .odd {
-        padding: 3px 6px; /* Paddingi daralt */
+        padding: 3px 6px;
         font-size: 12px;
     }
 
 
-    /* Detay Panel İçeriği Telefonlarda */
+    /* Detay Panel İçeriği Telefonlarda (Overlay içinde) */
 
     /* Sekme Stilleri Telefonlarda */
     .match-tabs {
-         justify-content: center; /* Sekmeleri ortala */
-         flex-wrap: wrap; /* Sekmeler sığmazsa alt satıra geçsin */
+         justify-content: center;
+         flex-wrap: wrap;
          margin-bottom: 10px;
     }
      .match-tabs .tab-button {
-         padding: 8px 12px; /* Paddingi daralt */
+         padding: 8px 12px;
          font-size: 14px;
-         margin: 4px; /* Boşlukları ayarla */
+         margin: 4px;
      }
 
     /* Olay ve İstatistik Listeleri Telefonlarda */
     .match-events-list li,
     .match-statistics-list .stat-item {
-        font-size: 13px; /* Font boyutunu küçült */
-        padding: 6px 0; /* Paddingi ayarla */
+        font-size: 13px;
+        padding: 6px 0;
     }
 
     /* İstatistik Satırları (Değerler, Tür, Bar) Telefonlarda */
     .match-statistics-list .stat-values {
-         flex-direction: column; /* Değerler ve türü alt alta yığ */
-         align-items: flex-start; /* Sola hizala */
-         margin-bottom: 5px; /* Altına boşluk */
-         width: 100%; /* Tam genişlik */
+         flex-direction: column;
+         align-items: flex-start;
+         margin-bottom: 5px;
+         width: 100%;
          box-sizing: border-box;
     }
 
     .match-statistics-list .stat-home-value,
     .match-statistics-list .stat-away-value {
-         width: auto; /* Genişliği otomatik yap */
-         text-align: left; /* Sola hizala */
-         padding: 0; /* Paddingleri kaldır */
-         margin: 2px 0; /* Üstten alttan boşluk */
+         width: auto;
+         text-align: left;
+         padding: 0;
+         margin: 2px 0;
          font-size: 13px;
     }
 
      .match-statistics-list .stat-type {
-         width: 100%; /* Tam genişlik kapla */
-         text-align: left; /* Sola hizala */
-         margin: 5px 0 10px 0; /* Boşlukları ayarla */
-         font-size: 12px; /* Font boyutunu küçült */
+         width: 100%;
+         text-align: left;
+         margin: 5px 0 10px 0;
+         font-size: 12px;
      }
 
      /* İstatistik çubuğu telefonlarda */
      .match-statistics-list .stat-progress-bar {
-          width: calc(100% - 0px); /* Kenar boşluğunu kaldır */
-         margin: 0; /* Marjı kaldır */
-         height: 6px; /* Bar yüksekliği */
+          width: calc(100% - 0px);
+         margin: 0;
+         height: 6px;
      }
+}
+
+/* Kapat düğmesini masaüstünde gizle */
+.close-details-panel {
+    display: none;
 }
