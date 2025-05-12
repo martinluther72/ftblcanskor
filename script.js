@@ -253,13 +253,13 @@ function getTodayDateString() {
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0'); // Aylar 0-11 arası
     const day = String(today.getDate()).padStart(2, '0');
-    return `<span class="math-inline">\{year\}\-</span>{month}-${day}`;
+    return `${year}-${month}-${day}`;
 }
 
 
 // --- Tarihe Göre Maç Verilerini Çeken Fonksiyon ---
 async function fetchMatchesByDate(dateString) {
-    const url = `<span class="math-inline">\{dateFixturesUrl\}</span>{dateString}`;
+    const url = `${dateFixturesUrl}${dateString}`;
     console.log(`API'den ${dateString} tarihli maç verileri çekiliyor...`, url);
     try {
         const response = await fetch(url, options);
@@ -326,7 +326,7 @@ async function fetchLiveMatchesForUpdate() {
 
 // --- Belirli Bir Maçın Olaylarını Çeken Fonksiyon ---
 async function fetchMatchEvents(fixtureId) {
-    const url = `<span class="math-inline">\{eventsUrl\}?fixture\=</span>{fixtureId}`;
+    const url = `${eventsUrl}?fixture=${fixtureId}`;
     console.log(`Maç olayları çekiliyor (ID: ${fixtureId})...`, url);
     try {
         const response = await fetch(url, options);
@@ -347,7 +347,7 @@ async function fetchMatchEvents(fixtureId) {
 
 // --- Belirli Bir Maçın İstatistiklerini Çeken Fonksiyon ---
 async function fetchMatchStatistics(fixtureId) {
-    const url = `<span class="math-inline">\{statisticsUrl\}?fixture\=</span>{fixtureId}`;
+    const url = `${statisticsUrl}?fixture=${fixtureId}`;
     console.log(`Maç istatistikleri çekiliyor (ID: ${fixtureId})...`, url);
      // İstatistikler için cacheleme yapılabilir
     try {
@@ -371,7 +371,7 @@ async function fetchMatchStatistics(fixtureId) {
 
 // --- Belirli Bir Maçın Kadrolarını Çeken Fonksiyon ---
 async function fetchMatchLineups(fixtureId) {
-    const url = `<span class="math-inline">\{lineupsUrl\}?fixture\=</span>{fixtureId}`;
+    const url = `${lineupsUrl}?fixture=${fixtureId}`;
     console.log(`Maç kadroları çekiliyor (ID: ${fixtureId})...`, url);
      // Kadrolar için cacheleme yapılabilir
     try {
@@ -395,7 +395,7 @@ async function fetchMatchLineups(fixtureId) {
 
 // --- Belirli Bir Ligin Puan Durumunu Çeken Fonksiyon ---
 async function fetchLeagueStandings(leagueId, seasonYear) {
-    const url = `<span class="math-inline">\{standingsUrl\}?league\=</span>{leagueId}&season=${seasonYear}`;
+    const url = `${standingsUrl}?league=${leagueId}&season=${seasonYear}`;
     console.log(`Lig puan durumu çekiliyor (Lig: ${leagueId}, Sezon: ${seasonYear})...`, url);
      // Puan durumu için cacheleme yapılabilir
     try {
@@ -418,568 +418,6 @@ async function fetchLeagueStandings(leagueId, seasonYear) {
 }
 
 // --- Belirli Bir Maçın Oyuncu İstatistiklerini Çeken Fonksiyon (Yeni) ---
-async function fetchMatchPlayerStatistics(fixtureId) {
-    const url = `<span class="math-inline">\{playerStatisticsUrl\}?fixture\=</span>{fixtureId}`;
-    console.log(`Maç oyuncu istatistikleri çekiliyor (ID: ${fixtureId})...`, url);
-    try {
-        const response = await fetch(url, options);
-
-        if (!response.ok) {
-            const errorDetail = await response.text();
-            throw new Error(`Oyuncu İstatistikleri API isteği başarısız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
-        }
-
-        const data = await response.json();
-        console.log('Maç oyuncu istatistikleri ham veri:', data);
-        // API yanıtı { response: [ { team: {...}, players: [ { player: {...}, statistics: [...] }, ... ] }, ... ] } formatında olmalı
-        return data;
-
-    } catch (error) {
-        console.error(`Maç oyuncu istatistikleri çekme hatası (ID: ${fixtureId}):`, error);
-         if (playerStatsSectionInPane) playerStatsSectionInPane.innerHTML = '<h4>Oyuncu İstatistikleri</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: red;">Oyuncu istatistikleri yüklenirken hata oluştu.</p>';
-        return null;
-    }
-}
-
-
-// --- İstatistik Türleri İçin İngilizce'den Türkçe'ye Çeviri Haritası ---
-const statTypeTranslations = {
-    "Shots on Goal": "İsabetli Şut",
-    "Shots off Goal": "İsabetsiz Şut",
-    "Total Shots": "Toplam Şut",
-    "Blocked Shots": "Engellenen Şut",
-    "Shots insidebox": "Ceza Sahası İçi Şut",
-    "Shots outsidebox": "Ceza Sahası Dışı Şut",
-    "Fouls": "Faul",
-    "Corner Kicks": "Korner",
-    "Offsides": "Ofsayt",
-    "Ball Possession": "Topa Sahip Olma",
-    "Yellow Cards": "Sarı Kart",
-    "Red Cards": "Kırmızı Kart",
-    "Goalkeeper Saves": "Kaleci Kurtarışı",
-    "Total passes": "Toplam Pas",
-    "Passes accurate": "Başarılı Pas",
-    "Passes %": "Pas Başarı %",
-    "Expected Goals (xG)": "Beklenen Gol (xG)",
-    "Expected Goals against (xGA)": "Yenilen Beklenen Gol (xGA)",
-    "Expected Points (xP)": "Beklenen Puan (xP)",
-    "Big Chance Created": "Önemli Fırsat Yaratan",
-    "Big Chance Missed": "Harcanan Önemli Fırsat",
-    "Clearances": "Uzaklaştırmalar",
-    "Interceptions": "Top Kapma",
-    "Tackles": "Müdahale", // Veya "İkili Mücadele Kazanma"
-    "Duels Total": "Toplam İkili Mücadele",
-    "Duels won": "Kazanılan İkili Mücadele",
-    "Dribble Attempts": "Dribbling Girişimi",
-    "Dribble Success": "Başarılı Dribbling",
-    "Dispossessed": "Top Kaybı",
-    "Saves": "Kurtarışlar", // Genel kurtarışlar
-    "Passes accurate %": "Pas Başarı %", // Hem "Passes %" hem de "Passes accurate %" aynı anlama gelebilir
-     "Goals": "Gol", // Oyuncu istatistiklerinde geçebilir
-     "Assists": "Asist", // Oyuncu istatistiklerinde geçebilir
-     "Saves": "Kurtarış", // Oyuncu istatistiklerinde kaleci kurtarışı
-      "Passes": "Pas", // Oyuncu istatistiklerinde toplam pas
-      "Accuracy": "Pas Başarı %", // Oyuncu istatistiklerinde pas başarısı
-      "Blocked": "Engellenen", // Oyuncu istatistiklerinde şut engelleme
-      "Total": "Toplam", // Oyuncu istatistiklerinde şut toplam
-      "Interceptions": "Top Kapma", // Oyuncu istatistiklerinde top kapma
-      "Duels": "İkili Mücadele", // Oyuncu istatistiklerinde ikili mücadele
-      "Won": "Kazanılan", // Oyuncu istatistiklerinde ikili mücadele kazanma
-      "Dribbles": "Dribbling", // Oyuncu istatistiklerinde dribbling girişimi
-      "Success": "Başarılı", // Oyuncu istatistiklerinde başarılı dribbling
-      "Attempts": "Girişim" // Oyuncu istatistiklerinde dribbling girişimi
-};
-
-
-// --- Maç detayları/olaylarını sağ panele yerleştirir ---
-function displayMatchDetails(matchId, eventsData) {
-    console.log('Maç olayları sağ panele yerleştiriliyor. Veri:', eventsData);
-
-    if (!eventsTabContent || !eventsSectionInPane) {
-        console.error("HTML'de olaylar sekmesi içeriği alanları bulunamadı!");
-        return;
-    }
-
-    eventsSectionInPane.innerHTML = ''; // İçeriği temizle
-
-     const eventsTitle = document.createElement('h4');
-     eventsTitle.textContent = 'Maç Olayları';
-     eventsSectionInPane.appendChild(eventsTitle);
-
-    const events = eventsData && Array.isArray(eventsData.response) ? eventsData.response : [];
-
-    if (events.length === 0) {
-        eventsSectionInPane.innerHTML += '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maçta henüz bir olay yok.</p>';
-        console.log('Olay listesi boş.');
-        return;
-    }
-
-    const eventsList = document.createElement('ul');
-    eventsList.classList.add('match-events-list');
-    eventsSectionInPane.appendChild(eventsList);
-
-    events.forEach(event => {
-        const time = event.time && event.time.elapsed !== null ? event.time.elapsed + "'" : '';
-        const teamName = event.team && event.team.name ? event.team.name : 'Bilinmeyen Takım';
-        const playerName = event.player && event.player.name ? event.player.name : '';
-        const eventType = event.type ? event.type : 'Bilinmeyen Olay';
-        const eventDetail = event.detail ? event.detail : '';
-
-        const eventItem = document.createElement('li');
-        eventItem.classList.add('event-item');
-        eventItem.classList.add(`event-type-${eventType.toLowerCase().replace(/\s+/g, '-')}`);
-
-        let eventContent = '';
-        let iconClass = '';
-        let iconText = '';
-
-        if (eventType === 'Goal') {
-            iconClass = 'icon-goal';
-            iconText = '';
-            const assistPlayer = (event.assist && event.assist.name) ? ` (Asist: ${event.assist.name})` : '';
-            eventContent = `<span class="math-inline">\{playerName\}</span>{assistPlayer}`;
-             if (eventDetail && eventDetail !== 'Normal Goal') eventContent += ` (${eventDetail})`;
-        } else if (eventType === 'Card') {
-            iconClass = 'icon-card';
-            iconText = '';
-            eventContent = `${eventDetail}! ${playerName}`;
-             eventItem.classList.add(`event-detail-${eventDetail.toLowerCase().replace(/\s+/g, '-')}`);
-        } else if (eventType === 'subst') {
-             iconClass = 'icon-subst';
-             iconText = '';
-             let players = '';
-             if (event.player && event.player.name) players += `Çıkan: ${event.player.name}`;
-             if (event.assist && event.assist.name) players += (players ? ', ' : '') + ` Giren: ${event.assist.name}`;
-             eventContent = `Oyuncu Değişikliği (${players})`;
-        } else if (eventType === 'Var') {
-             iconClass = 'icon-var';
-             iconText = '';
-             eventContent = `VAR Kontrolü (${eventDetail})`;
-        } else if (eventType === 'Penalty') {
-             iconClass = 'icon-penalty';
-             iconText = '';
-             eventContent = `Penaltı: ${eventDetail}! ${playerName}`;
-        } else {
-             eventContent = `${eventType}: ${eventDetail} ${playerName}`;
-             iconClass = 'icon-default';
-             iconText = '';
-        }
-
-        const iconSpan = document.createElement('span');
-        iconSpan.classList.add('event-icon');
-        iconSpan.classList.add(iconClass);
-        iconSpan.textContent = iconText;
-
-        eventItem.innerHTML = `<span>${time}</span> ${teamName}: `;
-        eventItem.appendChild(iconSpan);
-        eventItem.innerHTML += ` ${eventContent}`;
-
-        eventsList.appendChild(eventItem);
-    });
-
-    console.log('Olaylar sağ panele yerleştirildi.');
-}
-
-// --- Maç istatistiklerini sağ panele yerleştirir (TÜRKÇE ÇEVİRİ EKLENDİ) ---
-function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamName) {
-     console.log('Maç istatistikleri sağ panele yerleştiriliyor. Veri:', statisticsData);
-
-     if (!statisticsTabContent || !statisticsSectionInPane) {
-         console.error("HTML'de istatistikler sekmesi içeriği alanları bulunamadı!");
-         return;
-     }
-
-     statisticsSectionInPane.innerHTML = ''; // İçeriği temizle
-
-      const statsTitle = document.createElement('h4');
-      statsTitle.textContent = 'İstatistikler';
-      statisticsSectionInPane.appendChild(statsTitle);
-
-
-     const teamStatistics = statisticsData && Array.isArray(statisticsData.response) ? statisticsData.response : [];
-
-     if (teamStatistics.length === 0 || (!teamStatistics[0]?.statistics && !teamStatistics[1]?.statistics)) { // Hem 0 eleman hem de istatistik alanı boşsa
-        statisticsSectionInPane.innerHTML += '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için istatistik bilgisi bulunamadı.</p>';
-         console.log('İstatistik listesi boş veya veri formatı beklenenden farklı.');
-         return;
-     }
-
-     let homeStats = null;
-     let awayStats = null;
-     // Logo bilgisi displayMatches'te alındı, burada team name ile eşleştirme yapalım
-     // let homeTeamLogo = '';
-     // let awayTeamLogo = '';
-
-
-     if (teamStatistics.length >= 2) {
-         const team1 = teamStatistics[0];
-         const team2 = teamStatistics[1];
-
-         if (team1.team && team1.team.name === homeTeamName) {
-             homeStats = team1.statistics;
-             // homeTeamLogo = team1.team.logo || 'placeholder-logo.png';
-             awayStats = team2.statistics;
-             // awayTeamLogo = team2.team.logo || 'placeholder-logo.png';
-         } else if (team1.team && team1.team.name === awayTeamName) {
-             homeStats = team2.statistics;
-             // homeTeamLogo = team2.team.logo || 'placeholder-logo.png';
-             awayStats = team1.statistics;
-             // awayTeamLogo = team1.team.logo || 'placeholder-logo.png';
-         } else if (team2.team && team2.team.name === homeTeamName) {
-              homeStats = team2.statistics;
-              // homeTeamLogo = team2.team.logo || 'placeholder-logo.png';
-             awayStats = team1.statistics;
-             // awayTeamLogo = team1.team.logo || 'placeholder-logo.png';
-         } else if (team2.team && team2.team.name === awayTeamName) {
-              homeStats = team1.statistics;
-              // homeTeamLogo = team1.team.logo || 'placeholder-logo.png';
-             awayStats = team2.statistics;
-             // awayTeamLogo = team2.team.logo || 'placeholder-logo.png';
-         }
-     } else if (teamStatistics.length > 0 && teamStatistics[0]?.statistics) {
-          // Sadece tek takımın istatistiği geldiyse (beklenmeyen durum)
-          console.warn("Beklenmeyen istatistik yanıt yapısı: Sadece bir takımın istatistiği geldi.");
-          homeStats = teamStatistics[0].statistics; // Varsayılan olarak ilk takımı ev sahibi gibi göster
-     }
-
-
-     if (!homeStats && !awayStats) { // Hala geçerli istatistik yoksa
-          statisticsSectionInPane.innerHTML += '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">İstatistik verisi işlenirken bir sorun oluştu veya eksik.</p>';
-         return;
-     }
-
-    const statsList = document.createElement('ul');
-    statsList.classList.add('match-statistics-list');
-    statisticsSectionInPane.appendChild(statsList);
-
-    const allStatTypes = new Set();
-    if(homeStats) homeStats.forEach(stat => allStatTypes.add(stat.type));
-    if(awayStats) awayStats.forEach(stat => allStatTypes.add(stat.type));
-
-     const sortedStatTypes = Array.from(allStatTypes).sort();
-
-     // İstatistikler için ikon haritası (Değerler Boşaltıldı) - Kullanılmıyor ama referans olarak duruyor
-     const statIcons = {
-         "Shots on Goal": "", "Shots off Goal": "", "Total Shots": "", "Blocked Shots": "",
-         "Shots insidebox": "", "Shots outsidebox": "", "Fouls": "", "Corner Kicks": "",
-         "Offsides": "", "Ball Possession": "", "Yellow Cards": "", "Red Cards": "",
-         "Goalkeeper Saves": "", "Total passes": "", "Passes accurate": "", "Passes %": "",
-         "Expected Goals (xG)": "", "Expected Goals against (xGA)": "", "Expected Points (xP)": "",
-         "Big Chance Created": "Önemli Fırsat", "Big Chance Missed": "Harcanan Fırsat", // İkon olmasa da metin için farklılık
-         "Clearances": "", "Interceptions": "", "Tackles": "", "Duels Total": "", "Duels won": "", "Dribble Attempts": "",
-         "Dribble Success": "", "Dispossessed": "", "Saves": "", "Passes accurate %": ""
-     };
-
-     const statsWithoutBars = [
-         "Yellow Cards", "Red Cards", "Offsides", "Corner Kicks", "Goalkeeper Saves", "Saves",
-         "Penalties", "Big Chance Created", "Big Chance Missed", "Clearances", "Interceptions",
-         "Tackles", "Duels Total", "Duels won", "Dribble Attempts", "Dribble Success",
-         "Dispossessed", "Expected Goals (xG)", "Expected Goals against (xGA)","Expected Points (xP)"
-     ];
-
-      sortedStatTypes.forEach(statTypeEnglish => {
-          const statItem = document.createElement('li');
-          statItem.classList.add('stat-item');
-          // İngilizce türü CSS sınıfında kullanmak isteyebiliriz
-          statItem.classList.add(`stat-type-${statTypeEnglish.toLowerCase().replace(/\s+/g, '-')}`);
-
-           const homeValueObj = homeStats ? homeStats.find(s => s.type === statTypeEnglish) : null;
-           const awayValueObj = awayStats ? awayStats.find(s => s.type === statTypeEnglish) : null;
-
-           let homeValue = (homeValueObj && homeValueObj.value !== null) ? homeValueObj.value : '-';
-           let awayValue = (awayValueObj && awayValueObj.value !== null) ? awayValueObj.value : '-';
-
-           // Değerler string '%', sayı veya null/tanımsız olabilir
-           // "%" işaretini sadece Ball Possession için tutalım, diğer yüzdeleri sayıya çevirelim
-           if (statTypeEnglish !== "Ball Possession" && typeof homeValue === 'string' && homeValue.endsWith('%')) {
-               homeValue = parseFloat(homeValue);
-           }
-           if (statTypeEnglish !== "Ball Possession" && typeof awayValue === 'string' && awayValue.endsWith('%')) {
-               awayValue = parseFloat(awayValue);
-           }
-
-
-           // Türkçe çeviriyi al
-           const statTypeTurkish = statTypeTranslations[statTypeEnglish] || statTypeEnglish; // Çeviri yoksa İngilizce'yi kullan
-
-
-           const iconText = statIcons[statTypeEnglish] || ''; // İkon değeri boş
-           const iconSpan = document.createElement('span');
-           iconSpan.classList.add('stat-icon');
-           iconSpan.classList.add(`icon-${statTypeEnglish.toLowerCase().replace(/\s+/g, '-')}`);
-           iconSpan.textContent = iconText;
-
-           const statValuesDiv = document.createElement('div');
-           statValuesDiv.classList.add('stat-values');
-
-           // Değerlerin sayısal olup olmadığını kontrol et
-           const isNumericHome = typeof homeValue === 'number' && !isNaN(homeValue) && isFinite(homeValue);
-           const isNumericAway = typeof awayValue === 'number' && !isNaN(awayValue) && isFinite(awayValue);
-           const isNumericPair = isNumericHome && isNumericAway;
-
-
-           const numericHomeValue = isNumericHome ? homeValue : 0;
-           const numericAwayValue = isNumericAway ? awayValue : 0;
-           const totalNumericValue = numericHomeValue + numericAwayValue;
-
-
-           // Ball Possession için özel yüzde gösterimi
-           if (statTypeEnglish === "Ball Possession" && typeof homeValue === 'string' && typeof awayValue === 'string') {
-
-               const homePercentDisplay = homeValue;
-               const awayPercentDisplay = awayValue;
-
-               // Çubuk için yüzdeleri sayıya çevir (hata olmaması için kontrol ekle)
-               const homePercent = parseFloat(homeValue) || 0;
-               const awayPercent = parseFloat(awayValue) || 0;
-
-                const totalForBar = homePercent + awayPercent;
-                const homeBarWidth = totalForBar > 0 ? (homePercent / totalForBar) * 100 : 0;
-                const awayBarWidth = totalForBar > 0 ? (awayPercent / totalForBar) * 100 : 0;
-
-
-               statItem.classList.add('stat-item-bar');
-               statItem.classList.add('stat-item-percentage');
-
-               statValuesDiv.innerHTML = `
-                   <span class="stat-home-value"><span class="math-inline">\{homePercentDisplay\}</span\>
-<span class\="stat\-type"\></span\>
-<span class\="stat\-away\-value"\></span>{awayPercentDisplay}</span>
-               `;
-               statItem.appendChild(statValuesDiv);
-
-               const statTypeSpan = statValuesDiv.querySelector('.stat-type');
-               statTypeSpan.appendChild(iconSpan);
-               statTypeSpan.innerHTML += ` ${statTypeTurkish}`; // Türkçe çeviriyi kullan
-
-               const progressBarDiv = document.createElement('div');
-               progressBarDiv.classList.add('stat-progress-bar');
-               progressBarDiv.innerHTML = `
-                   <div class="progress-bar-track">
-                       <div class="progress-bar-home" style="width: ${homeBarWidth}%;"></div>
-                       <div class="progress-bar-away" style="width: ${awayBarWidth}%;"></div>
-                   </div>
-               `;
-               statItem.appendChild(progressBarDiv);
-
-           }
-           // Sayısal değerler ve çubuk gerektirenler (Ball Possession hariç)
-           else if (isNumericPair && totalNumericValue > 0 && !statsWithoutBars.includes(statTypeEnglish)) {
-                 const homeBarWidth = totalNumericValue > 0 ? (numericHomeValue / totalNumericValue) * 100 : 0;
-                 const awayBarWidth = totalNumericValue > 0 ? (numericAwayValue / totalNumericValue) * 100 : 0;
-
-                statItem.classList.add('stat-item-bar');
-                statItem.classList.add('stat-item-numeric');
-
-                statValuesDiv.innerHTML = `
-                   <span class="stat-home-value"><span class="math-inline">\{homeValue\}</span\>
-<span class\="stat\-type"\></span\>
-<span class\="stat\-away\-value"\></span>{awayValue}</span>
-               `;
-               statItem.appendChild(statValuesDiv);
-
-               const statTypeSpan = statValuesDiv.querySelector('.stat-type');
-               statTypeSpan.appendChild(iconSpan);
-               statTypeSpan.innerHTML += ` ${statTypeTurkish}`; // Türkçe çeviriyi kullan
-
-               const progressBarDiv = document.createElement('div');
-               progressBarDiv.classList.add('stat-progress-bar');
-               progressBarDiv.innerHTML = `
-                   <div class="progress-bar-track">
-                       <div class="progress-bar-home" style="width: ${homeBarWidth}%;"></div>
-                       <div class="progress-bar-away" style="width: ${awayBarWidth}%;"></div>
-                   </div>
-               `;
-               statItem.appendChild(progressBarDiv);
-
-           }
-           // Sadece metin veya sayısal ama çubuk gerekmeyenler
-            else {
-                statItem.classList.add('stat-item-simple');
-
-                statValuesDiv.innerHTML = `
-                   <span class="stat-home-value"><span class="math-inline">\{homeValue\}</span\>
-<span class\="stat\-type"\></span\>
-<span class\="stat\-away\-value"\></span>{awayValue}</span>
-               `;
-               statItem.appendChild(statValuesDiv);
-
-               const statTypeSpan = statValuesDiv.querySelector('.stat-type');
-               statTypeSpan.appendChild(iconSpan);
-               statTypeSpan.innerHTML += ` ${statTypeTurkish}`; // Türkçe çeviriyi kullan
-
-           }
-
-           statsList.appendChild(statItem);
-      });
-
-     console.log('İstatistikler sağ panele yerleştirildi.');
-}
-
-// --- Maç Kadrolarını sağ panele yerleştirir ---
-function displayMatchLineups(fixtureId, lineupsData, homeTeamName, awayTeamName) {
-     console.log('Maç kadroları sağ panele yerleştiriliyor. Veri:', lineupsData);
-
-     if (!lineupsTabContent || !lineupsSectionInPane) {
-         console.error("HTML'de kadrolar sekmesi içeriği alanları bulunamadı!");
-         return;
-     }
-
-     lineupsSectionInPane.innerHTML = ''; // İçeriği temizle
-
-     const lineups = lineupsData && Array.isArray(lineupsData.response) ? lineupsData.response : [];
-
-     if (lineups.length === 0) {
-         lineupsSectionInPane.innerHTML += '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için kadro bilgisi bulunamadı.</p>';
-         console.log('Kadro listesi boş.');
-         return;
-     }
-
-     let homeLineup = null;
-     let awayLineup = null;
-
-      if (lineups.length >= 2) {
-          const team1Lineup = lineups[0];
-          const team2Lineup = lineups[1];
-
-          if (team1Lineup.team?.name === homeTeamName) {
-              homeLineup = team1Lineup;
-              awayLineup = team2Lineup;
-          } else if (team1Lineup.team?.name === awayTeamName) {
-              homeLineup = team2Lineup;
-              awayLineup = team1Lineup;
-          } else if (team2Lineup.team?.name === homeTeamName) {
-               homeLineup = team2Lineup;
-               awayLineup = team1Lineup;
-          } else if (team2Lineup.team?.name === awayTeamName) {
-               homeLineup = team1Lineup;
-               awayLineup = team2Lineup;
-          }
-      } else if (lineups.length > 0) {
-           // Sadece tek takımın kadrosu geldiyse
-           console.warn("Beklenmeyen kadro yanıt yapısı: Sadece bir takımın kadrosu geldi.");
-           if(lineups[0].team?.name === homeTeamName) homeLineup = lineups[0];
-           else if (lineups[0].team?.name === awayTeamName) awayLineup = lineups[0];
-           else homeLineup = lineups[0]; // Eşleşmezse ilkini ev sahibi gibi göster
-      }
-
-      if (!homeLineup && !awayLineup) {
-           lineupsSectionInPane.innerHTML += '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Kadro verisi işlenirken bir sorun oluştu veya eksik.</p>';
-          return;
-      }
-
-
-      // Ev Sahibi Kadrosu
-      if (homeLineup) {
-           const homeLineupList = document.createElement('ul');
-           homeLineupList.classList.add('lineups-list');
-            homeLineupList.innerHTML = `<h5>${homeLineup.team?.name || homeTeamName} Kadrosu</h5>`;
-           homeLineup.startXI?.forEach(player => {
-               homeLineupList.innerHTML += `<li><span class="player-number">${player.player?.number || '-'}</span> ${player.player?.name || 'Bilinmeyen Oyuncu'}</li>`;
-           });
-            if(homeLineup.substitutes && homeLineup.substitutes.length > 0) {
-                 homeLineupList.innerHTML += `<li><strong>Yedekler:</strong></li>`;
-                 homeLineup.substitutes.forEach(player => {
-                     homeLineupList.innerHTML += `<li><span class="player-number">${player.player?.number || '-'}</span> ${player.player?.name || 'Bilinmeyen Oyuncu'}</li>`;
-                 });
-            }
-           lineupsSectionInPane.appendChild(homeLineupList);
-      }
-
-       // Deplasman Kadrosu
-      if (awayLineup) {
-           const awayLineupList = document.createElement('ul');
-           awayLineupList.classList.add('lineups-list');
-           awayLineupList.innerHTML = `<h5>${awayLineup.team?.name || awayTeamName} Kadrosu</h5>`;
-           awayLineup.startXI?.forEach(player => {
-               awayLineupList.innerHTML += `<li><span class="player-number">${player.player?.number || '-'}</span> ${player.player?.name || 'Bilinmeyen Oyuncu'}</li>`;
-           });
-           if(awayLineup.substitutes && awayLineup.substitutes.length > 0) {
-                 awayLineupList.innerHTML += `<li><strong>Yedekler:</strong></li>`;
-                 awayLineup.substitutes.forEach(player => {
-                     awayLineupList.innerHTML += `<li><span class="player-number">${player.player?.number || '-'}</span> ${player.player?.name || 'Bilinmeyen Oyuncu'}</li>`;
-                 });
-            }
-           lineupsSectionInPane.appendChild(awayLineupList);
-      }
-
-
-     console.log('Maç kadroları sağ panele yerleştirildi.');
-}
-
-
-// --- Lig Puan Durumunu sağ panele yerleştirir ---
-function displayLeagueStandings(leagueId, standingsData) {
-     console.log('Lig puan durumu sağ panele yerleştiriliyor. Veri:', standingsData);
-
-     if (!standingsTabContent || !standingsSectionInPane) {
-         console.error("HTML'de puan durumu sekmesi içeriği alanları bulunamadı!");
-         return;
-     }
-
-     standingsSectionInPane.innerHTML = ''; // İçeriği temizle
-
-      const standingsTitle = document.createElement('h4');
-      standingsTitle.textContent = standingsData.response?.[0]?.league?.name ? `${standingsData.response[0].league.name} Puan Durumu` : 'Lig Puan Durumu';
-      standingsSectionInPane.appendChild(standingsTitle);
-
-
-     const leagueStandings = standingsData.response?.[0]?.standings?.[0]; // Genellikle ilk yanıtın ilk standigns dizisi (Home/Away/Total ayrı diziler gelebilir, total olanı alıyoruz)
-
-     if (!leagueStandings || leagueStandings.length === 0) {
-         standingsSectionInPane.innerHTML += '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu lig için puan durumu bilgisi bulunamadı.</p>';
-         console.log('Puan durumu listesi boş.');
-         return;
-     }
-
-     const standingsTable = document.createElement('table');
-     standingsTable.classList.add('standings-table');
-     standingsSectionInPane.appendChild(standingsTable);
-
-     // Başlık Satırı
-     standingsTable.innerHTML += `
-         <thead>
-             <tr>
-                 <th>#</th>
-                 <th></th> <th>Takım</th>
-                 <th>OM</th>
-                 <th>G</th>
-                 <th>B</th>
-                 <th>M</th>
-                 <th>AG</th>
-                 <th>YG</th>
-                 <th>Av</th>
-                 <th>P</th>
-             </tr>
-         </thead>
-         <tbody></tbody>
-     `;
-
-     const tbody = standingsTable.querySelector('tbody');
-
-     leagueStandings.forEach(team => {
-         const teamRow = document.createElement('tr');
-         teamRow.innerHTML = `
-             <td><span class="math-inline">\{team\.rank \|\| '\-'\}</td\>
-<td\><img src\="</span>{team.team?.logo || 'placeholder-logo.png'}" alt="<span class="math-inline">\{team\.team?\.name \|\| 'Takım'\} Logo" class\="team\-logo"\></td\>
-<td\></span>{team.team?.name || 'Bilinmeyen Takım'}</td>
-             <td><span class="math-inline">\{team\.all?\.played \|\| 0\}</td\>
-<td\></span>{team.all?.win || 0}</td>
-             <td><span class="math-inline">\{team\.all?\.draw \|\| 0\}</td\>
-<td\></span>{team.all?.lose || 0}</td>
-             <td><span class="math-inline">\{team\.all?\.goals?\.for \|\| 0\}</td\>
-<td\></span>{team.all?.goals?.against || 0}</td>
-             <td><span class="math-inline">\{team\.goalsDiff \|\| 0\}</td\>
-<td\></span>{team.points || 0}</td>
-         `;
-         tbody.appendChild(teamRow);
-     });
-
-     console.log('Lig puan durumu sağ panele yerleştirildi.');
-
-}
-
-// --- Oyuncu İstatistiklerini sağ panele yerleştirir (Yeni) ---
 function displayMatchPlayerStatistics(fixtureId, playerStatsData, homeTeamName, awayTeamName) {
     console.log('Maç oyuncu istatistikleri sağ panele yerleştiriliyor. Veri:', playerStatsData);
 
@@ -1211,7 +649,7 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
         leagueTitle.classList.add('league-title');
          // Lig adını kullan (API'den gelen)
         leagueTitle.innerHTML = `
-            <span class="league-name"><span class="math-inline">\{leagueData\.country ? leagueData\.country \+ ' \- ' \: ''\}</span>{leagueData.name}</span>
+            <span class="league-name">${leagueData.country ? leagueData.country + ' - ' : ''}${leagueData.name}</span>
             <span class="favorite-icon league-favorite" data-league-id="${leagueId}">☆</span>
         `; // Lig favori butonu eklendi (işlevi yok şimdilik)
         leagueSection.appendChild(leagueTitle);
@@ -1273,7 +711,7 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
                 matchItem.innerHTML = `
                     <div class="match-summary">
                         <div class="team-info">
-                            <img src="<span class="math-inline">\{homeTeamLogo\}" alt\="</span>{homeTeamName} Logo" class="team-logo">
+                            <img src="${homeTeamLogo}" alt="${homeTeamName} Logo" class="team-logo">
                             <span class="team-name">${homeTeamName}</span>
                         </div>
                         <div class="score-status">
@@ -1287,12 +725,12 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
                             }
                         </div>
                         <div class="team-info">
-                             <img src="<span class="math-inline">\{awayTeamLogo\}" alt\="</span>{awayTeamName} Logo" class="team-logo">
+                             <img src="${awayTeamLogo}" alt="${awayTeamName} Logo" class="team-logo">
                             <span class="team-name">${awayTeamName}</span>
                         </div>
                     </div>
                     <div class="match-actions">
-                        <span class="match-favorite-icon <span class="math-inline">\{isFavorite ? 'is\-favorite' \: ''\}" data\-match\-id\="</span>{matchId}">☆</span> </div>
+                        <span class="match-favorite-icon ${isFavorite ? 'is-favorite' : ''}" data-match-id="${matchId}">☆</span> </div>
                 `;
 
                 // Maç öğesi tıklama olayı (detayları göstermek için)
@@ -1532,7 +970,7 @@ function startLiveUpdates() {
 
                     if (existingStatus !== liveStatus || existingElapsed !== liveElapsed || existingHomeGoals !== liveHomeGoals || existingAwayGoals !== liveAwayGoals) {
                          dataChanged = true; // Veri değiştiyse işaretle
-                         console.log(`Maç güncellendi (ID: ${existingMatch.fixture.id}): ${existingMatch.teams.home.name} <span class="math-inline">\{existingHomeGoals\}\-</span>{existingAwayGoals} ${existingStatus} -> <span class="math-inline">\{liveHomeGoals\}\-</span>{liveAwayGoals} <span class="math-inline">\{liveStatus\} \(</span>{liveElapsed}')`);
+                         console.log(`Maç güncellendi (ID: ${existingMatch.fixture.id}): ${existingMatch.teams.home.name} ${existingHomeGoals}-${existingAwayGoals} ${existingStatus} -> ${liveHomeGoals}-${liveAwayGoals} ${liveStatus} (${liveElapsed}')`);
                          return {
                              ...existingMatch, // Mevcut maçın diğer bilgilerini koru
                              goals: liveMatch.goals,
@@ -1643,7 +1081,6 @@ if(filterButtons) {
                       if (selectedMatchInfo) selectedMatchInfo.style.display = 'none';
                  }
              }
-             // Seçili maç referanslarını temizle
              selectedFixtureId = null;
              selectedMatchData = null;
 
@@ -1772,4 +1209,11 @@ document.addEventListener('DOMContentLoaded', async () => {
          displayMatches(); // allMatchesData kullanılarak listeyi çiz (Varsayılan 'today' filtresi aktif olacak)
          startLiveUpdates(); // Canlı güncellemeyi başlat (Sadece bugün için çalışacak)
      } else {
-         console.error("İlk veri çekme başarısı
+         console.error("İlk veri çekme başarısız oldu.");
+          if (matchesListContainer) {
+               matchesListContainer.innerHTML = '<p style="color:red; text-align:center;">Maç verileri yüklenemedi. Lütfen konsolu kontrol edin ve API bilgilerinizi/limitlerinizi kontrol edin.</p>';
+          }
+          if (initialMessage) initialMessage.textContent = 'Maç verileri yüklenemedi.';
+          if (selectedMatchInfo) selectedMatchInfo.style.display = 'none';
+     }
+});
