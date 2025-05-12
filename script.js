@@ -39,9 +39,8 @@ const headerHomeLogo = matchHeaderTeams ? matchHeaderTeams.querySelector('.home-
 const headerTeamNames = matchHeaderTeams ? matchHeaderTeams.querySelector('.header-team-names') : null;
 const headerAwayLogo = matchHeaderTeams ? matchHeaderTeams.querySelector('.away-logo') : null;
 
-// Fix typo here: detailsPanels -> detailsPanel
 const tabButtons = detailsPanel ? detailsPanel.querySelectorAll('.tab-button') : null;
-const tabPanes = detailsPanel ? detailsPanel.querySelectorAll('.tab-pane') : null;
+const tabPanes = detailsPanel ? detailsPanel.querySelectorAll('.tab-pane') : null; // Yazım hatası düzeltildi: detailsPanels -> detailsPanel
 
 
 const eventsTabContent = detailsPanel ? document.getElementById('events-tab-content') : null;
@@ -235,6 +234,40 @@ async function fetchMatchStatistics(fixtureId) {
     }
 }
 
+// --- İstatistik Türleri İçin İngilizce'den Türkçe'ye Çeviri Haritası ---
+const statTypeTranslations = {
+    "Shots on Goal": "İsabetli Şut",
+    "Shots off Goal": "İsabetsiz Şut",
+    "Total Shots": "Toplam Şut",
+    "Blocked Shots": "Engellenen Şut",
+    "Shots insidebox": "Ceza Sahası İçi Şut",
+    "Shots outsidebox": "Ceza Sahası Dışı Şut",
+    "Fouls": "Faul",
+    "Corner Kicks": "Korner",
+    "Offsides": "Ofsayt",
+    "Ball Possession": "Topa Sahip Olma",
+    "Yellow Cards": "Sarı Kart",
+    "Red Cards": "Kırmızı Kart",
+    "Goalkeeper Saves": "Kaleci Kurtarışı",
+    "Total passes": "Toplam Pas",
+    "Passes accurate": "Başarılı Pas",
+    "Passes %": "Pas Başarı %",
+    "Expected Goals (xG)": "Beklenen Gol (xG)",
+    "Expected Goals against (xGA)": "Yenilen Beklenen Gol (xGA)",
+    "Expected Points (xP)": "Beklenen Puan (xP)",
+    "Big Chance Created": "Önemli Fırsat Yaratan",
+    "Big Chance Missed": "Harcanan Önemli Fırsat",
+    "Clearances": "Uzaklaştırmalar",
+    "Interceptions": "Top Kapma",
+    "Tackles": "Müdahale", // Veya "İkili Mücadele Kazanma"
+    "Duels Total": "Toplam İkili Mücadele",
+    "Duels won": "Kazanılan İkili Mücadele",
+    "Dribble Attempts": "Dribbling Girişimi",
+    "Dribble Success": "Başarılı Dribbling",
+    "Dispossessed": "Top Kaybı",
+    "Saves": "Kurtarışlar", // Genel kurtarışlar
+    "Passes accurate %": "Pas Başarı %" // Hem "Passes %" hem de "Passes accurate %" aynı anlama gelebilir
+};
 
 // --- Maç detayları/olaylarını sağ panele yerleştiren fonksiyon (Değişiklik Yok) ---
 function displayMatchDetails(matchId, eventsData) {
@@ -325,7 +358,7 @@ function displayMatchDetails(matchId, eventsData) {
     console.log('Olaylar sağ panele yerleştirildi.');
 }
 
-// --- Maç istatistiklerini sağ panele yerleştirir ---
+// --- Maç istatistiklerini sağ panele yerleştirir (TÜRKÇE ÇEVİRİ EKLENDİ) ---
 function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamName) {
      console.log('Maç istatistikleri sağ panele yerleştiriliyor. Veri:', statisticsData);
 
@@ -408,7 +441,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
      const sortedStatTypes = Array.from(allStatTypes).sort();
 
-     // İstatistikler için ikon haritası (Değerler Boşaltıldı)
+     // İstatistikler için ikon haritası (Değerler Boşaltıldı) - Kullanılmıyor ama referans olarak duruyor
      const statIcons = {
          "Shots on Goal": "", "Shots off Goal": "", "Total Shots": "", "Blocked Shots": "",
          "Shots insidebox": "", "Shots outsidebox": "", "Fouls": "", "Corner Kicks": "",
@@ -427,21 +460,26 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
          "Dispossessed", "Expected Goals (xG)", "Expected Goals against (xGA)", "Expected Points (xP)"
      ];
 
-      sortedStatTypes.forEach(statType => {
+      sortedStatTypes.forEach(statTypeEnglish => {
           const statItem = document.createElement('li');
           statItem.classList.add('stat-item');
-          statItem.classList.add(`stat-type-${statType.toLowerCase().replace(/\s+/g, '-')}`);
+          // İngilizce türü CSS sınıfında kullanmak isteyebiliriz
+          statItem.classList.add(`stat-type-${statTypeEnglish.toLowerCase().replace(/\s+/g, '-')}`);
 
-           const homeValueObj = homeStats ? homeStats.find(s => s.type === statType) : null;
-           const awayValueObj = awayStats ? awayStats.find(s => s.type === statType) : null;
+           const homeValueObj = homeStats ? homeStats.find(s => s.type === statTypeEnglish) : null;
+           const awayValueObj = awayStats ? awayStats.find(s => s.type === statTypeEnglish) : null;
 
            let homeValue = (homeValueObj && homeValueObj.value !== null) ? homeValueObj.value : '-';
            let awayValue = (awayValueObj && awayValueObj.value !== null) ? awayValueObj.value : '-';
 
-           const iconText = statIcons[statType] || '';
+           // Türkçe çeviriyi al
+           const statTypeTurkish = statTypeTranslations[statTypeEnglish] || statTypeEnglish; // Çeviri yoksa İngilizce'yi kullan
+
+
+           const iconText = statIcons[statTypeEnglish] || ''; // İkon değeri boş
            const iconSpan = document.createElement('span');
            iconSpan.classList.add('stat-icon');
-           iconSpan.classList.add(`icon-${statType.toLowerCase().replace(/\s+/g, '-')}`);
+           iconSpan.classList.add(`icon-${statTypeEnglish.toLowerCase().replace(/\s+/g, '-')}`);
            iconSpan.textContent = iconText;
 
            const statValuesDiv = document.createElement('div');
@@ -459,7 +497,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
            const totalNumericValue = numericHomeValue + numericAwayValue;
 
 
-           if (statType === "Ball Possession" && isPercentage) {
+           if (statTypeEnglish === "Ball Possession" && isPercentage) {
                const homePercent = parseFloat(homeValue);
                const awayPercent = parseFloat(awayValue);
 
@@ -482,7 +520,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
                const statTypeSpan = statValuesDiv.querySelector('.stat-type');
                statTypeSpan.appendChild(iconSpan);
-               statTypeSpan.innerHTML += ` ${statType}`;
+               statTypeSpan.innerHTML += ` ${statTypeTurkish}`; // Türkçe çeviriyi kullan
 
                const progressBarDiv = document.createElement('div');
                progressBarDiv.classList.add('stat-progress-bar');
@@ -494,7 +532,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
                `;
                statItem.appendChild(progressBarDiv);
 
-           } else if (isNumeric && totalNumericValue > 0 && !statsWithoutBars.includes(statType)) {
+           } else if (isNumeric && totalNumericValue > 0 && !statsWithoutBars.includes(statTypeEnglish)) {
                  const homeBarWidth = totalNumericValue > 0 ? (numericHomeValue / totalNumericValue) * 100 : 0;
                  const awayBarWidth = totalNumericValue > 0 ? (numericAwayValue / totalNumericValue) * 100 : 0;
 
@@ -510,7 +548,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
                const statTypeSpan = statValuesDiv.querySelector('.stat-type');
                statTypeSpan.appendChild(iconSpan);
-               statTypeSpan.innerHTML += ` ${statType}`;
+               statTypeSpan.innerHTML += ` ${statTypeTurkish}`; // Türkçe çeviriyi kullan
 
                const progressBarDiv = document.createElement('div');
                progressBarDiv.classList.add('stat-progress-bar');
@@ -535,7 +573,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
                const statTypeSpan = statValuesDiv.querySelector('.stat-type');
                statTypeSpan.appendChild(iconSpan);
-               statTypeSpan.innerHTML += ` ${statType}`;
+               statTypeSpan.innerHTML += ` ${statTypeTurkish}`; // Türkçe çeviriyi kullan
 
            }
 
@@ -720,19 +758,14 @@ function displayMatches(data) {
                      }
                      // Masaüstünde sağ paneli görünür yap (CSS grid yönetir)
                      if (sidebarRight && !isMobileView()) {
-                         sidebarRight.style.display = 'block';
+                         sidebarRight.style.display = 'block'; // CSS grid ile çakışmazsa bu satır fazlalık olabilir
                      }
 
 
                      // Sağ panelin gerekli elementlerinin varlığını kontrol et
-                     if (detailsPanel && initialMessage && selectedMatchInfo && matchDetailTitle && matchHeaderTeams && headerHomeLogo && headerTeamNames && headerAwayLogo && eventsTabContent && statisticsTabContent && eventsSectionInPane && statisticsSectionInPane) {
+                     if (detailsPanel && initialMessage && selectedMatchInfo && matchDetailTitle && matchHeaderTeams && headerHomeLogo && headerTeamNames && headerAwayLogo && eventsTabContent && statisticsTabContent && eventsSectionInPane && statisticsSectionInPane && tabButtons && tabPanes) { // Tüm elementleri kontrol et
                          initialMessage.style.display = 'none';
                          selectedMatchInfo.style.display = 'block';
-                         // Oran listesini temizle ve sabit mesajı göster (Kaldırıldı)
-                         // if(matchDetailsOddsSection && matchDetailsOddsSection.querySelector('.odds-list')) {
-                         //      matchDetailsOddsSection.querySelector('.odds-list').innerHTML = '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Oran bilgisi mevcut değil.</p>';
-                         // }
-
 
                         const clickedMatch = allMatchesData.find(m => (m.fixture && String(m.fixture.id)) === clickedMatchId); // allMatchesData'dan bul
                          let homeTeamName = 'Ev Sahibi';
@@ -786,6 +819,9 @@ function displayMatches(data) {
                          if (!statisticsTabContent) console.error(" - statisticsTabContent (#statistics-tab-content)");
                           if (!eventsSectionInPane) console.error(" - eventsSectionInPane (.events-section)");
                          if (!statisticsSectionInPane) console.error(" - statisticsSectionInPane (.statistics-section)");
+                          if (!tabButtons) console.error(" - tabButtons (.tab-button)");
+                          if (!tabPanes) console.error(" - tabPanes (.tab-pane)");
+
 
                           if (detailsPanel) { // detailsPanel bulunduysa içini temizle
                                detailsPanel.innerHTML = '<h3>Detaylar Yükleniyor...</h3><p style="color:red;">Gerekli panel elementleri JavaScript tarafından bulunamadı. Konsolu kontrol edin.</p>';
@@ -915,8 +951,9 @@ function startLiveUpdates() {
          const activeFilterButton = document.querySelector('.filter-button.active');
          const activeFilter = activeFilterButton ? activeFilterButton.dataset.filter : 'live';
 
-         // Eğer aktif filtre 'live' veya 'favorites' ise güncelleme yap (favoriler de canlı veriye dayanır)
-         // Sadece 'live' filtresi aktifken API'den yeniden çekmek daha mantıklı olabilir
+         // Eğer aktif filtre 'live' ise güncelleme yap
+         // Favoriler filtresi aktifken de veri çekmek isteyebilirsin ama sadece listeyi yeniden çizeriz, favori olmayanlar görünmez.
+         // Veya sadece 'live' filtresi aktifken API'den yeniden çekmek daha mantıklı. Şimdilik sadece live çekiyor.
          if (activeFilter === 'live') {
              console.log('Canlı maç verileri güncelleniyor...');
              fetchLiveMatches().then(data => {
@@ -930,8 +967,13 @@ function startLiveUpdates() {
                       console.error('Veri güncelleme sırasında API\'den veri alınamadı.');
                  }
              });
-         } else {
-             console.log('Canlı güncelleme duraklatıldı (Aktif filtre canlı değil).');
+         } else if (activeFilter === 'favorites') {
+              // Favoriler filtresi aktifken sadece mevcut veriyi tekrar filtreleyip çiz
+              console.log('Favoriler aktif, mevcut veri yeniden filtreleniyor.');
+              displayMatches({ response: allMatchesData });
+         }
+          else {
+             console.log('Canlı güncelleme duraklatıldı (Aktif filtre canlı veya favori değil).');
          }
 
 
@@ -944,7 +986,29 @@ function startLiveUpdates() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Sayfa yüklendi, ilk veri çekiliyor...');
+    console.log('Sayfa yüklendi, ilk veri çekiliyor... ');
+     console.log('Element kontrolleri yapılıyor...');
+
+     // Başlangıçta tüm elementlerin varlığını kontrol et ve logla
+     if (!matchesListContainer) console.error("DOM Yükleme Hatası: #matches-list bulunamadı!");
+     if (!detailsPanel) console.error("DOM Yükleme Hatası: #match-details-panel bulunamadı!");
+     if (!sidebarRight) console.error("DOM Yükleme Hatası: .sidebar-right bulunamadı!");
+     if (!initialMessage) console.error("DOM Yükleme Hatası: .initial-message bulunamadı!");
+     if (!selectedMatchInfo) console.error("DOM Yükleme Hatası: .selected-match-info bulunamadı!");
+     if (!matchDetailTitle) console.error("DOM Yükleme Hatası: .match-detail-title bulunamadı!");
+     if (!matchHeaderTeams) console.error("DOM Yükleme Hatası: .match-header-teams bulunamadı!");
+     if (!headerHomeLogo) console.error("DOM Yükleme Hatası: .home-logo bulunamadı!");
+     if (!headerTeamNames) console.error("DOM Yükleme Hatası: .header-team-names bulunamadı!");
+     if (!headerAwayLogo) console.error("DOM Yükleme Hatası: .away-logo bulunamadı!");
+     if (!tabButtons || tabButtons.length === 0) console.error("DOM Yükleme Hatası: .tab-button bulunamadı veya boş!");
+     if (!tabPanes || tabPanes.length === 0) console.error("DOM Yükleme Hatası: .tab-pane bulunamadı veya boş!");
+     if (!eventsTabContent) console.error("DOM Yükleme Hatası: #events-tab-content bulunamadı!");
+     if (!statisticsTabContent) console.error("DOM Yükleme Hatası: #statistics-tab-content bulunamadı!");
+     if (!eventsSectionInPane) console.error("DOM Yükleme Hatası: .events-section (eventsTabContent içinde) bulunamadı!");
+     if (!statisticsSectionInPane) console.error("DOM Yükleme Hatası: .statistics-section (statisticsTabContent içinde) bulunamadı!");
+     if (!closeDetailsButton) console.error("DOM Yükleme Hatası: .close-details-panel bulunamadı!");
+     if (filterButtons.length === 0) console.error("DOM Yükleme Hatası: .filter-button bulunamadı veya boş!");
+
 
     if (initialMessage) initialMessage.style.display = 'block';
     if (selectedMatchInfo) selectedMatchInfo.style.display = 'none';
