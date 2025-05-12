@@ -1,5 +1,5 @@
 /* Google Font Import (index.html'e linki eklemeyi unutmayın) */
-/* @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap'); */
+/* <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"> */
 
 
 /* Renk Paleti (CSS Değişkenleri) */
@@ -43,9 +43,9 @@ body {
 .site-header {
     background-color: var(--header-background);
     color: var(--header-text-color);
-    padding: 15px 0; /* Boşluk artırıldı */
-    margin-bottom: 25px; /* Boşluk artırıldı */
-    box-shadow: var(--soft-shadow); /* Hafif gölge */
+    padding: 15px 0;
+    margin-bottom: 25px;
+    box-shadow: var(--soft-shadow);
 }
 
 .site-header .container {
@@ -57,11 +57,11 @@ body {
 
 .site-header h1 {
     margin: 0;
-    font-size: 26px; /* Boyut artırıldı */
+    font-size: 26px;
     width: 100%;
     text-align: center;
-    margin-bottom: 15px; /* Boşluk artırıldı */
-    font-weight: 700; /* Daha kalın */
+    margin-bottom: 15px;
+    font-weight: 700;
 }
 
 .header-right {
@@ -73,7 +73,7 @@ body {
 }
 
 .sport-selection {
-    margin-bottom: 15px; /* Boşluk artırıldı */
+    margin-bottom: 15px;
     display: flex;
     justify-content: center;
     width: 100%;
@@ -82,11 +82,11 @@ body {
 .sport-selection a {
     color: var(--header-text-color);
     text-decoration: none;
-    margin: 0 12px; /* Boşluk artırıldı */
+    margin: 0 12px;
     font-size: 16px;
-    opacity: 0.9; /* Opaklık ayarlandı */
+    opacity: 0.9;
     transition: opacity 0.3s ease, border-bottom-color 0.3s ease;
-    padding-bottom: 4px; /* Boşluk artırıldı */
+    padding-bottom: 4px;
     border-bottom: 2px solid transparent;
 }
 
@@ -98,38 +98,38 @@ body {
 
 .search-box {
     width: 100%;
-    max-width: 300px; /* Maksimum genişlik */
+    max-width: 300px;
 }
 
 .search-box input {
-    padding: 10px 15px; /* Boşluk artırıldı */
-    border: 1px solid var(--border-color); /* Kenarlık */
-    border-radius: 20px; /* Daha yuvarlak */
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
     width: 100%;
     box-sizing: border-box;
     font-size: 15px;
     color: var(--text-color);
-    background-color: var(--card-background); /* Beyaz arka plan */
-     outline: none; /* Odaklandığında çerçeveyi kaldır */
+    background-color: var(--card-background);
+     outline: none;
      transition: border-color 0.2s ease;
 }
 .search-box input:focus {
-     border-color: var(--primary-color); /* Odaklandığında renk değiştir */
+     border-color: var(--primary-color);
 }
 
 
 /* Ana Layout Stilleri */
 .main-layout {
     display: grid;
-    grid-template-columns: 220px 1fr 320px; /* Sütun genişlikleri güncellendi */
-    gap: 25px; /* Boşluk artırıldı */
+    grid-template-columns: 220px 1fr 320px;
+    gap: 25px;
     padding: 0 15px;
 }
 
 /* Sol Sidebar Stilleri */
 .sidebar-left {
     background-color: var(--card-background);
-    padding: 20px; /* Boşluk artırıldı */
+    padding: 20px;
     border-radius: 8px;
     box-shadow: var(--soft-shadow);
     border: 1px solid var(--border-color);
@@ -139,10 +139,10 @@ body {
     margin-top: 0;
     font-size: 20px;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px; /* Boşluk artırıldı */
-    margin-bottom: 15px; /* Boşluk artırıldı */
+    padding-bottom: 15px;
+    margin-bottom: 15px;
     color: var(--primary-color);
-    font-weight: 700; /* Daha kalın */
+    font-weight: 700;
 }
 
 .sidebar-left ul {
@@ -152,21 +152,21 @@ body {
 }
 
 .sidebar-left li {
-    margin-bottom: 8px; /* Boşluk artırıldı */
+    margin-bottom: 8px;
 }
 
 .sidebar-left a {
     text-decoration: none;
     color: var(--text-color);
     display: block;
-    padding: 8px 10px; /* İç boşluk eklendi */
+    padding: 8px 10px;
     transition: color 0.2s ease, background-color 0.2s ease;
-    border-radius: 4px; /* Hafif yuvarlak köşe */
+    border-radius: 4px;
 }
 
 .sidebar-left a:hover {
     color: var(--primary-color);
-    background-color: var(--background-color); /* Hover arka plan */
+    background-color: var(--background-color);
 }
 
 
@@ -176,9 +176,9 @@ body {
 }
 
 .match-filters {
-    margin-bottom: 20px; /* Boşluk artırıldı */
+    margin-bottom: 20px;
     background-color: var(--card-background);
-    padding: 15px; /* Boşluk artırıldı */
+    padding: 15px;
     border-radius: 8px;
     box-shadow: var(--soft-shadow);
     border: 1px solid var(--border-color);
@@ -188,10 +188,10 @@ body {
 }
 
 .match-filters button {
-    padding: 10px 20px; /* Boşluk artırıldı */
+    padding: 10px 20px;
     margin: 5px;
     border: 1px solid var(--border-color);
-    border-radius: 20px; /* Daha yuvarlak */
+    border-radius: 20px;
     background-color: var(--background-color);
     color: var(--text-color);
     cursor: pointer;
@@ -203,13 +203,13 @@ body {
     background-color: var(--primary-color);
     color: var(--header-text-color);
     border-color: var(--primary-color);
-    font-weight: 700; /* Daha kalın */
+    font-weight: 700;
 }
 
 .match-filters button:hover:not(.active) {
     background-color: var(--border-color);
     border-color: var(--secondary-text-color);
-    color: var(--primary-color); /* Hover metin rengi */
+    color: var(--primary-color);
 }
 
 #matches-list {
@@ -219,23 +219,23 @@ body {
 .league-section {
     background-color: var(--card-background);
     border-radius: 8px;
-    margin-bottom: 20px; /* Boşluk artırıldı */
-    padding: 15px; /* Boşluk artırıldı */
+    margin-bottom: 20px;
+    padding: 15px;
     box-shadow: var(--soft-shadow);
     border: 1px solid var(--border-color);
 }
 
 .league-title {
     margin-top: 0;
-    margin-bottom: 15px; /* Boşluk artırıldı */
-    font-size: 20px; /* Boyut artırıldı */
+    margin-bottom: 15px;
+    font-size: 20px;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px; /* Boşluk artırıldı */
+    padding-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: var(--primary-color);
-    font-weight: 700; /* Daha kalın */
+    font-weight: 700;
 }
 
 .league-name {
@@ -245,7 +245,7 @@ body {
 .favorite-icon {
     cursor: pointer;
     color: var(--secondary-text-color);
-    font-size: 22px; /* Boyut artırıldı */
+    font-size: 22px;
     line-height: 1;
     transition: color 0.2s ease;
 }
@@ -253,7 +253,7 @@ body {
     color: gold; /* Favori olduğunda altın rengi */
 }
 .favorite-icon:hover {
-    color: var(--primary-color); /* Hover rengi */
+    color: var(--primary-color);
 }
 
 
@@ -262,10 +262,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0; /* Boşluk artırıldı */
+    padding: 15px 0;
     border-bottom: 1px solid var(--border-color);
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease; /* Hafif transform eklendi */
+    transition: background-color 0.2s ease, transform 0.1s ease;
     flex-wrap: wrap;
 }
 
@@ -275,13 +275,13 @@ body {
 
 .match-item:hover {
     background-color: var(--background-color);
-     transform: translateY(-1px); /* Hafif yukarı kayma efekti */
+     transform: translateY(-1px);
 }
 
 .match-item.selected-match {
     background-color: var(--selected-match-bg);
-    border-left: 4px solid var(--primary-color); /* Kenarlık kalınlaştırıldı */
-    padding-left: 11px; /* Kenarlık için boşluk */
+    border-left: 4px solid var(--primary-color);
+    padding-left: 11px;
 }
 
 
@@ -296,69 +296,69 @@ body {
 .team-info {
     display: flex;
     align-items: center;
-    width: 180px; /* Genişlik artırıldı */
+    width: 180px;
     flex-shrink: 0;
 }
 /* Takım isimlerinin sağa yaslanması (ev sahibi) ve sola yaslanması (deplasman) için */
 .match-summary .team-info:first-child {
      justify-content: flex-end;
      text-align: right;
-     margin-right: 15px; /* Boşluk artırıldı */
+     margin-right: 15px;
 }
 .match-summary .team-info:last-child {
      justify-content: flex-start;
      text-align: left;
-     margin-left: 15px; /* Boşluk artırıldı */
+     margin-left: 15px;
 }
 
 
 .team-logo {
-    width: 28px; /* Boyut artırıldı */
-    height: 28px; /* Boyut artırıldı */
-    margin: 0 8px; /* Boşluk artırıldı */
+    width: 28px;
+    height: 28px;
+    margin: 0 8px;
     vertical-align: middle;
     object-fit: contain;
 }
 
 .team-name {
-    font-size: 16px; /* Boyut artırıldı */
+    font-size: 16px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--text-color);
-    font-weight: 700; /* Kalın */
+    font-weight: 700;
 }
 
 .score-status {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 25px; /* Boşluk artırıldı */
-     width: 70px; /* Genişlik artırıldı */
+    margin: 0 25px;
+     width: 70px;
      flex-shrink: 0;
 }
 
 .score {
-    font-size: 20px; /* Boyut artırıldı */
-    font-weight: 700; /* Daha kalın */
-    margin-bottom: 5px; /* Boşluk artırıldı */
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 5px;
     color: var(--text-color);
 }
 
 .match-status {
-    font-size: 13px; /* Boyut artırıldı */
+    font-size: 13px;
     color: var(--secondary-text-color);
 }
 
 /* Canlı maç durumu için özel renk */
 .match-status.live {
     color: var(--accent-color);
-    font-weight: 700; /* Daha kalın */
+    font-weight: 700;
 }
 
 
 .match-time, .match-date {
-     font-size: 13px; /* Boyut artırıldı */
+     font-size: 13px;
     color: var(--secondary-text-color);
     margin-bottom: 3px;
     text-align: center;
@@ -369,42 +369,22 @@ body {
     align-items: center;
     flex-shrink: 0;
      width: auto;
-     justify-content: flex-end;
+     justify-content: flex-end; /* Masaüstünde sağa hizalı */
+    /* Oranlar kaldırıldığı için buradaki justify-content flex-end olarak kaldı,
+       sadece favori ikonu sağda duracak */
 }
 
-/* Ana Listedeki Oranların Stilleri */
-.odds {
-    display: flex;
-    margin-right: 20px; /* Boşluk artırıldı */
-}
+/* Ana Listedeki Oranların Stilleri (TAMAMEN KALDIRILDI) */
+/*
+.odds { ... }
+.odd { ... }
+*/
 
-.odd {
-    background-color: var(--background-color);
-    padding: 5px 12px; /* Boşluk artırıldı */
-    margin-right: 6px; /* Boşluk artırıldı */
-    border-radius: 4px;
-    font-size: 14px; /* Boyut artırıldı */
-    font-weight: 700; /* Kalın */
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-}
-
-.odd:last-child {
-    margin-right: 0;
-}
-
-.odd:hover {
-    background-color: var(--border-color);
-    color: var(--primary-color);
-    border-color: var(--primary-color);
-}
 
 .match-favorite-icon {
      cursor: pointer;
     color: var(--secondary-text-color);
-    font-size: 22px; /* Boyut artırıldı */
+    font-size: 22px;
     line-height: 1;
      transition: color 0.2s ease;
 }
@@ -419,7 +399,7 @@ body {
 /* Sağ Sidebar Stilleri */
 .sidebar-right {
     background-color: var(--card-background);
-    padding: 20px; /* Boşluk artırıldı */
+    padding: 20px;
     border-radius: 8px;
     box-shadow: var(--soft-shadow);
     border: 1px solid var(--border-color);
@@ -428,12 +408,12 @@ body {
 
 .sidebar-right h2 {
      margin-top: 0;
-    font-size: 22px; /* Boyut artırıldı */
+    font-size: 22px;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px; /* Boşluk artırıldı */
-    margin-bottom: 15px; /* Boşluk artırıldı */
+    padding-bottom: 15px;
+    margin-bottom: 15px;
      color: var(--primary-color);
-     font-weight: 700; /* Daha kalın */
+     font-weight: 700;
 }
 
 /* Maç Detay Alanı Container Stilleri */
@@ -446,8 +426,8 @@ body {
     text-align: center;
     color: var(--secondary-text-color);
     font-style: italic;
-    padding: 30px; /* Boşluk artırıldı */
-    font-size: 16px; /* Boyut artırıldı */
+    padding: 30px;
+    font-size: 16px;
 }
 
 /* Maç seçildikten sonraki içerik alanı */
@@ -457,30 +437,30 @@ body {
 
 /* Sağ panel başlığındaki takım isimleri ve logoları */
 .selected-match-info .match-detail-title {
-    font-size: 19px; /* Boyut artırıldı */
+    font-size: 19px;
     margin: 0 0 10px 0;
     text-align: center;
      color: var(--primary-color);
-     font-weight: 700; /* Daha kalın */
+     font-weight: 700;
 }
 
 .selected-match-info .match-header-teams {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px; /* Boşluk artırıldı */
+    margin-bottom: 20px;
 }
 
 .selected-match-info .header-team-logo {
-    width: 45px; /* Boyut artırıldı */
-    height: 45px; /* Boyut artırıldı */
-    margin: 0 20px; /* Boşluk artırıldı */
+    width: 45px;
+    height: 45px;
+    margin: 0 20px;
      object-fit: contain;
 }
 
 .selected-match-info .header-team-names {
-    font-size: 18px; /* Boyut artırıldı */
-    font-weight: 700; /* Kalın */
+    font-size: 18px;
+    font-weight: 700;
     text-align: center;
     flex-grow: 1;
     white-space: nowrap;
@@ -492,82 +472,42 @@ body {
 
 /* Olaylar, İstatistikler, Oranlar Arasındaki Çizgi */
 #match-details-panel hr {
-    margin: 25px 0; /* Boşluk artırıldı */
+    margin: 25px 0;
     border: none;
     border-top: 1px solid var(--border-color);
 }
 
 
-/* Detay Panelindeki Oran Bölümü Stilleri */
-.match-details-odds {
-    margin-bottom: 20px;
-}
-
-.match-details-odds h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 17px; /* Boyut artırıldı */
-    border-bottom: 1px dashed var(--border-color);
-    padding-bottom: 6px; /* Boşluk artırıldı */
-    color: var(--primary-color);
-    font-weight: 700; /* Kalın */
-}
-
-.odds-list {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px; /* Boşluk artırıldı */
-}
-
-.odds-list .odd-item {
-    background-color: var(--background-color);
-    padding: 10px 18px; /* Boşluklar artırıldı */
-    border: 1px solid var(--border-color);
-    border-radius: 6px; /* Daha yuvarlak */
-    font-size: 15px; /* Boyut artırıldı */
-    font-weight: 700; /* Kalın */
-    color: var(--text-color);
-    text-align: center;
-    min-width: 70px; /* Genişlik artırıldı */
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08); /* Daha belirgin gölge */
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-.odds-list .odd-item:hover {
-    transform: translateY(-2px); /* Hafif yukarı kayma */
-    box-shadow: var(--soft-shadow); /* Gölge belirginleşsin */
-}
-
-
-.odds-list .odd-item span {
-    display: block;
-    font-size: 12px; /* Boyut artırıldı */
-    font-weight: 400; /* Normal kalınlık */
-    color: var(--secondary-text-color);
-    margin-bottom: 4px; /* Boşluk artırıldı */
-}
+/* Detay Panelindeki Oran Bölümü Stilleri (TAMAMEN KALDIRILDI) */
+/*
+.match-details-odds { ... }
+.match-details-odds h4 { ... }
+.odds-list { ... }
+.odds-list .odd-item { ... }
+.odds-list .odd-item span { ... }
+*/
 
 
 /* Sekme Stilleri */
 .match-tabs {
     display: flex;
-    margin-bottom: 20px; /* Boşluk artırıldı */
+    margin-bottom: 20px;
     border-bottom: 1px solid var(--border-color);
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .match-tabs .tab-button {
-    padding: 12px 18px; /* Boşluk artırıldı */
+    padding: 12px 18px;
     border: none;
     background-color: transparent;
     cursor: pointer;
-    font-size: 16px; /* Boyut artırıldı */
+    font-size: 16px;
     color: var(--secondary-text-color);
-    border-bottom: 3px solid transparent; /* Çizgi kalınlaştırıldı */
+    border-bottom: 3px solid transparent;
     transition: color 0.3s ease, border-bottom-color 0.3s ease;
-    margin: 0 8px 5px 8px; /* Kenar boşlukları ayarlandı */
-    font-weight: 700; /* Kalın */
+    margin: 0 8px 5px 8px;
+    font-weight: 700;
 }
 
 .match-tabs .tab-button:hover {
@@ -587,7 +527,7 @@ body {
 
 .tab-pane {
     display: none;
-    padding-top: 15px; /* Boşluk artırıldı */
+    padding-top: 15px;
 }
 
 .tab-pane.active {
@@ -598,12 +538,12 @@ body {
 /* Olaylar Bölümü Stilleri */
 .events-section h4 {
     margin-top: 0;
-    margin-bottom: 15px; /* Boşluk artırıldı */
-    font-size: 17px; /* Boyut artırıldı */
+    margin-bottom: 15px;
+    font-size: 17px;
     border-bottom: 1px dashed var(--border-color);
-    padding-bottom: 8px; /* Boşluk artırıldı */
+    padding-bottom: 8px;
     color: var(--primary-color);
-    font-weight: 700; /* Kalın */
+    font-weight: 700;
 }
 
 .match-events-list {
@@ -613,7 +553,7 @@ body {
 }
 
 .match-events-list li {
-    padding: 12px 0; /* Boşluk artırıldı */
+    padding: 12px 0;
     border-bottom: 1px dashed var(--border-color);
     font-size: 14px;
     color: var(--text-color);
@@ -626,13 +566,13 @@ body {
 
 /* Olay Tipine Göre Stil (Renkler) */
 .event-item span:first-child {
-    font-weight: 700; /* Kalın */
-    margin-right: 10px; /* Boşluk artırıldı */
+    font-weight: 700;
+    margin-right: 10px;
     color: var(--secondary-text-color);
 }
 
 .event-item .event-icon {
-    margin-right: 8px; /* Boşluk artırıldı */
+    margin-right: 8px;
     /* İkon kütüphanesi kullanılırsa ikonlar buraya yerleşecek */
     /* width: 1em; height: 1em; display: inline-block; vertical-align: middle; */
 }
@@ -640,7 +580,7 @@ body {
 
 .event-goal {
     color: var(--accent-color);
-    font-weight: 700; /* Kalın */
+    font-weight: 700;
 }
 
 .event-card {
@@ -669,12 +609,12 @@ body {
 /* İstatistikler Bölümü Stilleri */
 .statistics-section h4 {
      margin-top: 0;
-    margin-bottom: 15px; /* Boşluk artırıldı */
-    font-size: 17px; /* Boyut artırıldı */
+    margin-bottom: 15px;
+    font-size: 17px;
     border-bottom: 1px dashed var(--border-color);
-    padding-bottom: 8px; /* Boşluk artırıldı */
+    padding-bottom: 8px;
      color: var(--primary-color);
-     font-weight: 700; /* Kalın */
+     font-weight: 700;
 }
 
 .match-statistics-list {
@@ -685,7 +625,7 @@ body {
 
 /* --- Her Bir İstatistik Satırı (Genel Stil) --- */
 .match-statistics-list .stat-item {
-     padding: 10px 0; /* Boşluk artırıldı */
+     padding: 10px 0;
     border-bottom: 1px dashed var(--border-color);
     font-size: 14px;
      color: var(--text-color);
@@ -704,28 +644,28 @@ body {
 
 /* İstatistik türü ikonları */
 .match-statistics-list .stat-values .stat-icon {
-     margin-right: 8px; /* Boşluk artırıldı */
+     margin-right: 8px;
      /* İkon kütüphanesi kullanılırsa ikonlar buraya yerleşecek */
 }
 
 /* Ev Sahibi ve Deplasman Değerleri */
 .match-statistics-list .stat-home-value,
 .match-statistics-list .stat-away-value {
-    font-weight: 700; /* Kalın */
-    width: 60px; /* Genişlik artırıldı */
+    font-weight: 700;
+    width: 60px;
     flex-shrink: 0;
     text-align: center;
      white-space: nowrap;
      color: var(--text-color);
-     font-size: 15px; /* Boyut artırıldı */
+     font-size: 15px;
 }
 
 .match-statistics-list .stat-home-value {
-    padding-right: 8px; /* Boşluk artırıldı */
+    padding-right: 8px;
 }
 
 .match-statistics-list .stat-away-value {
-     padding-left: 8px; /* Boşluk artırıldı */
+     padding-left: 8px;
 }
 
 
@@ -733,12 +673,12 @@ body {
 .match-statistics-list .stat-type {
     flex-grow: 1;
     text-align: center;
-    margin: 0 15px; /* Boşluk artırıldı */
+    margin: 0 15px;
     color: var(--secondary-text-color);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-     font-weight: 400; /* Normal kalınlık */
+     font-weight: 400;
 }
 
 
@@ -750,15 +690,15 @@ body {
 }
 
 .match-statistics-list .stat-item-bar .stat-values {
-     margin-bottom: 6px; /* Boşluk artırıldı */
+     margin-bottom: 6px;
 }
 
 .match-statistics-list .stat-progress-bar {
-    width: calc(100% - 16px); /* Boşluk ayarlandı */
+    width: calc(100% - 16px);
     margin: 0 auto;
-    height: 10px; /* Yükseklik artırıldı */
+    height: 10px;
     background-color: var(--border-color);
-    border-radius: 5px; /* Köşe yuvarlaklığı artırıldı */
+    border-radius: 5px;
     overflow: hidden;
     display: flex;
 }
@@ -815,7 +755,7 @@ body {
          align-items: stretch;
     }
     .site-header h1 {
-         font-size: 22px; /* Boyut ayarlandı */
+         font-size: 22px;
          margin-bottom: 10px;
     }
     .header-right {
@@ -837,7 +777,7 @@ body {
      }
      .search-box input {
          width: 100%;
-         padding: 8px 15px; /* Boşluk ayarlandı */
+         padding: 8px 15px;
          box-sizing: border-box;
           font-size: 14px;
      }
@@ -856,7 +796,7 @@ body {
     .sidebar-right {
         width: 100%;
         margin-top: 0;
-        padding: 15px; /* Boşluk ayarlandı */
+        padding: 15px;
         box-sizing: border-box;
          border-radius: 8px;
          box-shadow: var(--soft-shadow);
@@ -905,15 +845,15 @@ body {
          position: fixed;
          top: 10px;
          right: 10px;
-         background-color: rgba(var(--card-background), 0.9); /* Arka plan rengi ve opaklık */
+         background-color: rgba(var(--card-background), 0.9);
          border: 1px solid var(--border-color);
          border-radius: 50%;
          font-size: 20px;
          cursor: pointer;
          z-index: 1001;
          color: var(--text-color);
-         width: 35px; /* Boyut artırıldı */
-         height: 35px; /* Boyut artırıldı */
+         width: 35px;
+         height: 35px;
          display: flex;
          justify-content: center;
          align-items: center;
@@ -930,7 +870,7 @@ body {
     .match-item {
         flex-direction: column;
         align-items: center;
-        padding: 12px 0; /* Boşluk ayarlandı */
+        padding: 12px 0;
     }
 
     .match-summary {
@@ -941,7 +881,7 @@ body {
     }
 
     .team-info {
-        width: 100px; /* Genişlik ayarlandı */
+        width: 100px;
         justify-content: flex-start;
          text-align: left;
          margin: 0;
@@ -957,12 +897,12 @@ body {
          margin-left: 10px;
      }
     .team-logo {
-        width: 24px; height: 24px; /* Boyut ayarlandı */
-        margin: 0 6px; /* Boşluk ayarlandı */
+        width: 24px; height: 24px;
+        margin: 0 6px;
     }
     .team-name {
-        font-size: 14px; /* Boyut ayarlandı */
-         font-weight: 400; /* Normal */
+        font-size: 14px;
+         font-weight: 400;
     }
 
 
@@ -971,56 +911,44 @@ body {
          width: 50px;
     }
     .score {
-         font-size: 16px; /* Boyut ayarlandı */
+         font-size: 16px;
          margin-bottom: 2px;
           font-weight: 700;
     }
     .match-status {
-         font-size: 11px; /* Boyut ayarlandı */
+         font-size: 11px;
     }
      .match-time, .match-date {
-          font-size: 11px; /* Boyut ayarlandı */
+          font-size: 11px;
      }
 
 
     .match-actions {
         width: 100%;
-        justify-content: center;
+        justify-content: center; /* Mobil'de ortala */
          margin-top: 5px;
     }
-    /* Ana Listedeki Oranlar (Telefon) */
-    .odds {
-        margin-right: 10px;
-    }
-    .odd {
-        padding: 3px 8px; /* Boşluk ayarlandı */
-        font-size: 12px; /* Boyut ayarlandı */
-         font-weight: 700;
-         margin-right: 4px;
+    /* Ana Listedeki Oranların Stilleri (TAMAMEN KALDIRILDI) */
+    /*
+    .odds { ... }
+    .odd { ... }
+    */
+
+    /* Favori ikonu mobil ortalama */
+    .match-actions .match-favorite-icon {
+        /* Eğer match-actions tek eleman içeriyorsa (oranlar silindiği için),
+           justify-content: center bunu ortalar */
     }
 
 
-    /* Detay Panelindeki Oran Bölümü Stilleri (Telefon) */
-     .match-details-odds {
-         margin-bottom: 15px;
-     }
-     .match-details-odds h4 {
-         font-size: 16px; /* Boyut ayarlandı */
-         margin-bottom: 8px;
-         padding-bottom: 4px;
-     }
-     .odds-list {
-         gap: 8px;
-     }
-     .odds-list .odd-item {
-         padding: 8px 15px; /* Boşluk ayarlandı */
-         font-size: 14px; /* Boyut ayarlandı */
-         font-weight: 700;
-         min-width: 60px;
-     }
-     .odds-list .odd-item span {
-         font-size: 11px; /* Boyut ayarlandı */
-     }
+    /* Detay Panelindeki Oran Bölümü Stilleri (TAMAMEN KALDIRILDI) */
+    /*
+    .match-details-odds { ... }
+    .match-details-odds h4 { ... }
+    .odds-list { ... }
+    .odds-list .odd-item { ... }
+    .odds-list .odd-item span { ... }
+    */
 
 
     /* Sekme Stilleri Telefonlarda */
@@ -1030,8 +958,8 @@ body {
          margin-bottom: 15px;
     }
      .match-tabs .tab-button {
-         padding: 10px 15px; /* Boşluk ayarlandı */
-         font-size: 15px; /* Boyut ayarlandı */
+         padding: 10px 15px;
+         font-size: 15px;
          margin: 4px;
          font-weight: 700;
      }
@@ -1039,8 +967,8 @@ body {
     /* Olay ve İstatistik Listeleri Telefonlarda */
     .match-events-list li,
     .match-statistics-list .stat-item {
-        font-size: 13px; /* Boyut ayarlandı */
-        padding: 8px 0; /* Boşluk ayarlandı */
+        font-size: 13px;
+        padding: 8px 0;
     }
      .event-item span:first-child {
          margin-right: 8px;
@@ -1062,14 +990,14 @@ body {
          text-align: left;
          padding: 0;
          margin: 2px 0;
-         font-size: 14px; /* Boyut ayarlandı */
+         font-size: 14px;
          font-weight: 700;
     }
 
      .match-statistics-list .stat-type {
          width: 100%;
          text-align: left;
-         margin: 5px 0 8px 0; /* Boşluk ayarlandı */
+         margin: 5px 0 8px 0;
          font-size: 12px;
           font-weight: 400;
      }
