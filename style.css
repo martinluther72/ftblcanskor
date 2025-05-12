@@ -1,11 +1,26 @@
+/* Renk Paleti (CSS Değişkenleri) */
+:root {
+    --primary-color: #0056b3; /* Koyu Mavi - Ana Renk */
+    --accent-color: #28a745; /* Yeşil - Vurgu Rengi (Gol Rengi) */
+    --secondary-accent-color: #ffc107; /* Sarı - İkincil Vurgu (Sarı Kart vb.) */
+    --background-color: #f8f9fa; /* Çok Açık Gri */
+    --card-background: #ffffff; /* Beyaz */
+    --border-color: #e9ecef; /* Açık Gri Kenarlık */
+    --text-color: #212529; /* Koyu Gri/Siyah - Ana Metin */
+    --secondary-text-color: #6c757d; /* Orta Gri - İkincil Metin (Saat, Durum vb.) */
+    --header-background: #343a40; /* Koyu Gri/Siyah - Header Arka Planı */
+    --header-text-color: #ffffff; /* Beyaz - Header Metni */
+    --selected-match-bg: #e0f2f7; /* Açık Mavi - Seçili Maç Arka Planı */
+}
+
+
 /* Genel Stiller */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background-color: #f4f4f4;
-    color: #333;
-    /* Overlay açıldığında body'nin kaymasını engellemek için */
-     overflow-x: hidden;
+    background-color: var(--background-color); /* Arka Plan Rengi */
+    color: var(--text-color); /* Ana Metin Rengi */
+    overflow-x: hidden;
 }
 
 .container {
@@ -17,8 +32,8 @@ body {
 
 /* Header Stilleri */
 .site-header {
-    background-color: #333;
-    color: #fff;
+    background-color: var(--header-background); /* Header Arka Planı */
+    color: var(--header-text-color); /* Header Metin Rengi */
     padding: 10px 0;
     margin-bottom: 20px;
 }
@@ -54,17 +69,20 @@ body {
 }
 
 .sport-selection a {
-    color: #fff;
+    color: var(--header-text-color); /* Header Metin Rengi */
     text-decoration: none;
     margin: 0 10px;
     font-size: 16px;
     opacity: 0.8;
     transition: opacity 0.3s ease;
+    padding-bottom: 2px; /* Aktif çizgi için boşluk */
+    border-bottom: 2px solid transparent; /* Aktif çizgi */
 }
 
 .sport-selection a:hover,
 .sport-selection a.active {
     opacity: 1;
+     border-bottom-color: var(--primary-color); /* Aktif çizgi rengi */
 }
 
 .search-box input {
@@ -87,18 +105,20 @@ body {
 
 /* Sol Sidebar Stilleri */
 .sidebar-left {
-    background-color: #fff;
+    background-color: var(--card-background); /* Panel Arka Planı */
     padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px; /* Daha yuvarlak köşeler */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Daha belirgin gölge */
+    border: 1px solid var(--border-color); /* Kenarlık */
 }
 
 .sidebar-left h2 {
     margin-top: 0;
     font-size: 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color); /* Kenarlık */
     padding-bottom: 10px;
     margin-bottom: 10px;
+    color: var(--primary-color); /* Başlık Rengi */
 }
 
 .sidebar-left ul {
@@ -113,14 +133,14 @@ body {
 
 .sidebar-left a {
     text-decoration: none;
-    color: #333;
+    color: var(--text-color); /* Metin Rengi */
     display: block;
-    padding: 5px 0;
+    padding: 8px 0; /* Boşluk artırıldı */
     transition: color 0.2s ease;
 }
 
 .sidebar-left a:hover {
-    color: #007bff;
+    color: var(--primary-color); /* Hover Rengi */
 }
 
 
@@ -131,10 +151,11 @@ body {
 
 .match-filters {
     margin-bottom: 15px;
-    background-color: #fff;
+    background-color: var(--card-background); /* Panel Arka Planı */
     padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px; /* Daha yuvarlak köşeler */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Daha belirgin gölge */
+    border: 1px solid var(--border-color); /* Kenarlık */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -143,21 +164,24 @@ body {
 .match-filters button {
     padding: 8px 15px;
     margin: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color); /* Kenarlık */
     border-radius: 4px;
-    background-color: #eee;
+    background-color: var(--background-color); /* Hafif Gri Buton Arka Planı */
+    color: var(--text-color); /* Buton Metin Rengi */
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    font-size: 14px;
 }
 
 .match-filters button.active {
-    background-color: #007bff;
-    color: #fff;
-    border-color: #007bff;
+    background-color: var(--primary-color); /* Aktif Buton Arka Planı */
+    color: var(--header-text-color); /* Aktif Buton Metin Rengi (Beyaz) */
+    border-color: var(--primary-color); /* Aktif Buton Kenarlık */
 }
 
 .match-filters button:hover:not(.active) {
-    background-color: #ddd;
+    background-color: var(--border-color); /* Hover Arka Planı */
+    border-color: var(--secondary-text-color); /* Hover Kenarlık */
 }
 
 #matches-list {
@@ -165,22 +189,24 @@ body {
 }
 
 .league-section {
-    background-color: #fff;
-    border-radius: 5px;
+    background-color: var(--card-background); /* Panel Arka Planı */
+    border-radius: 8px; /* Daha yuvarlak köşeler */
     margin-bottom: 15px;
     padding: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Daha belirgin gölge */
+    border: 1px solid var(--border-color); /* Kenarlık */
 }
 
 .league-title {
     margin-top: 0;
     margin-bottom: 10px;
     font-size: 18px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color); /* Kenarlık */
     padding-bottom: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: var(--primary-color); /* Başlık Rengi */
 }
 
 .league-name {
@@ -189,18 +215,26 @@ body {
 
 .favorite-icon {
     cursor: pointer;
-    color: #ccc;
+    color: var(--secondary-text-color); /* Gri Favori Simge */
     font-size: 20px;
     line-height: 1;
+    transition: color 0.2s ease;
 }
+.favorite-icon.is-favorite {
+    color: gold; /* Favori olduğunda altın rengi */
+}
+.favorite-icon:hover {
+    color: var(--primary-color); /* Hover rengi */
+}
+
 
 /* Maç Öğesi Stilleri */
 .match-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
+    padding: 12px 0; /* Boşluk artırıldı */
+    border-bottom: 1px solid var(--border-color); /* Kenarlık */
     cursor: pointer;
     transition: background-color 0.2s ease;
     flex-wrap: wrap;
@@ -211,12 +245,12 @@ body {
 }
 
 .match-item:hover {
-    background-color: #f9f9f9;
+    background-color: var(--background-color); /* Hafif Gri Hover Arka Planı */
 }
 
 .match-item.selected-match {
-    background-color: #e0f2f7;
-    border-left: 3px solid #007bff;
+    background-color: var(--selected-match-bg); /* Seçili Maç Arka Planı */
+    border-left: 3px solid var(--primary-color); /* Vurgu Rengi Kenarlık */
     padding-left: 7px;
 }
 
@@ -225,15 +259,14 @@ body {
     display: flex;
     align-items: center;
     flex-grow: 1;
-    /* flex-basis: 100%; */ /* Küçük ekranda ayarlandı */
     justify-content: center;
-    margin-bottom: 0; /* Mobil için 0, masaüstü için ayarlandı */
+    margin-bottom: 0;
 }
 
 .team-info {
     display: flex;
     align-items: center;
-    width: 150px; /* Masaüstü genişlik */
+    width: 150px;
     flex-shrink: 0;
 }
 /* Takım isimlerinin sağa yaslanması (ev sahibi) ve sola yaslanması (deplasman) için */
@@ -250,18 +283,19 @@ body {
 
 
 .team-logo {
-    width: 20px;
-    height: 20px;
-    margin: 0 5px;
+    width: 24px; /* Boyut artırıldı */
+    height: 24px; /* Boyut artırıldı */
+    margin: 0 6px; /* Boşluk artırıldı */
     vertical-align: middle;
+    object-fit: contain; /* Oranını koru */
 }
 
 .team-name {
-    font-size: 14px;
+    font-size: 15px; /* Boyut artırıldı */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    /* flex-grow: 1; */
+    color: var(--text-color); /* Metin rengi */
 }
 
 .score-status {
@@ -274,19 +308,27 @@ body {
 }
 
 .score {
-    font-size: 16px;
+    font-size: 18px; /* Boyut artırıldı */
     font-weight: bold;
     margin-bottom: 3px;
+    color: var(--text-color); /* Metin rengi */
 }
 
 .match-status {
     font-size: 12px;
-    color: #555;
+    color: var(--secondary-text-color); /* Gri Metin Rengi */
 }
+
+/* Canlı maç durumu için özel renk */
+.match-status.live {
+    color: var(--accent-color); /* Yeşil Vurgu Rengi */
+    font-weight: bold;
+}
+
 
 .match-time, .match-date {
      font-size: 12px;
-    color: #555;
+    color: var(--secondary-text-color); /* Gri Metin Rengi */
     margin-bottom: 3px;
     text-align: center;
 }
@@ -295,8 +337,8 @@ body {
     display: flex;
     align-items: center;
     flex-shrink: 0;
-     width: auto; /* Masaüstü için otomatik genişlik */
-     justify-content: flex-end; /* Sağa yasla */
+     width: auto;
+     justify-content: flex-end;
 }
 
 .odds {
@@ -305,14 +347,16 @@ body {
 }
 
 .odd {
-    background-color: #eee;
-    padding: 3px 8px;
+    background-color: var(--background-color); /* Hafif Gri */
+    padding: 4px 10px; /* Boşluk artırıldı */
     margin-right: 5px;
-    border-radius: 3px;
+    border-radius: 4px; /* Daha yuvarlak köşeler */
     font-size: 13px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    color: var(--text-color); /* Metin rengi */
+    border: 1px solid var(--border-color); /* Kenarlık */
 }
 
 .odd:last-child {
@@ -320,31 +364,42 @@ body {
 }
 
 .odd:hover {
-    background-color: #ddd;
+    background-color: var(--border-color); /* Hover rengi */
+    color: var(--primary-color); /* Hover metin rengi */
 }
 
 .match-favorite-icon {
      cursor: pointer;
-    color: #ccc;
+    color: var(--secondary-text-color); /* Gri Simge */
     font-size: 20px;
     line-height: 1;
+     transition: color 0.2s ease;
 }
+.match-favorite-icon.is-favorite {
+     color: gold; /* Favori olduğunda altın rengi */
+}
+.match-favorite-icon:hover {
+     color: var(--primary-color); /* Hover rengi */
+}
+
 
 /* Sağ Sidebar Stilleri */
 .sidebar-right {
-    background-color: #fff;
+    background-color: var(--card-background); /* Panel Arka Planı */
     padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: relative; /* Kapat düğmesi için konumlandırma */
+    border-radius: 8px; /* Daha yuvarlak köşeler */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Daha belirgin gölge */
+    border: 1px solid var(--border-color); /* Kenarlık */
+    position: relative;
 }
 
 .sidebar-right h2 {
      margin-top: 0;
     font-size: 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color); /* Kenarlık */
     padding-bottom: 10px;
     margin-bottom: 10px;
+     color: var(--primary-color); /* Başlık Rengi */
 }
 
 /* Maç Detay Alanı Container Stilleri */
@@ -355,8 +410,9 @@ body {
 /* Başlangıç mesajı stilleri */
 #match-details-panel > .initial-message {
     text-align: center;
-    color: #777;
+    color: var(--secondary-text-color); /* Gri Metin Rengi */
     font-style: italic;
+    padding: 20px;
 }
 
 /* Maç seçildikten sonraki içerik alanı */
@@ -367,31 +423,34 @@ body {
 /* Sağ panel başlığındaki takım isimleri ve logoları */
 .selected-match-info .match-detail-title {
     font-size: 18px;
-    margin: 0 0 5px 0;
+    margin: 0 0 10px 0; /* Boşluk artırıldı */
     text-align: center;
+     color: var(--primary-color); /* Başlık Rengi */
 }
 
 .selected-match-info .match-header-teams {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* Boşluk artırıldı */
 }
 
 .selected-match-info .header-team-logo {
-    width: 30px;
-    height: 30px;
-    margin: 0 10px;
+    width: 40px; /* Boyut artırıldı */
+    height: 40px; /* Boyut artırıldı */
+    margin: 0 15px; /* Boşluk artırıldı */
+     object-fit: contain; /* Oranını koru */
 }
 
 .selected-match-info .header-team-names {
-    font-size: 16px;
+    font-size: 17px; /* Boyut artırıldı */
     font-weight: bold;
     text-align: center;
     flex-grow: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+     color: var(--text-color); /* Metin rengi */
 }
 
 
@@ -399,7 +458,7 @@ body {
 #match-details-panel hr {
     margin: 20px 0;
     border: none;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color); /* Kenarlık Rengi */
 }
 
 
@@ -407,7 +466,7 @@ body {
 .match-tabs {
     display: flex;
     margin-bottom: 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color); /* Kenarlık Rengi */
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -418,24 +477,19 @@ body {
     background-color: transparent;
     cursor: pointer;
     font-size: 15px;
-    color: #555;
+    color: var(--secondary-text-color); /* Gri Metin Rengi */
     border-bottom: 2px solid transparent;
     transition: color 0.3s ease, border-bottom-color 0.3s ease;
-    margin-right: 5px;
-    margin-bottom: 5px;
-}
-
-.match-tabs .tab-button:last-child {
-    margin-right: 0;
+    margin: 0 5px 5px 5px; /* Kenar boşlukları */
 }
 
 .match-tabs .tab-button:hover {
-    color: #333;
+    color: var(--text-color); /* Hover Metin Rengi */
 }
 
 .match-tabs .tab-button.active {
-    color: #007bff;
-    border-bottom-color: #007bff;
+    color: var(--primary-color); /* Aktif Metin Rengi */
+    border-bottom-color: var(--primary-color); /* Aktif Çizgi Rengi */
     font-weight: bold;
 }
 
@@ -459,9 +513,9 @@ body {
     margin-top: 0;
     margin-bottom: 10px;
     font-size: 16px;
-    border-bottom: 1px dashed #eee;
+    border-bottom: 1px dashed var(--border-color); /* Kenarlık Rengi */
     padding-bottom: 5px;
-    color: #333;
+    color: var(--primary-color); /* Başlık Rengi */
 }
 
 .match-events-list {
@@ -471,10 +525,10 @@ body {
 }
 
 .match-events-list li {
-    padding: 8px 0;
-    border-bottom: 1px dashed #eee;
+    padding: 10px 0; /* Boşluk artırıldı */
+    border-bottom: 1px dashed var(--border-color); /* Kenarlık Rengi */
     font-size: 14px;
-    color: #555;
+    color: var(--text-color); /* Metin Rengi */
     word-break: break-word;
 }
 
@@ -482,42 +536,41 @@ body {
     border-bottom: none;
 }
 
-/* Olay Tipine Göre Stil */
+/* Olay Tipine Göre Stil (Renkler) */
 .event-item span:first-child {
     font-weight: bold;
-    margin-right: 5px;
-    color: #333;
+    margin-right: 8px; /* Boşluk artırıldı */
+    color: var(--secondary-text-color); /* Zaman Metni Rengi */
 }
 
 .event-item .event-icon {
     margin-right: 5px;
+    /* İkonlar artık JS'ten gelmiyor, CSS ile ikon atamak gerekirse bu sınıf kullanılabilir */
+    /* content: '★'; // Örnek: Tüm olaylara aynı ikon */
 }
 
+
 .event-goal {
-    color: #28a745;
+    color: var(--accent-color); /* Yeşil */
     font-weight: bold;
 }
 
-.event-card {
-    /* Genel kart stili */
-}
-
 .event-yellow-card {
-    color: #ffc107;
+    color: var(--secondary-accent-color); /* Sarı */
 }
 
 .event-red-card {
-    color: #dc3545;
+    color: #dc3545; /* Kırmızı */
 }
 
 .event-subst {
-    color: #007bff;
+    color: var(--primary-color); /* Mavi */
 }
 .event-var {
-    color: #6c757d;
+    color: var(--secondary-text-color); /* Gri */
 }
 .event-penalty {
-     color: #28a745;
+     color: var(--accent-color); /* Yeşil */
 }
 
 
@@ -526,9 +579,9 @@ body {
      margin-top: 0;
     margin-bottom: 10px;
     font-size: 16px;
-    border-bottom: 1px dashed #eee;
+    border-bottom: 1px dashed var(--border-color); /* Kenarlık Rengi */
     padding-bottom: 5px;
-     color: #333;
+     color: var(--primary-color); /* Başlık Rengi */
 }
 
 .match-statistics-list {
@@ -539,9 +592,10 @@ body {
 
 /* --- Her Bir İstatistik Satırı (Genel Stil) --- */
 .match-statistics-list .stat-item {
-     padding: 6px 0;
-    border-bottom: 1px dashed #eee;
+     padding: 8px 0; /* Boşluk artırıldı */
+    border-bottom: 1px dashed var(--border-color); /* Kenarlık Rengi */
     font-size: 14px;
+     color: var(--text-color); /* Metin rengi */
 }
 
 .match-statistics-list .stat-item:last-child {
@@ -555,7 +609,7 @@ body {
      align-items: center;
 }
 
-/* İstatistik türü ikonları */
+/* İstatistik türü ikonları (Artık ikon metni gelmiyor, sadece boşluk) */
 .match-statistics-list .stat-values .stat-icon {
      margin-right: 5px;
 }
@@ -568,6 +622,7 @@ body {
     flex-shrink: 0;
     text-align: center;
      white-space: nowrap;
+     color: var(--text-color); /* Metin rengi */
 }
 
 .match-statistics-list .stat-home-value {
@@ -584,32 +639,30 @@ body {
     flex-grow: 1;
     text-align: center;
     margin: 0 10px;
-    color: #555;
+    color: var(--secondary-text-color); /* Gri Metin Rengi */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 
-/* --- İstatistik Öğeleri (ProgressBar ile) - Hem Yüzdelik Hem Sayısal İçin --- */
-.match-statistics-list .stat-item-percentage,
-.match-statistics-list .stat-item-numeric {
+/* --- İstatistik Öğeleri (ProgressBar ile) --- */
+.match-statistics-list .stat-item-bar {
     display: flex;
     flex-direction: column;
     align-items: stretch;
 }
 
-.match-statistics-list .stat-item-percentage .stat-values,
-.match-statistics-list .stat-item-numeric .stat-values {
+.match-statistics-list .stat-item-bar .stat-values {
      margin-bottom: 5px;
 }
 
 .match-statistics-list .stat-progress-bar {
     width: calc(100% - 10px);
     margin: 0 auto;
-    height: 10px;
-    background-color: #e9ecef;
-    border-radius: 5px;
+    height: 8px; /* Yükseklik ayarlandı */
+    background-color: var(--border-color); /* Bar Arka Planı */
+    border-radius: 4px; /* Köşe yuvarlaklığı */
     overflow: hidden;
     display: flex;
 }
@@ -621,13 +674,13 @@ body {
 }
 
 .match-statistics-list .progress-bar-home {
-    background-color: #28a745;
+    background-color: var(--accent-color); /* Ev Sahibi Çubuk Rengi (Yeşil) */
     height: 100%;
      transition: width 0.5s ease;
 }
 
 .match-statistics-list .progress-bar-away {
-    background-color: #007bff;
+    background-color: var(--primary-color); /* Deplasman Çubuk Rengi (Mavi) */
     height: 100%;
      transition: width 0.5s ease;
 }
@@ -654,16 +707,6 @@ body {
 
 
 /* !!! DUYARLI TASARIM - MEDIA QUERYLERİ !!! */
-
-/* Orta Boyutlu Ekranlar (Tabletler gibi, isteğe bağlı) */
-/* @media (max-width: 992px) {
-     .main-layout {
-         grid-template-columns: 180px 1fr 250px; // Sütun genişliklerini daralt
-         gap: 15px;
-     }
-     // Diğer ara ekran düzenlemeleri buraya gelebilir
-} */
-
 
 /* Küçük Ekranlar (Telefonlar) */
 @media (max-width: 768px) {
@@ -717,6 +760,9 @@ body {
         margin-top: 0;
         padding: 10px;
         box-sizing: border-box;
+         border-radius: 8px; /* Mobil'de de yuvarlak köşeler */
+         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Mobil'de de gölge */
+         border: 1px solid var(--border-color); /* Mobil'de de kenarlık */
     }
 
     /* Sağ Sidebar (Detay Paneli) Telefonlarda - Overlay Yapısı */
@@ -728,10 +774,11 @@ body {
          height: 100%;
          z-index: 1000;
          overflow-y: auto;
-         background-color: #fff;
+         background-color: var(--card-background); /* Arka plan rengi (altında kalanları kapatır) */
          padding: 15px;
-         box-shadow: none;
-         border-radius: 0;
+         box-shadow: none; /* Overlay olunca gölgeye gerek yok */
+         border-radius: 0; /* Overlay olunca tam köşe */
+         border: none; /* Overlay olunca kenarlığa gerek yok */
 
          display: none; /* Varsayılan olarak gizli */
      }
@@ -752,24 +799,34 @@ body {
      }
       /* Maç detayları yüklenince başlangıç mesajını gizle */
      .sidebar-right.is-visible-on-mobile .selected-match-info {
-         /* JS zaten display: block yapıyor. Eğer overlay'de görünürse ekstra stil gerekirse buraya */
-         /* display: block !important; // Gerekirse zorla görünür yap */
+         /* display: block !important; // JS zaten görünür yapıyor */
+         padding-top: 30px; /* Kapat düğmesi için üstten boşluk */
      }
 
 
      /* Mobil İçin Kapat Düğmesi */
      .close-details-panel {
          display: block; /* Mobil görünümde göster */
-         position: absolute;
-         top: 10px;
-         right: 10px;
-         background-color: transparent;
-         border: none;
-         font-size: 24px;
+         position: fixed; /* Ekrana göre sabit */
+         top: 10px; /* Üstten boşluk */
+         right: 10px; /* Sağdan boşluk */
+         background-color: rgba(255, 255, 255, 0.8); /* Yarı şeffaf beyaz arka plan */
+         border: 1px solid var(--border-color); /* Kenarlık */
+         border-radius: 50%; /* Tamamen yuvarlak */
+         font-size: 20px; /* Boyut ayarlandı */
          cursor: pointer;
-         z-index: 1001;
-         color: #555;
-         padding: 5px; /* Tıklama alanını genişlet */
+         z-index: 1001; /* Overlay'in üstünde olsun */
+         color: var(--text-color); /* Koyu Metin Rengi */
+         width: 30px; /* Düğme genişliği */
+         height: 30px; /* Düğme yüksekliği */
+         display: flex; /* Ortalamak için */
+         justify-content: center; /* Yatayda ortala */
+         align-items: center; /* Dikeyde ortala */
+         transition: background-color 0.2s ease;
+         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+     }
+     .close-details-panel:hover {
+         background-color: var(--border-color); /* Hover arka planı */
      }
 
 
