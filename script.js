@@ -25,7 +25,9 @@ const options = {
 // --- Element Referansları ---
 // HTML'deki elementlere daha kolay erişmek için referansları alalım
 const matchesListContainer = document.getElementById('matches-list');
-const detailsPanel = document.getElementById('match-details-panel');
+const detailsPanel = document.getElementById('match-details-panel'); // Bu artık sadece detayların içindeki div
+const sidebarRight = document.querySelector('.sidebar-right'); // Sağ panelin ana elementi
+
 const initialMessage = detailsPanel ? detailsPanel.querySelector('.initial-message') : null;
 const selectedMatchInfo = detailsPanel ? detailsPanel.querySelector('.selected-match-info') : null;
 const matchDetailTitle = detailsPanel ? detailsPanel.querySelector('.match-detail-title') : null;
@@ -34,18 +36,24 @@ const headerHomeLogo = matchHeaderTeams ? matchHeaderTeams.querySelector('.home-
 const headerTeamNames = matchHeaderTeams ? matchHeaderTeams.querySelector('.header-team-names') : null;
 const headerAwayLogo = matchHeaderTeams ? matchHeaderTeams.querySelector('.away-logo') : null;
 
-
 const tabButtons = detailsPanel ? detailsPanel.querySelectorAll('.tab-button') : null;
-const tabPanes = detailsPanel ? detailsPanel.querySelectorAll('.tab-pane') : null;
+const tabPanes = detailsPanel ? detailsPanes.querySelectorAll('.tab-pane') : null;
+
+// Sekme içerik alanları içindeki .events-section ve .statistics-section divlerini de referans alalım
 const eventsTabContent = detailsPanel ? document.getElementById('events-tab-content') : null;
 const statisticsTabContent = detailsPanel ? document.getElementById('statistics-tab-content') : null;
 const eventsSectionInPane = eventsTabContent ? eventsTabContent.querySelector('.events-section') : null;
 const statisticsSectionInPane = statisticsTabContent ? statisticsTabContent.querySelector('.statistics-section') : null;
 
+// Mobil kapat düğmesi referansı
+const closeDetailsButton = document.querySelector('.close-details-panel');
 
-// Paneller bulunamazsa uyarı verelim
+
+// Paneller ve önemli elementler bulunamazsa uyarı verelim
 if (!matchesListContainer) console.error("HTML'de #matches-list ID'li container bulunamadı!");
-if (!detailsPanel) console.error("HTML'de #match-details-panel ID'li container bulunamadı.");
+if (!detailsPanel) console.error("HTML'de #match-details-panel ID'li container bulunamadı!"); // Artık iç div
+if (!sidebarRight) console.error("HTML'de .sidebar-right elementi bulunamadı!"); // Sağ panelin ana elementi
+
 if (!initialMessage) console.warn("HTML'de .initial-message elementi bulunamadı.");
 if (!selectedMatchInfo) console.warn("HTML'de .selected-match-info elementi bulunamadı.");
 if (!matchDetailTitle) console.warn("HTML'de .match-detail-title elementi bulunamadı.");
@@ -54,13 +62,22 @@ if (!headerHomeLogo) console.warn("HTML'de .home-logo elementi bulunamadı.");
 if (!headerTeamNames) console.warn("HTML'de .header-team-names elementi bulunamadı.");
 if (!headerAwayLogo) console.warn("HTML'de .away-logo elementi bulunamadı.");
 
-
 if (!tabButtons || tabButtons.length === 0) console.warn("HTML'de sekme düğmeleri (.tab-button) bulunamadı.");
 if (!tabPanes || tabPanes.length === 0) console.warn("HTML'de sekme içerik alanları (.tab-pane) bulunamadı.");
+
 if (!eventsTabContent) console.warn("HTML'de #events-tab-content elementi bulunamadı.");
 if (!statisticsTabContent) console.warn("HTML'de #statistics-tab-content elementi bulunamadı.");
 if (!eventsSectionInPane) console.warn("HTML'de .events-section (olaylar paneli içinde) elementi bulunamadı.");
 if (!statisticsSectionInPane) console.warn("HTML'de .statistics-section (istatistikler paneli içinde) elementi bulunamadı.");
+
+if (!closeDetailsButton) console.warn("HTML'de .close-details-panel elementi bulunamadı."); // Yeni kapat düğmesi kontrolü
+
+
+// Ekranın mobil görünümde olup olmadığını kontrol eden fonksiyon
+function isMobileView() {
+    // CSS'teki media query kırılma noktasıyla aynı değeri kullanmalısın
+    return window.innerWidth <= 768;
+}
 
 
 // Sekme değiştirme fonksiyonu
@@ -96,6 +113,15 @@ if (tabButtons) {
     });
 }
 
+// Mobil kapat düğmesine tıklama olay dinleyicisi
+if (closeDetailsButton && sidebarRight) {
+    closeDetailsButton.addEventListener('click', () => {
+        sidebarRight.classList.remove('is-visible-on-mobile'); // Sidebar'ı gizle
+         // İsteğe bağlı: Body'nin kaymasını engellediysek, burada eski durumuna döndürebiliriz
+         document.body.style.overflow = '';
+    });
+}
+
 
 // Canlı maç verilerini çeken fonksiyon
 async function fetchLiveMatches() {
@@ -106,7 +132,7 @@ async function fetchLiveMatches() {
         if (!response.ok) {
             // HTTP durumu 200-299 aralığında değilse hata fırlat
             const errorDetail = await response.text();
-            throw new Error(`API isteği başarısız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
+            throw new Error(`API isteği başarısıız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
         }
 
         const data = await response.json();
@@ -132,7 +158,7 @@ async function fetchMatchEvents(fixtureId) {
 
          if (!response.ok) {
             const errorDetail = await response.text();
-            throw new Error(`Olay API isteği başarısız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
+            throw new Error(`Olay API isteği başarısıız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
         }
 
         const data = await response.json();
@@ -159,7 +185,7 @@ async function fetchMatchStatistics(fixtureId) {
 
          if (!response.ok) {
             const errorDetail = await response.text();
-            throw new Error(`İstatistik API isteği başarısız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
+            throw new Error(`İstatistik API isteği başarısıız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
         }
 
         const data = await response.json();
@@ -218,46 +244,58 @@ function displayMatchDetails(matchId, eventsData) {
 
         const eventItem = document.createElement('li');
         eventItem.classList.add('event-item');
+        // Olay türüne göre sınıflar ekleyelim (CSS ile stil vermek için)
+        eventItem.classList.add(`event-type-${eventType.toLowerCase().replace(/\s+/g, '-')}`);
+
 
         let eventContent = '';
-        let eventIcon = ''; // İkon için değişken
+        let iconClass = ''; // İkon sınıfı için değişken
+        let iconText = ''; // İkon metni (geçici olarak unicode veya boşluk)
 
+        // Olay türüne göre ikon sınıfı ve içerik belirle
         if (eventType === 'Goal') {
-            eventIcon = '⚽';
+            iconClass = 'icon-goal';
+            iconText = '⚽'; // Geçici Unicode
             const assistPlayer = (event.assist && event.assist.name) ? ` (Asist: ${event.assist.name})` : '';
             eventContent = `${playerName}${assistPlayer}`;
-            eventItem.classList.add('event-goal');
              if (eventDetail && eventDetail !== 'Normal Goal') eventContent += ` (${eventDetail})`;
-
         } else if (eventType === 'Card') {
-            eventIcon = eventDetail === 'Yellow Card' ? '📒' : eventDetail === 'Red Card' ? '🟥' : '';
+            iconClass = 'icon-card'; // Genel kart sınıfı
+            iconText = eventDetail === 'Yellow Card' ? '📒' : eventDetail === 'Red Card' ? '🟥' : '';
             eventContent = `${eventDetail}! ${playerName}`;
-            eventItem.classList.add('event-card');
-            if(eventDetail === 'Yellow Card') eventItem.classList.add('event-yellow-card');
-            if(eventDetail === 'Red Card') eventItem.classList.add('event-red-card');
+             eventItem.classList.add(`event-detail-${eventDetail.toLowerCase().replace(/\s+/g, '-')}`); // Sarı/Kırmızı Kart için detay sınıfı
         } else if (eventType === 'subst') {
-             eventIcon = '🔁';
+             iconClass = 'icon-subst';
+             iconText = '🔁'; // Geçici Unicode
              let players = '';
-             if (event.player && event.player.name) players += `Çıkan: ${event.player.name}`; // Player genellikle çıkan oyuncu
-             if (event.assist && event.assist.name) players += (players ? ', ' : '') + ` Giren: ${event.assist.name}`; // Assist genellikle giren oyuncu
+             if (event.player && event.player.name) players += `Çıkan: ${event.player.name}`;
+             if (event.assist && event.assist.name) players += (players ? ', ' : '') + ` Giren: ${event.assist.name}`;
              eventContent = `Oyuncu Değişikliği (${players})`;
-             eventItem.classList.add('event-subst');
         } else if (eventType === 'Var') {
-             eventIcon = '🖥️';
+             iconClass = 'icon-var';
+             iconText = '🖥️'; // Geçici Unicode
              eventContent = `VAR Kontrolü (${eventDetail})`;
-             eventItem.classList.add('event-var');
         } else if (eventType === 'Penalty') {
-             eventIcon = eventDetail === 'Missed Penalty' ? '❌' : eventDetail === 'Penalty Scored' ? '✅' : '득점';
+             iconClass = 'icon-penalty';
+             iconText = eventDetail === 'Missed Penalty' ? '❌' : eventDetail === 'Penalty Scored' ? '✅' : '득점'; // Geçici Unicode
              eventContent = `Penaltı: ${eventDetail}! ${playerName}`;
-             eventItem.classList.add('event-penalty');
         } else {
             // Bilinmeyen veya diğer olay türleri için
              eventContent = `${eventType}: ${eventDetail} ${playerName}`;
-             eventIcon = ' '; // Varsayılan ikon veya boşluk
+             iconClass = 'icon-default'; // Varsayılan ikon sınıfı
+             iconText = ' '; // Varsayılan ikon veya boşluk
         }
 
         // Olay zamanı, takım adı, ikon ve olay içeriğini birleştir
-        eventItem.innerHTML = `<span>${time}</span> ${teamName}: <span class="event-icon">${eventIcon}</span> ${eventContent}`;
+        // İkon için özel span oluşturuyoruz
+        const iconSpan = document.createElement('span');
+        iconSpan.classList.add('event-icon');
+        iconSpan.classList.add(iconClass); // Tür/Detay bazlı ikon sınıfı
+        iconSpan.textContent = iconText; // Şimdilik Unicode metni koyuyoruz
+
+        eventItem.innerHTML = `<span>${time}</span> ${teamName}: `;
+        eventItem.appendChild(iconSpan); // İkon span'ini ekle
+        eventItem.innerHTML += ` ${eventContent}`; // Metin içeriğini ekle
 
         eventsList.appendChild(eventItem);
     });
@@ -296,8 +334,12 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
      // Ev sahibi ve deplasman takımlarının istatistik objelerini ayır
      let homeStats = null;
      let awayStats = null;
+     // Logoları da alalım (şimdilik kullanılmasa da dursun)
+     let homeTeamLogo = '';
+     let awayTeamLogo = '';
 
-     // Gelen yanıttaki takım isimlerini veya ID'lerini kullanarak ev sahibi ve deplasman istatistik setlerini bulalım
+
+     // Gelen yanıtta takım isimlerini veya ID'lerini kullanarak ev sahibi ve deplasman istatistik setlerini bulalım
      if (teamStatistics.length >= 2) { // En az 2 takımın istatistiği gelmeli
          const team1 = teamStatistics[0];
          const team2 = teamStatistics[1];
@@ -305,16 +347,24 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
          // Takım adları ile eşleştirme
          if (team1.team && team1.team.name === homeTeamName) {
              homeStats = team1.statistics;
+             homeTeamLogo = team1.team.logo || 'placeholder-logo.png';
              awayStats = team2.statistics;
+             awayTeamLogo = team2.team.logo || 'placeholder-logo.png';
          } else if (team1.team && team1.team.name === awayTeamName) {
              homeStats = team2.statistics;
+             homeTeamLogo = team2.team.logo || 'placeholder-logo.png';
              awayStats = team1.statistics;
+             awayTeamLogo = team1.team.logo || 'placeholder-logo.png';
          } else if (team2.team && team2.team.name === homeTeamName) { // Eğer 0. eleman ev sahibi değilse 1. eleman ev sahibi olabilir
               homeStats = team2.statistics;
+              homeTeamLogo = team2.team.logo || 'placeholder-logo.png';
              awayStats = team1.statistics;
+             awayTeamLogo = team1.team.logo || 'placeholder-logo.png';
          } else if (team2.team && team2.team.name === awayTeamName) { // Eğer 1. eleman ev sahibi değilse 0. eleman ev sahibi olabilir
               homeStats = team1.statistics;
+              homeTeamLogo = team1.team.logo || 'placeholder-logo.png';
              awayStats = team2.statistics;
+             awayTeamLogo = team2.team.logo || 'placeholder-logo.png';
          }
           // Eğer isimler eşleşmezse (nadiren), ID'ye göre de kontrol edilebilir.
           // match objesini tıklama olayından alıp burada kullanmak da bir yöntem olabilir.
@@ -325,11 +375,13 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
          // Yine de gelen ilk takımın istatistiklerini göstermeyi deneyebiliriz
          if(teamStatistics.length > 0 && teamStatistics[0].statistics) {
              homeStats = teamStatistics[0].statistics; // İlk takımı ev sahibi gibi göster
+             homeTeamLogo = teamStatistics[0].team.logo || 'placeholder-logo.png';
          }
           // awayStats boş kalacak veya ikinci eleman varsa ikinci takımı da işlemeyi deneyebiliriz
           // teamStatistics[1] varsa ve istatistiği varsa
           if(teamStatistics.length > 1 && teamStatistics[1].statistics) {
               awayStats = teamStatistics[1].statistics; // İkinci takımı deplasman gibi göster
+              awayTeamLogo = teamStatistics[1].team.logo || 'placeholder-logo.png';
           }
      }
 
@@ -357,6 +409,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
 
      // İstatistikler için ikon haritası (isteğe bağlı olarak daha fazla ikon eklenebilir)
+     // NOT: Buradaki Unicode semboller şimdilik yer tutucu. CSS ile gerçek ikonlar gösterilecek.
      const statIcons = {
          "Shots on Goal": "🎯", // Kaleye Şut
          "Shots off Goal": "🚫", // Kaleyi Bulan Şut Değil
@@ -367,13 +420,13 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
          "Fouls": "🚨", // Faul
          "Corner Kicks": "🚩", // Korner
          "Offsides": "📏", // Ofsayt
-         "Ball Possession": " possession icon? ", // Topla Oynama (şimdilik boşluk)
+         "Ball Possession": "%", // Topla Oynama (Yüzde işareti)
          "Yellow Cards": "📒", // Sarı Kart
          "Red Cards": "🟥", // Kırmızı Kart
          "Goalkeeper Saves": "🧤", // Kaleci Kurtarışı
          "Total passes": "➡️", // Toplam Pas
-         "Passes accurate": "✅➡️", // Başarılı Pas
-         "Passes %": "📊", // Pas Başarı Yüzdesi
+         "Passes accurate": "✅", // Başarılı Pas (Ok işareti ile birleşebilir CSS'te)
+         "Passes %": "%", // Pas Başarı Yüzdesi (Yüzde işareti)
          "Expected Goals (xG)": "📈", // Beklenen Gol
           "Expected Goals against (xGA)": "📉", // Yenilen Beklenen Gol
           "Expected Points (xP)": "📍", // Beklenen Puan
@@ -388,14 +441,47 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
           "Dribble Success": "✅💨", // Başarılı Çalım
           "Dispossessed": "🚫⚽", // Top Kaybı
           "Saves": "🧤", // Kurtarış (Kaleci Kurtarışı ile aynı olabilir)
-          "Passes accurate %": "✅%" // Başarılı Pas Yüzdesi
+          "Passes accurate %": "%" // Başarılı Pas Yüzdesi
      };
+
+
+     // Hangi istatistiklere çubuk ekleyeceğimize karar verelim
+     // Yüzdelik olanlara (Ball Possession, Passes %) çubuk.
+     // Sayısal olanların çoğuna çubuk (Şutlar, Fauller, Paslar vb.)
+     // Kartlar, Ofsayt gibi bazıları çubuksuz olabilir (ekran görüntüsünde bazılarında çubuk var bazılarında yok)
+     // API'den gelen istatistik türü isimlerine göre bu listeyi ayarla
+     const statsWithoutBars = [
+         "Yellow Cards",
+         "Red Cards",
+         "Offsides",
+         "Corner Kicks",
+         "Goalkeeper Saves",
+         "Saves",
+         "Penalties", // Eğer Penaltılar istatistik olarak geliyorsa (olay değilse)
+         "Big Chance Created", // Örnek çubuksuz
+         "Big Chance Missed", // Örnek çubuksuz
+         "Clearances", // Örnek çubuksuz
+         "Interceptions", // Örnek çubuksuz
+         "Tackles", // Örnek çubuksuz
+         "Duels Total", // Örnek çubuksuz
+         "Duels won", // Örnek çubuksuz
+         "Dribble Attempts", // Örnek çubuksuz
+         "Dribble Success", // Örnek çalım
+         "Dispossessed", // Top Kaybı
+         "Expected Goals (xG)", // Beklenen Gol
+         "Expected Goals against (xGA)", // Yenilen Beklenen Gol
+         "Expected Points (xP)" // Beklenen Puan
+         // İhtiyacına göre bu listeyi düzenle
+     ];
 
 
      // İstatistikleri tek tek listeleme
       sortedStatTypes.forEach(statType => { // Tüm türler arasında döngü
           const statItem = document.createElement('li');
           statItem.classList.add('stat-item'); // CSS class (Genel)
+          // İstatistik türüne göre sınıf ekleyelim (CSS ile özelleştirmek için)
+          statItem.classList.add(`stat-type-${statType.toLowerCase().replace(/\s+/g, '-')}`);
+
 
            // İlgili istatistik türünün değer objelerini bul
            const homeValueObj = homeStats ? homeStats.find(s => s.type === statType) : null;
@@ -405,8 +491,15 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
            let homeValue = (homeValueObj && homeValueObj.value !== null) ? homeValueObj.value : '-';
            let awayValue = (awayValueObj && awayValueObj.value !== null) ? awayValueObj.value : '-';
 
-           // İstatistik türü ikonunu al (varsa)
-           const icon = statIcons[statType] || ' '; // Tanımlı değilse boşluk kullan
+           // İstatistik türü ikon metnini al (şimdilik Unicode)
+           const iconText = statIcons[statType] || ' '; // Tanımlı değilse boşluk kullan
+           // İkon için özel span oluşturuyoruz
+           const iconSpan = document.createElement('span');
+           iconSpan.classList.add('stat-icon');
+            // İkon sınıfını istatistik türüne göre ekleyelim (CSS ile ikon atamak için)
+           iconSpan.classList.add(`icon-${statType.toLowerCase().replace(/\s+/g, '-')}`);
+           iconSpan.textContent = iconText; // Şimdilik yer tutucu Unicode veya metni koyuyoruz
+
 
            // HTML yapısını oluşturacak div
            const statValuesDiv = document.createElement('div');
@@ -414,8 +507,6 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
 
            // --- İstatistik türüne göre gösterim şeklini belirle ---
-           // Topla Oynama yüzdelik çubuk. Diğer sayısal istatistikler için de çubuk yapalım.
-           // Kartlar gibi sadece sayı olan ve çubuk istemediğimiz istatistikler için ise basit yan yana gösterim.
 
            const isPercentage = typeof homeValue === 'string' && homeValue.endsWith('%') &&
                                 typeof awayValue === 'string' && awayValue.endsWith('%');
@@ -430,17 +521,6 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
            const numericHomeValue = isNumeric ? parseFloat(homeValue) : 0;
            const numericAwayValue = isNumeric ? parseFloat(awayValue) : 0;
            const totalNumericValue = numericHomeValue + numericAwayValue;
-
-
-           // Hangi istatistiklere çubuk ekleyeceğimize karar verelim
-           // Yüzdelik olanlara (Ball Possession, Passes %) çubuk.
-           // Sayısal olanların çoğuna çubuk (Şutlar, Fauller, Paslar vb.)
-           // Kartlar, Ofsayt gibi bazıları çubuksuz olabilir (ekran görüntüsünde bazılarında çubuk var bazılarında yok)
-           // Şimdilik sadece Topla Oynama için özel yüzdelik çubuk, diğer sayısal olanlara sayısal çubuk yapalım.
-           // Kartlar, Ofsayt, Korner gibi sayılar bazen çubuklu bazen çubuksuz olabilir. API'den gelen veriye ve istediğin tasarıma göre bu mantık ayarlanabilir.
-           // Şimdilik "Cards", "Offsides", "Corner Kicks", "Goalkeeper Saves" gibi istatistikleri çubuksuz bırakalım, diğer sayısal olanlara çubuk ekleyelim.
-
-           const statsWithoutBars = ["Yellow Cards", "Red Cards", "Offsides", "Corner Kicks", "Goalkeeper Saves", "Saves", "Penalties"]; // Çubuksuz kalacak istatistik türleri (API'den gelen isimlere göre ayarla)
 
 
            if (statType === "Ball Possession" && isPercentage) { // --- Yüzdelik Çubuk (Topla Oynama) ---
@@ -466,10 +546,15 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
                statValuesDiv.innerHTML = `
                    <span class="stat-home-value">${homeValue}</span>
-                   <span class="stat-type"><span class="stat-icon">${icon}</span> ${statType}</span>
-                   <span class="stat-away-value">${awayValue}</span>
+                   <span class="stat-type"></span> <span class="stat-away-value">${awayValue}</span>
                `;
-               statItem.appendChild(statValuesDiv); // Değerleri ve türü ekle
+               statItem.appendChild(statValuesDiv); // Değerleri ve türü içeren divi ekle
+
+               // stat-type span'ini bulup içine ikon ve tür adını ekle
+               const statTypeSpan = statValuesDiv.querySelector('.stat-type');
+               statTypeSpan.appendChild(iconSpan); // İkon span'ini ekle
+               statTypeSpan.innerHTML += ` ${statType}`; // Tür adını ekle
+
 
                // Progress bar divini oluştur
                const progressBarDiv = document.createElement('div');
@@ -485,8 +570,9 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
            } else if (isNumeric && totalNumericValue > 0 && !statsWithoutBars.includes(statType)) { // --- Sayısal Çubuk (Toplamı 0 olmayan ve çubuksuz listesinde olmayan sayısal istatistikler) ---
                  // Sayısal değerlere göre çubuk genişliği hesapla (toplam değere oranla)
-                 const homeBarWidth = (numericHomeValue / totalNumericValue) * 100;
-                 const awayBarWidth = (numericAwayValue / totalNumericValue) * 100;
+                 // Eğer toplam 0 ise bölme hatası olmaması için kontrol et
+                 const homeBarWidth = totalNumericValue > 0 ? (numericHomeValue / totalNumericValue) * 100 : 0;
+                 const awayBarWidth = totalNumericValue > 0 ? (numericAwayValue / totalNumericValue) * 100 : 0;
 
 
                 statItem.classList.add('stat-item-bar'); // Çubuklu istatistik stili için sınıf (genel)
@@ -494,10 +580,15 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
                 statValuesDiv.innerHTML = `
                    <span class="stat-home-value">${homeValue}</span>
-                   <span class="stat-type"><span class="stat-icon">${icon}</span> ${statType}</span>
-                   <span class="stat-away-value">${awayValue}</span>
+                   <span class="stat-type"></span> <span class="stat-away-value">${awayValue}</span>
                `;
-               statItem.appendChild(statValuesDiv); // Değerleri ve türü ekle
+               statItem.appendChild(statValuesDiv); // Değerleri ve türü içeren divi ekle
+
+               // stat-type span'ini bulup içine ikon ve tür adını ekle
+               const statTypeSpan = statValuesDiv.querySelector('.stat-type');
+               statTypeSpan.appendChild(iconSpan); // İkon span'ini ekle
+               statTypeSpan.innerHTML += ` ${statType}`; // Tür adını ekle
+
 
                // Progress bar divini oluştur
                const progressBarDiv = document.createElement('div');
@@ -519,10 +610,14 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
 
                 statValuesDiv.innerHTML = `
                    <span class="stat-home-value">${homeValue}</span>
-                   <span class="stat-type"><span class="stat-icon">${icon}</span> ${statType}</span>
-                   <span class="stat-away-value">${awayValue}</span>
+                   <span class="stat-type"></span> <span class="stat-away-value">${awayValue}</span>
                `;
-               statItem.appendChild(statValuesDiv); // Değerleri ve türü ekle
+               statItem.appendChild(statValuesDiv); // Değerleri ve türü içeren divi ekle
+
+               // stat-type span'ini bulup içine ikon ve tür adını ekle
+               const statTypeSpan = statValuesDiv.querySelector('.stat-type');
+               statTypeSpan.appendChild(iconSpan); // İkon span'ini ekle
+               statTypeSpan.innerHTML += ` ${statType}`; // Tür adını ekle
 
            }
 
@@ -530,7 +625,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
       });
 
 
-     console.log('İstatistikler sağ panele yerleştirildi (Gelişmiş gösterim ile).');
+     console.log('İstatistikler sağ panele yerleştirildi (Gelişmiş gösterim ve ikonlarla).');
 }
 
 
@@ -650,6 +745,14 @@ function displayMatches(data) {
                         console.log(`Maç öğesine tıklandı. ID: ${selectedFixtureId}`);
 
                          // --- Sağ Panel Hazırlığı (Sekme yapısı ve Başlık Logoları dahil) ---
+                         // Sidebar sağ elementine mobil görünür sınıfını ekleyelim
+                         if(sidebarRight && isMobileView()){
+                             sidebarRight.classList.add('is-visible-on-mobile');
+                              // İsteğe bağlı: Body'nin kaymasını engellemek için
+                             // document.body.style.overflow = 'hidden'; // Bu bazen scrollbar sorunları yaratabilir
+                         }
+
+
                          if (detailsPanel && initialMessage && selectedMatchInfo && matchDetailTitle && matchHeaderTeams && headerHomeLogo && headerTeamNames && headerAwayLogo) {
                              // Başlangıç mesajını gizle
                              initialMessage.style.display = 'none';
@@ -774,6 +877,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Sayfa yüklendi, ilk veri çekiliyor...');
 
     // Başlangıçta sadece ilk mesajı göster, seçilen maç info alanını gizle
+    // Sidebar'ın kendisini mobil görünümde CSS gizleyecek
     if (initialMessage) initialMessage.style.display = 'block';
     if (selectedMatchInfo) selectedMatchInfo.style.display = 'none';
 
