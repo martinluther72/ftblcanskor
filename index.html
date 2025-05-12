@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTBLCAN CANLI SKOR</title>
+    <link rel="stylesheet" href="style.css">
+    </head>
+<body>
+
+    <header class="site-header">
+        <div class="container">
+            <h1>FTBLCAN CANLI SKOR</h1>
+            <div class="header-right">
+                <nav class="sport-selection">
+                    <a href="#" class="active">Futbol</a>
+                    <a href="#">Basketbol</a>
+                    <a href="#">Tenis</a>
+                    <a href="#">Daha Fazla</a>
+                </nav>
+                <div class="search-box">
+                    <input type="text" placeholder="Takım, lig, oyuncu arayın...">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout container">
+        <aside class="sidebar-left">
+            <h2>Ligler</h2>
+            <ul>
+                <li><a href="#">Süper Lig</a></li>
+                <li><a href="#">Premier League</a></li>
+                <li><a href="#">La Liga</a></li>
+                <li><a href="#">Serie A</a></li>
+                <li><a href="#">Bundesliga</a></li>
+                <li><a href="#">Daha Fazla Lig</a></li>
+            </ul>
+        </aside>
+
+        <main class="central-content">
+            <div class="match-filters">
+                <button class="filter-button active">Canlı</button>
+                <button class="filter-button">Bitti</button>
+                <button class="filter-button">Yaklaşan</button>
+                <button class="filter-button">Favorilerim</button>
+            </div>
+
+            <div id="matches-list">
+                <div class="league-section">
+                    <h3 class="league-title">
+                        <span class="league-name">Yükleniyor...</span>
+                        <span class="favorite-icon">☆</span>
+                    </h3>
+                    <p style="text-align:center;">Canlı maçlar yükleniyor...</p>
+                 </div>
+            </div>
+
+        </main>
+
+        <aside class="sidebar-right">
+            <h2>Seçilen Maç Detayları</h2>
+            <div id="match-details-panel" class="match-details-panel">
+                <p class="initial-message">Lütfen detaylarını görmek için listeden bir maç seçin.</p>
+
+                <div class="selected-match-info"> <h3 class="match-detail-title"></h3> <div class="match-header-teams">
+                         <img src="placeholder-logo.png" alt="Ev Sahibi Logo" class="header-team-logo home-logo">
+                         <span class="header-team-names"></span> <img src="placeholder-logo.png" alt="Deplasman Logo" class="header-team-logo away-logo">
+                     </div>
+                     <hr>
+
+                     <div class="match-tabs">
+                        <button class="tab-button active" data-tab="events">Olaylar</button>
+                        <button class="tab-button" data-tab="statistics">İstatistikler</button>
+                         </div>
+
+                    <div class="tab-content">
+                        <div id="events-tab-content" class="tab-pane active">
+                            <div class="events-section">
+                                 </div>
+                        </div>
+                        <div id="statistics-tab-content" class="tab-pane">
+                            <div class="statistics-section">
+                                 </div>
+                        </div>
+                         </div>
+                    </div>
+
+                <div class="error-message"></div>
+
+            </div>
+        </aside>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
