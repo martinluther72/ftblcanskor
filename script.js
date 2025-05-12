@@ -37,7 +37,9 @@ const headerTeamNames = matchHeaderTeams ? matchHeaderTeams.querySelector('.head
 const headerAwayLogo = matchHeaderTeams ? matchHeaderTeams.querySelector('.away-logo') : null;
 
 const tabButtons = detailsPanel ? detailsPanel.querySelectorAll('.tab-button') : null;
-const tabPanes = detailsPanel ? detailsPanes.querySelectorAll('.tab-pane') : null;
+// DÜZELTME: detailsPanes yerine detailsPanel olmalıydı
+const tabPanes = detailsPanel ? detailsPanel.querySelectorAll('.tab-pane') : null;
+
 
 // Sekme içerik alanları içindeki .events-section ve .statistics-section divlerini de referans alalım
 const eventsTabContent = detailsPanel ? document.getElementById('events-tab-content') : null;
@@ -63,7 +65,9 @@ if (!headerTeamNames) console.warn("HTML'de .header-team-names elementi bulunama
 if (!headerAwayLogo) console.warn("HTML'de .away-logo elementi bulunamadı.");
 
 if (!tabButtons || tabButtons.length === 0) console.warn("HTML'de sekme düğmeleri (.tab-button) bulunamadı.");
+// Düzeltmeden sonra tabPanes null olabilir eğer detailsPanel bulunamazsa
 if (!tabPanes || tabPanes.length === 0) console.warn("HTML'de sekme içerik alanları (.tab-pane) bulunamadı.");
+
 
 if (!eventsTabContent) console.warn("HTML'de #events-tab-content elementi bulunamadı.");
 if (!statisticsTabContent) console.warn("HTML'de #statistics-tab-content elementi bulunamadı.");
@@ -380,7 +384,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
           // awayStats boş kalacak veya ikinci eleman varsa ikinci takımı da işlemeyi deneyebiliriz
           // teamStatistics[1] varsa ve istatistiği varsa
           if(teamStatistics.length > 1 && teamStatistics[1].statistics) {
-              awayStats = teamStatistics[1].statistics; // İkinci takımı deplasman gibi göster
+              awayStats = teamStatistics[1].statistics; // İkincisi deplasman gibi göster
               awayTeamLogo = teamStatistics[1].team.logo || 'placeholder-logo.png';
           }
      }
