@@ -185,6 +185,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+     align-items: center; /* Dikey hizalama */
 }
 
 .match-filters button {
@@ -211,6 +212,36 @@ body {
     border-color: var(--secondary-text-color);
     color: var(--primary-color);
 }
+
+/* Tarih Seçici Stilleri */
+.date-selector {
+    margin: 5px 15px 5px 5px; /* Margin ayarları */
+    display: flex;
+    align-items: center;
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+.date-selector label {
+    margin-right: 8px;
+    font-weight: 700;
+}
+
+.date-selector input[type="date"] {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 14px;
+    color: var(--text-color);
+    background-color: var(--background-color);
+     outline: none;
+     cursor: pointer;
+     transition: border-color 0.2s ease;
+}
+.date-selector input[type="date"]:focus {
+     border-color: var(--primary-color);
+}
+
 
 #matches-list {
     /* Maç listesi container'ı için ek stil gerekirse buraya ekle */
@@ -508,6 +539,7 @@ body {
     transition: color 0.3s ease, border-bottom-color 0.3s ease;
     margin: 0 8px 5px 8px;
     font-weight: 700;
+    flex-shrink: 0; /* Küçük ekranlarda sıkışmasın */
 }
 
 .match-tabs .tab-button:hover {
@@ -741,6 +773,126 @@ body {
       margin: 0 15px;
 }
 
+/* Kadro ve Puan Durumu Sekmeleri İçindeki Başlıklar */
+.lineups-section h4,
+.standings-section h4,
+.playerstats-section h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 17px;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 8px;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+/* Kadro Listeleri Stilleri */
+.lineups-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0; /* Takım arasına boşluk */
+    border: 1px solid var(--border-color); /* Liste etrafına ince çizgi */
+    border-radius: 4px;
+}
+.lineups-list h5 {
+    margin: 0;
+    padding: 10px;
+    background-color: var(--background-color); /* Başlık arka plan rengi */
+    border-bottom: 1px solid var(--border-color);
+    font-size: 15px;
+    color: var(--text-color);
+    font-weight: 700;
+}
+.lineups-list li {
+    padding: 8px 10px;
+    border-bottom: 1px dashed var(--border-color);
+    font-size: 14px;
+    color: var(--text-color);
+}
+.lineups-list li:last-child {
+    border-bottom: none;
+}
+.lineups-list .player-number {
+    font-weight: 700;
+    margin-right: 8px;
+    color: var(--secondary-text-color);
+}
+.lineups-list .player-name {
+    /* Ek stil gerekirse */
+}
+
+
+/* Puan Durumu Tablosu Stilleri */
+.standings-table {
+    width: 100%;
+    border-collapse: collapse; /* Kenarlıkları birleştir */
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+.standings-table th,
+.standings-table td {
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    text-align: left;
+    color: var(--text-color);
+}
+
+.standings-table th {
+    background-color: var(--background-color);
+    font-weight: 700;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+.standings-table td {
+    background-color: var(--card-background);
+}
+
+/* Puan tablosu sütun genişlikleri (Örnek) */
+.standings-table th:nth-child(1), /* Sıra */
+.standings-table td:nth-child(1) {
+    width: 30px;
+    text-align: center;
+}
+.standings-table th:nth-child(2), /* Logo */
+.standings-table td:nth-child(2) {
+    width: 30px;
+    text-align: center;
+}
+.standings-table th:nth-child(3), /* Takım Adı */
+.standings-table td:nth-child(3) {
+    /* Genişlik otomatik */
+}
+.standings-table th:nth-child(4), /* Oynanan Maç */
+.standings-table td:nth-child(4),
+.standings-table th:nth-child(5), /* Galibiyet */
+.standings-table td:nth-child(5),
+.standings-table th:nth-child(6), /* Beraberlik */
+.standings-table td:nth-child(6),
+.standings-table th:nth-child(7), /* Mağlubiyet */
+.standings-table td:nth-child(7),
+.standings-table th:nth-child(8), /* Atılan Gol */
+.standings-table td:nth-child(8),
+.standings-table th:nth-child(9), /* Yenilen Gol */
+.standings-table td:nth-child(9),
+.standings-table th:nth-child(10), /* Averaj */
+.standings-table td:nth-child(10),
+.standings-table th:nth-child(11), /* Puan */
+.standings-table td:nth-child(11) {
+     width: 40px; /* Küçük sütunlar için daha az genişlik */
+     text-align: center;
+     font-weight: 700; /* Puan gibi önemli sütunlar kalın olabilir */
+     color: var(--primary-color);
+}
+/* Takım Logosu Puan Tablosunda */
+.standings-table .team-logo {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
 
 /* !!! DUYARLI TASARIM - MEDIA QUERYLERİ !!! */
 
@@ -929,7 +1081,7 @@ body {
          margin-top: 5px;
          /* Oranlar kaldırıldığı için buradaki justify-content: center, sadece favori ikonunu ortalar */
     }
-    /* Ana Listedeki Oranların Stilleri (TAMAMEN KALDIRILDI) */
+    /* Ana Listedeki Oranların Stilleri (TAMEN KALDIRILDI) */
     /*
     .odds { ... }
     .odd { ... }
@@ -1009,6 +1161,41 @@ body {
          margin: 0;
          height: 6px;
      }
+     /* Kadro ve Puan Durumu Listeleri/Tabloları Telefonlarda */
+     .lineups-list h5 {
+         font-size: 14px;
+         padding: 8px;
+     }
+     .lineups-list li {
+         font-size: 13px;
+         padding: 6px 8px;
+     }
+     .standings-table {
+         font-size: 12px;
+     }
+     .standings-table th,
+     .standings-table td {
+         padding: 6px;
+     }
+      .standings-table th:nth-child(1), td:nth-child(1),
+      .standings-table th:nth-child(2), td:nth-child(2) {
+          width: 25px; /* Sığdırmak için daha daraltıldı */
+      }
+      .standings-table th:nth-child(4), td:nth-child(4),
+      .standings-table th:nth-child(5), td:nth-child(5),
+      .standings-table th:nth-child(6), td:nth-child(6),
+      .standings-table th:nth-child(7), td:nth-child(7),
+      .standings-table th:nth-child(8), td:nth-child(8),
+      .standings-table th:nth-child(9), td:nth-child(9),
+      .standings-table th:nth-child(10), td:nth-child(10),
+      .standings-table th:nth-child(11), td:nth-child(11) {
+          width: 30px; /* Küçük sütunlar daha daraltıldı */
+      }
+      .standings-table .team-logo {
+          width: 18px;
+          height: 18px;
+      }
+
 }
 
 /* Kapat düğmesini masaüstünde gizle */
