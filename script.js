@@ -5,40 +5,22 @@
 const liveFixturesUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures?live=all';
 
 // --- Tarihe Göre Maçlar için API Bilgileri ---
-const dateFixturesUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures?date='; // SonunaLütfen kusura bakma, sanırım yanıtım yine yarıda kesildi. Üzgünüm, bu tekrar yaşanıyor.
-
-Sana **script.js dosyasının TAMAMINI**, eksiksiz olarak **bir kez daha** gönderiyorum. Lütfen bu kod bloğunun **tamamını** kopyaladığından emin ol.
-
-Bu sürümde "Geçmiş ve Gelecek Maçlar" özelliği için temel altyapı (tarih seçici ve seçilen tarihe göre veri çekme) ve diğer sekmeler için HTML yapıları eklendi.
-
----
-
-**`script.js` Dosyası (TAM ve Güncel Hali - Tarih Seçimi ve Güncelleme Mantığı Dahil)**
-
-```javascript
-// API bilgileri (Bunları KENDİ API'nizin bilgilerine göre DOLDURUN!)
-// RapidAPI üzerindeki API'nizin sayfasından (Kod Parçacıkları bölümü) doğru bilgileri alın.
-
-// --- Canlı Maç Listesi için API Bilgileri (Artık sadece canlı güncellemeler için kullanılır) ---
-const liveFixturesUrl = '[https://api-football-v1.p.rapidapi.com/v3/fixtures?live=all](https://api-football-v1.p.rapidapi.com/v3/fixtures?live=all)';
-
-// --- Tarihe Göre Maçlar için API Bilgileri ---
-const dateFixturesUrl = '[https://api-football-v1.p.rapidapi.com/v3/fixtures?date=](https://api-football-v1.p.rapidapi.com/v3/fixtures?date=)'; // Sonuna YYYY-MM-DD eklenecek
+const dateFixturesUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures?date='; // SonunaYYYY-MM-DD eklenecek
 
 // --- Maç Olayları için API Bilgileri ---
-const eventsUrl = '[https://api-football-v1.p.rapidapi.com/v3/fixtures/events](https://api-football-v1.p.rapidapi.com/v3/fixtures/events)';
+const eventsUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures/events';
 
 // --- Maç İstatistikleri için API Bilgileri ---
-const statisticsUrl = '[https://api-football-v1.p.rapidapi.com/v3/fixtures/statistics](https://api-football-v1.p.rapidapi.com/v3/fixtures/statistics)';
+const statisticsUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures/statistics';
 
 // --- Maç Kadroları için API Bilgileri ---
-const lineupsUrl = '[https://api-football-v1.p.rapidapi.com/v3/fixtures/lineups](https://api-football-v1.p.rapidapi.com/v3/fixtures/lineups)';
+const lineupsUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures/lineups';
 
 // --- Lig Puan Durumu için API Bilgileri ---
-const standingsUrl = '[https://api-football-v1.p.rapidapi.com/v3/standings](https://api-football-v1.p.rapidapi.com/v3/standings)'; // Parametreler: league={id}&season={year}
+const standingsUrl = 'https://api-football-v1.p.rapidapi.com/v3/standings'; // Parametreler: league={id}&season={year}
 
 // Oranlar için API Bilgileri (KALDIRILDI)
-// const oddsUrl = '[https://api-football-v1.p.rapidapi.com/v3/odds](https://api-football-v1.p.rapidapi.com/v3/odds)';
+// const oddsUrl = 'https://api-football-v1.p.rapidapi.com/v3/odds';
 
 
 const options = {
@@ -246,7 +228,7 @@ if (closeDetailsButton && sidebarRight) {
     });
 }
 
-// --- YYYY-MM-DD formatında bugünün tarihini alan fonksiyon ---
+// ---YYYY-MM-DD formatında bugünün tarihini alan fonksiyon ---
 function getTodayDateString() {
     const today = new Date();
     const year = today.getFullYear();
@@ -289,13 +271,19 @@ async function fetchMatchesByDate(dateString) {
 async function fetchLiveMatchesForUpdate() {
      // Canlı güncellemeyi sadece bugün için yapalım
      const todayString = getTodayDateString();
-     const selectedDate = dateInput.value;
+     const selectedDate = dateInput.value; // Tarih inputundan seçili tarihi al
 
-     // Eğer seçili tarih bugün değilse veya allMatchesData boşsa canlı güncelleme yapmanın anlamı yok
-     if (selectedDate !== todayString || allMatchesData.length === 0) {
-          console.log("Canlı güncelleme atlandı: Seçili tarih bugün değil veya liste boş.");
+     // Eğer tarih inputu bulunamadıysa (null veya undefined) veya seçili tarih bugün değilse
+     if (!dateInput || selectedDate !== todayString) {
+          console.log("Canlı güncelleme atlandı: Tarih inputu bulunamadı veya seçili tarih bugün değil.");
           return null;
      }
+
+     // Eğer allMatchesData boşsa (ilk yükleme hatası gibi durumlarda) canlı güncelleme yapmanın anlamı yok
+      if (allMatchesData.length === 0) {
+          console.log("Canlı güncelleme atlandı: allMatchesData boş.");
+          return null;
+      }
 
 
      console.log('Canlı maç verileri güncellemeler için çekiliyor...', liveFixturesUrl);
@@ -332,7 +320,8 @@ async function fetchMatchLineups(fixtureId) {
 
         const data = await response.json();
         console.log('Maç kadroları ham veri:', data);
-        return data; // { response: [...] } formatında olmalı
+         // API yanıtı { response: [ { team: {...}, formation: "...", startXI: [...], substitutes: [...] } ] } formatında olmalı
+        return data;
 
     } catch (error) {
         console.error(`Maç kadroları çekme hatası (ID: ${fixtureId}):`, error);
@@ -374,7 +363,7 @@ function displayMatchDetails(matchId, eventsData) {
         return;
     }
 
-    eventsSectionInPane.innerHTML = '';
+    eventsSectionInPane.innerHTML = ''; // İçeriği temizle
 
      const eventsTitle = document.createElement('h4');
      eventsTitle.textContent = 'Maç Olayları';
@@ -1024,11 +1013,11 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
                         </div>
                         <div class="score-status">
                             ${statusShort === '1H' || statusShort === '2H' || statusShort === 'ET' || statusShort === 'BT' || statusShort === 'LIVE' || statusShort === 'HT' ? // HT de canlı sayılabilir
-                                `<span class="score">${homeScore} - <span class="math-inline">\{awayScore\}</span\><span class\="match\-status live"\></span>{elapsedTime || statusLong}</span>` : // Canlı ise 'live' class'ı eklendi
+                                `<span class="score">${homeScore} - ${awayScore}</span><span class="match-status live">${elapsedTime || statusLong}</span>` : // Canlı ise 'live' class'ı eklendi
                                  statusShort === 'FT' || statusShort === 'AET' || statusShort === 'PEN' ?
-                                `<span class="score">${homeScore} - <span class="math-inline">\{awayScore\}</span\><span class\="match\-status"\></span>{statusLong}</span>` :
+                                `<span class="score">${homeScore} - ${awayScore}</span><span class="match-status">${statusLong}</span>` :
                                  statusShort === 'NS' || statusShort === 'TBD' ?
-                                `<span class="match-time"><span class="math-inline">\{matchTime\}</span\><span class\="match\-date"\></span>{matchDate}</span>` :
+                                `<span class="match-time">${matchTime}</span><span class="match-date">${matchDate}</span>` :
                                 `<span class="match-status">${statusLong}</span>`
                             }
                         </div>
@@ -1231,10 +1220,16 @@ function startLiveUpdates() {
         const todayString = getTodayDateString();
         const selectedDate = dateInput ? dateInput.value : todayString; // Eğer tarih inputu yoksa bugünü varsay
 
-        if (selectedDate !== todayString) {
-             console.log("Canlı güncelleme atlandı: Seçili tarih bugün değil.");
+        if (!dateInput || selectedDate !== todayString) {
+             console.log("Canlı güncelleme atlandı: Tarih inputu bulunamadı veya seçili tarih bugün değil.");
              return; // Seçili tarih bugün değilse canlı güncellemeyi durdur
         }
+
+     // Eğer allMatchesData boşsa (ilk yükleme hatası gibi durumlarda) canlı güncelleme yapmanın anlamı yok
+      if (allMatchesData.length === 0) {
+          console.log("Canlı güncelleme atlandı: allMatchesData boş.");
+          return; // allMatchesData boşsa canlı güncellemeyi durdur
+      }
 
 
         console.log('Canlı güncellemeler için veri çekiliyor...');
@@ -1278,7 +1273,7 @@ function startLiveUpdates() {
                 return existingMatch; // Canlı güncelleme verisinde yoksa veya değişmediyse mevcut haliyle bırak
             });
 
-            // NOT: Bu güncelleme mantığı sadece allMatchesData içinde *zaten var olan* maçları günceller.
+            // NOT: Bu güncelleme mantığı sadece allMatchesData içinde *zaten var olan* ve *canlı feed'de gelen* maçları günceller.
             // Eğer API'nin live feed'ine yeni başlayan bir maç düşerse ve bu maç
             // ilk fetchMatchesByDate çağrısında allMatchesData'ya eklenmemişse (örneğin fetch sırasında NS durumundaysa),
             // bu maç bu mantıkla eklenmez. Bugünün tüm maçlarını periyodik olarak çekmek
@@ -1291,15 +1286,26 @@ function startLiveUpdates() {
                  // Eğer detay paneli açıksa ve güncellenen maçı gösteriyorsa, detayları da yeniden yükle
                  if (selectedFixtureId) {
                       const updatedSelectedMatch = allMatchesData.find(m => (m.fixture && String(m.fixture.id)) === selectedFixtureId);
-                      if (updatedSelectedMatch && updatedSelectedMatch.fixture?.status?.short !== selectedMatchData?.fixture?.status?.short) {
-                          // Seçili maçın durumu değiştiyse olayları veya istatistikleri yeniden çekmek isteyebiliriz?
-                          // Şimdilik sadece skor ve sürenin listede güncellenmesi yeterli.
-                           console.log(`Seçili maçın durumu değişti (ID: ${selectedFixtureId}). Detay panelinin manuel güncellenmesi gerekebilir.`);
-                          // İleride detay panelinin de otomatik güncellenmesi eklenebilir.
-                          // Örneğin: Eğer olaylar sekmesi açıksa ve gol olduysa olayları yeniden çek vb.
+                      if (updatedSelectedMatch) {
+                           // Seçili maçın durum veya skor bilgisi değiştiyse detay panelindeki görünümü de güncellemek gerekebilir
+                           // Şimdilik detay paneli açıksa manuel olarak paneli yeniden açmak gibi bir yöntem kullanılabilir.
+                           // İleride detay panelinin de otomatik güncellenmesi eklenebilir.
+                           selectedMatchData = updatedSelectedMatch; // selectedMatchData'yı da güncel tut
+                           console.log(`Seçili maçın durumu veya skoru değişti (ID: ${selectedFixtureId}). Detay panelinin içeriği manuel olarak güncellenmelidir.`);
+                           // Sekmelerin içeriğini yeniden çekme veya güncelleme mantığı buraya eklenebilir.
+                           // Örneğin aktif sekme 'events' ise olayları yeniden çek/güncelle gibi.
+                      } else {
+                          // Seçili maç listeden kalktıysa (bitti ve filtre değişti gibi) paneli kapat
+                           if (sidebarRight) {
+                                sidebarRight.classList.remove('is-visible-on-mobile');
+                                if(!isMobileView()) sidebarRight.style.display = 'none';
+                                if (initialMessage) initialMessage.style.display = 'block';
+                                if (selectedMatchInfo) selectedMatchInfo.style.display = 'none';
+                           }
+                            selectedFixtureId = null;
+                            selectedMatchData = null;
+                            console.log(`Seçili maç listeden kalktığı için detay paneli kapatıldı.`);
                       }
-                       // selectedMatchData'yı da güncelleyelim
-                      selectedMatchData = updatedSelectedMatch || null;
                  }
 
             } else {
@@ -1357,18 +1363,35 @@ if(filterButtons) {
 // --- Tarih Seçiciye Olay Dinleyicisi Ekle ---
 if (dateInput) {
     dateInput.addEventListener('change', async (event) => {
-        const selectedDate = event.target.value; // YYYY-MM-DD formatında tarih
+        const selectedDate = event.target.value; //YYYY-MM-DD formatında tarih
 
         if (selectedDate) {
             console.log(`Tarih seçildi: ${selectedDate}`);
              // Seçili tarihe göre maçları yeniden çek
-            const data = await fetchMatchesByDate(selectedDate);
+            // Yükleniyor mesajını göster
+            if (matchesListContainer) {
+                  matchesListContainer.innerHTML = `
+                       <div class="league-section">
+                           <h3 class="league-title">
+                               <span class="league-name">Yükleniyor...</span>
+                               <span class="favorite-icon">☆</span>
+                           </h3>
+                           <p style="text-align:center;">Maçlar yükleniyor...</p>
+                       </div>
+                   `;
+             }
+
+            const data = await fetchMatchesByDate(selectedDate); // allMatchesData bu fonksiyon içinde güncellenir
             if (data) {
-                displayMatches(); // allMatchesData güncellendi, listeyi yeniden çiz
+                displayMatches(); // allMatchesData kullanılarak listeyi çiz (Varsayılan 'today' filtresi aktif olacak)
                  // Tarih değişince aktif filtreyi 'today' (yani seçili tarih) olarak ayarla
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                  const todayFilterButton = document.querySelector('.filter-button[data-filter="today"]');
                  if(todayFilterButton) todayFilterButton.classList.add('active');
+
+                 // Canlı güncelleme intervalini yeniden başlat (sadece bugün için çalışacak şekilde ayarlandı)
+                  // Mevcut intervali temizleyip yeniden başlatmak daha güvenli olabilir
+                  // Ancak startLiveUpdates kendi içinde tarih kontrolü yaptığı için gerek kalmıyor.
             }
 
             // Tarih değişince detay panelini kapat ve seçili maçı sıfırla
@@ -1387,7 +1410,8 @@ if (dateInput) {
         } else {
             console.log("Tarih seçici temizlendi.");
             // Tarih seçici temizlenirse ne yapılmalı? Belki bugüne dönülebilir.
-             // displayMatches(); // Boş liste gösterilir veya bugüne dönülür
+             // Şimdilik boş kalabilir veya bugüne dönme mantığı eklenebilir.
+             // Örn: dateInput.value = getTodayDateString(); ve sonra fetchMatchesByDate(todayString) çağrılabilir.
         }
     });
 }
@@ -1440,14 +1464,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         dateInput.value = todayString; // Tarih inputunu bugüne ayarla
     }
 
-    const initialData = await fetchMatchesByDate(todayString); // Bugünün maçlarını çek
+    const initialData = await fetchMatchesByDate(todayString); // Bugünün maçlarını çek (allMatchesData bu fonksiyon içinde güncellenir)
 
     if (initialData) {
          // allMatchesData global değişkene fetchMatchesByDate içinde zaten kaydedildi
          displayMatches(); // allMatchesData kullanılarak listeyi çiz (Varsayılan 'today' filtresi aktif olacak)
-         startLiveUpdates(); // Canlı güncellemeyi başlat (Bugün için)
+         startLiveUpdates(); // Canlı güncellemeyi başlat (Sadece bugün için çalışacak)
      } else {
          console.error("İlk veri çekme başarısız oldu.");
+          if (matchesListContainer) {
+               matchesListContainer.innerHTML = '<p style="color:red; text-align:center;">Maç verileri yüklenemedi. Lütfen konsolu kontrol edin ve API bilgilerinizi/limitlerinizi kontrol edin.</p>';
+          }
           if (initialMessage) initialMessage.textContent = 'Maç verileri yüklenemedi.';
           if (selectedMatchInfo) selectedMatchInfo.style.display = 'none';
      }
