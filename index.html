@@ -42,6 +42,11 @@
 
         <main class="central-content">
             <div class="match-filters">
+                 <div class="date-selector">
+                     <label for="match-date">Tarih:</label>
+                     <input type="date" id="match-date">
+                 </div>
+
                  <button class="filter-button active" data-filter="today">Bugünün Maçları</button>
                 <button class="filter-button" data-filter="live">Canlı</button>
                 <button class="filter-button" data-filter="finished">Bitti</button>
@@ -79,6 +84,8 @@
                      <div class="match-tabs">
                         <button class="tab-button active" data-tab="events">Olaylar</button>
                         <button class="tab-button" data-tab="statistics">İstatistikler</button>
+                         <button class="tab-button" data-tab="lineups">Kadrolar</button>
+                         <button class="tab-button" data-tab="standings">Puan Durumu</button>
                          </div>
 
                     <div class="tab-content">
@@ -90,7 +97,19 @@
                             <div class="statistics-section">
                                  </div>
                         </div>
+                        <div id="lineups-tab-content" class="tab-pane">
+                             <div class="lineups-section">
+                                 <h4>Takım Kadroları</h4>
+                                 <p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Kadrolar yükleniyor veya bulunamadı.</p>
+                             </div>
                          </div>
+                         <div id="standings-tab-content" class="tab-pane">
+                             <div class="standings-section">
+                                 <h4>Lig Puan Durumu</h4>
+                                  <p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Puan durumu yükleniyor veya bulunamadı.</p>
+                             </div>
+                         </div>
+                          </div>
                     </div>
 
                 <div class="error-message"></div>
