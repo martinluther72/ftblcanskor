@@ -927,6 +927,7 @@ body {
         width: 100%;
         justify-content: center; /* Mobil'de ortala */
          margin-top: 5px;
+         /* Oranlar kaldırıldığı için buradaki justify-content: center, sadece favori ikonunu ortalar */
     }
     /* Ana Listedeki Oranların Stilleri (TAMAMEN KALDIRILDI) */
     /*
