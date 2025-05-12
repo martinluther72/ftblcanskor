@@ -170,6 +170,13 @@ function switchTab(selectedTab) {
                  if (selectedTab === 'events') {
                       // Olaylar maç tıklandığında zaten çekiliyor
                       console.log("Olaylar sekmesi seçildi. Olaylar zaten çekilmiş olmalı.");
+                      // Sekme içeriği boşsa yeniden yüklemeyi tetikle
+                       if (eventsSectionInPane && eventsSectionInPane.innerHTML.includes('Maç seçilmedi.')) {
+                           fetchMatchEvents(selectedFixtureId).then(eventsData => {
+                                if(eventsData && eventsSectionInPane) displayMatchDetails(selectedFixtureId, eventsData);
+                           }).catch(err => console.error("Olay çekme hatası:", err));
+                       }
+
 
                  } else if (selectedTab === 'statistics' && statisticsSectionInPane && statisticsSectionInPane.innerHTML.includes('yükleniyor veya bulunamadı.')) {
                       // İstatistikler sekmesi seçildi ve içeriği henüz yüklenmemişse çek
@@ -501,7 +508,7 @@ function displayMatchDetails(fixtureId, eventsData) {
                  eventDetailText = 'Kırmızı Kart';
              } else if (event.detail === 'Second Yellow Card') { // İkinci sarıdan kırmızı
                   eventClass += ' event-red-card'; // Kırmızı kart olarak gösterelim
-                  eventDetailText = 'İkinci Sarı Kart → Kırmızı Kart';
+                  eventDetailText = 'İkincisi Sarı Kart → Kırmızı Kart'; // Typo here: İkincisi -> İkinci
              }
          } else if (event.type === 'subst') {
              eventClass = 'event-subst';
@@ -1092,7 +1099,7 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
 
             leagueData.matches.forEach(match => {
                 const matchId = String(match.fixture && match.fixture.id); // matchId string olarak saklanmalı
-                const isFavorite = isMatchFavorite(matchId, favoriteMatchIds);
+                const isFavorite = isMatchFavorite(matchId, favoriteIds);
 
                 const homeTeamName = match.teams && match.teams.home ? match.teams.home.name : 'Ev Sahibi';
                 const awayTeamName = match.teams && match.teams.away ? match.teams.away.name : 'Deplasman';
@@ -1519,7 +1526,7 @@ if (dateInput) {
 
                  // Canlı güncelleme intervalini yeniden başlat (sadece bugün için çalışacak şekilde ayarlandı)
                   // Mevcut intervali temizleyip yeniden başlatmak daha güvenli olabilir
-                  // Ancak startLiveUpdates kendi içinde tarih kontrolü yaptığı için gerek kalmıyor.
+                  // Ancak startLiveUpdates kendi içinde tarih kontrol ettiği için gerek kalmıyor.
             }
 
             // Tarih değişince detay panelini kapat ve seçili maçı sıfırla
@@ -1605,7 +1612,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const initialData = await fetchMatchesByDate(todayString); // Bugünün maçlarını çek (allMatchesData bu fonksiyon içinde güncellenir)
 
     if (initialData) {
-         // allMatchesData global değişkene fetchMatchesByDate içinde zaten kaydedildi
+         // allMatchesData global değişkenlere fetchMatchesByDate içinde zaten kaydedildi
          displayMatches(); // allMatchesData kullanılarak listeyi çiz (Varsayılan 'today' filtresi aktif olacak)
          startLiveUpdates(); // Canlı güncellemeyi başlat (Sadece bugün için çalışacak)
      } else {
