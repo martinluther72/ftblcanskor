@@ -19,6 +19,10 @@ const lineupsUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures/lineups';
 // --- Lig Puan Durumu için API Bilgileri ---
 const standingsUrl = 'https://api-football-v1.p.rapidapi.com/v3/standings'; // Parametreler: league={id}&season={year}
 
+// --- Oyuncu İstatistikleri İçin API Bilgileri (Yeni Endpoint) ---
+const playerStatisticsUrl = 'https://api-football-v1.p.rapidapi.com/v3/fixtures/players'; // Parametre: fixture={fixtureId}
+
+
 // Oranlar için API Bilgileri (KALDIRILDI)
 // const oddsUrl = 'https://api-football-v1.p.rapidapi.com/v3/odds';
 
@@ -52,13 +56,15 @@ const tabPanes = detailsPanel ? detailsPanel.querySelectorAll('.tab-pane') : nul
 
 const eventsTabContent = detailsPanel ? document.getElementById('events-tab-content') : null;
 const statisticsTabContent = detailsPanel ? document.getElementById('statistics-tab-content') : null;
-const lineupsTabContent = detailsPanel ? document.getElementById('lineups-tab-content') : null; // Yeni Kadrolar sekmesi içeriği
-const standingsTabContent = detailsPanel ? document.getElementById('standings-tab-content') : null; // Yeni Puan Durumu sekmesi içeriği
+const lineupsTabContent = detailsPanel ? document.getElementById('lineups-tab-content') : null; // Kadrolar sekmesi
+const standingsTabContent = detailsPanel ? document.getElementById('standings-tab-content') : null; // Puan Durumu sekmesi
+const playerStatsTabContent = detailsPanel ? document.getElementById('player-stats-tab-content') : null; // Yeni Oyuncu İstatistikleri sekmesi
 
 const eventsSectionInPane = eventsTabContent ? eventsTabContent.querySelector('.events-section') : null;
 const statisticsSectionInPane = statisticsTabContent ? statisticsTabContent.querySelector('.statistics-section') : null;
-const lineupsSectionInPane = lineupsTabContent ? lineupsTabContent.querySelector('.lineups-section') : null; // Yeni Kadrolar bölümü
-const standingsSectionInPane = standingsTabContent ? standingsTabContent.querySelector('.standings-section') : null; // Yeni Puan Durumu bölümü
+const lineupsSectionInPane = lineupsTabContent ? lineupsTabContent.querySelector('.lineups-section') : null; // Kadrolar bölümü
+const standingsSectionInPane = standingsTabContent ? standingsTabContent.querySelector('.standings-section') : null; // Puan Durumu bölümü
+const playerStatsSectionInPane = playerStatsTabContent ? playerStatsTabContent.querySelector('.player-stats-section') : null; // Yeni Oyuncu İstatistikleri bölümü
 
 
 // Oranlar bölümü referansları (HTML'de duruyor ama JS'te kullanılmıyor şimdilik)
@@ -104,7 +110,7 @@ function isMatchFavorite(matchId, favoriteIds) {
 if (!matchesListContainer) console.error("HTML'de #matches-list ID'li container bulunamadı!");
 if (!detailsPanel) console.error("HTML'de #match-details-panel ID'li container bulunamadı!");
 if (!sidebarRight) console.error("HTML'de .sidebar-right elementi bulunamadı!");
-if (!dateInput) console.error("HTML'de #match-date elementi bulunamadı!"); // Yeni kontrol
+if (!dateInput) console.error("HTML'de #match-date elementi bulunamadı!");
 
 
 if (!initialMessage) console.warn("HTML'de .initial-message elementi bulunamadı.");
@@ -120,13 +126,16 @@ if (!tabPanes || tabPanes.length === 0) console.warn("HTML'de sekme içerik alan
 
 if (!eventsTabContent) console.warn("HTML'de #events-tab-content elementi bulunamadı!");
 if (!statisticsTabContent) console.warn("HTML'de #statistics-tab-content elementi bulunamadı!");
-if (!lineupsTabContent) console.warn("HTML'de #lineups-tab-content elementi bulunamadı!"); // Yeni kontrol
-if (!standingsTabContent) console.warn("HTML'de #standings-tab-content elementi bulunamadı!"); // Yeni kontrol
+if (!lineupsTabContent) console.warn("HTML'de #lineups-tab-content elementi bulunamadı!");
+if (!standingsTabContent) console.warn("HTML'de #standings-tab-content elementi bulunamadı!");
+if (!playerStatsTabContent) console.warn("HTML'de #player-stats-tab-content elementi bulunamadı!"); // Yeni kontrol
+
 
 if (!eventsSectionInPane) console.warn("HTML'de .events-section (eventsTabContent içinde) elementi bulunamadı!");
 if (!statisticsSectionInPane) console.warn("HTML'de .statistics-section (statisticsTabContent içinde) elementi bulunamadı!");
-if (!lineupsSectionInPane) console.warn("HTML'de .lineups-section (lineupsTabContent içinde) elementi bulunamadı!"); // Yeni kontrol
-if (!standingsSectionInPane) console.warn("HTML'de .standings-section (standingsTabContent içinde) elementi bulunamadı!"); // Yeni kontrol
+if (!lineupsSectionInPane) console.warn("HTML'de .lineups-section (lineupsTabContent içinde) elementi bulunamadı!");
+if (!standingsSectionInPane) console.warn("HTML'de .standings-section (standingsTabContent içinde) elementi bulunamadı!");
+if (!playerStatsSectionInPane) console.warn("HTML'de .player-stats-section (playerStatsTabContent içinde) elementi bulunamadı!"); // Yeni kontrol
 
 
 if (!closeDetailsButton) console.warn("HTML'de .close-details-panel bulunamadı!");
@@ -167,13 +176,13 @@ function switchTab(selectedTab) {
                       fetchMatchStatistics(selectedFixtureId).then(statsData => {
                           if(statsData) displayMatchStatistics(selectedFixtureId, statsData, selectedMatchData.teams.home.name, selectedMatchData.teams.away.name);
                            else if (statisticsSectionInPane) statisticsSectionInPane.innerHTML = '<h4>İstatistikler</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için istatistik bilgisi bulunamadı.</p>';
-                      });
+                      }).catch(err => { console.error("İstatistik çekme hatası:", err); if (statisticsSectionInPane) statisticsSectionInPane.innerHTML = '<h4>İstatistikler</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: red;">İstatistikler yüklenirken hata oluştu.</p>'; });
                  } else if (selectedTab === 'lineups' && lineupsSectionInPane && lineupsSectionInPane.innerHTML.includes('yükleniyor veya bulunamadı.')) {
                       // Kadrolar sekmesi seçildi ve içeriği henüz yüklenmemişse çek
                       fetchMatchLineups(selectedFixtureId).then(lineupsData => {
                            if(lineupsData) displayMatchLineups(selectedFixtureId, lineupsData, selectedMatchData.teams.home.name, selectedMatchData.teams.away.name);
                            else if (lineupsSectionInPane) lineupsSectionInPane.innerHTML = '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için kadro bilgisi bulunamadı.</p>';
-                      });
+                      }).catch(err => { console.error("Kadroları çekme hatası:", err); if (lineupsSectionInPane) lineupsSectionInPane.innerHTML = '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: red;">Kadrolar yüklenirken hata oluştu.</p>'; });
                  } else if (selectedTab === 'standings' && standingsSectionInPane && standingsSectionInPane.innerHTML.includes('yükleniyor veya bulunamadı.')) {
                      // Puan Durumu sekmesi seçildi ve içeriği henüz yüklenmemişse çek
                      // Puan durumu için lig ID'si ve sezon bilgisi lazım
@@ -183,12 +192,17 @@ function switchTab(selectedTab) {
                          fetchLeagueStandings(leagueId, seasonYear).then(standingsData => {
                               if(standingsData) displayLeagueStandings(leagueId, standingsData);
                              else if (standingsSectionInPane) standingsSectionInPane.innerHTML = '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu lig için puan durumu bilgisi bulunamadı.</p>';
-                         });
+                         }).catch(err => { console.error("Puan durumu çekme hatası:", err); if (standingsSectionInPane) standingsSectionInPane.innerHTML = '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: red;">Puan durumu yüklenirken hata oluştu.</p>'; });
                      } else {
                           if (standingsSectionInPane) standingsSectionInPane.innerHTML = '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Puan durumu için lig bilgisi eksik.</p>';
                      }
+                 } else if (selectedTab === 'player-stats' && playerStatsSectionInPane && playerStatsSectionInPane.innerHTML.includes('yükleniyor veya bulunamadı.')) {
+                      // Oyuncu İstatistikleri sekmesi seçildi ve içeriği henüz yüklenmemişse çek
+                      fetchMatchPlayerStatistics(selectedFixtureId).then(playerStatsData => {
+                          if(playerStatsData) displayMatchPlayerStatistics(selectedFixtureId, playerStatsData, selectedMatchData.teams.home.name, selectedMatchData.teams.away.name);
+                           else if (playerStatsSectionInPane) playerStatsSectionInPane.innerHTML = '<h4>Oyuncu İstatistikleri</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için oyuncu istatistik bilgisi bulunamadı.</p>';
+                      }).catch(err => { console.error("Oyuncu istatistikleri çekme hatası:", err); if (playerStatsSectionInPane) playerStatsSectionInPane.innerHTML = '<h4>Oyuncu İstatistikleri</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: red;">Oyuncu istatistikleri yüklenirken hata oluştu.</p>'; });
                  }
-                 // Diğer sekmeler (oyuncu istatistikleri vb.) buraya eklenecek
              }
         } else {
              pane.classList.remove('active');
@@ -227,6 +241,7 @@ if (closeDetailsButton && sidebarRight) {
            if(statisticsSectionInPane) statisticsSectionInPane.innerHTML = '<h4>İstatistikler</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi.</p>';
             if(lineupsSectionInPane) lineupsSectionInPane.innerHTML = '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi.</p>';
             if(standingsSectionInPane) standingsSectionInPane.innerHTML = '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi.</p>';
+             if(playerStatsSectionInPane) playerStatsSectionInPane.innerHTML = '<h4>Oyuncu İstatistikleri</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi.</p>'; // Yeni temizleme
 
 
     });
@@ -264,7 +279,7 @@ async function fetchMatchesByDate(dateString) {
     } catch (error) {
         console.error(`Maç verisi çekme hatası (${dateString}):`, error);
         if (matchesListContainer) {
-             matchesListContainer.innerHTML = '<p style="color:red; text-align:center;">Maç verileri yüklenemedi. Lütfen konsolu kontrol edin ve API bilgilerinizi/limitlerini kontrol edin.</p>';
+             matchesListContainer.innerHTML = '<p style="color:red; text-align:center;">Maç verileri yüklenemedi. Lütfen konsolu kontrol edin ve API bilgilerinizi/limitlerinizi kontrol edin.</p>';
         }
          allMatchesData = []; // Hata durumunda listeyi temizle
         return null;
@@ -307,6 +322,51 @@ async function fetchLiveMatchesForUpdate() {
          console.warn('Canlı güncelleme verisi çekme hatası:', error);
          return null;
      }
+}
+
+// --- Belirli Bir Maçın Olaylarını Çeken Fonksiyon ---
+async function fetchMatchEvents(fixtureId) {
+    const url = `${eventsUrl}?fixture=${fixtureId}`;
+    console.log(`Maç olayları çekiliyor (ID: ${fixtureId})...`, url);
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+             const errorDetail = await response.text();
+            throw new Error(`Olay API isteği başarısız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
+        }
+        const data = await response.json();
+        console.log('Maç olayları ham veri:', data);
+        return data;
+    } catch (error) {
+        console.error(`Maç olayları çekme hatası (ID: ${fixtureId}):`, error);
+         if (eventsSectionInPane) eventsSectionInPane.innerHTML = '<h4>Maç Olayları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: red;">Olaylar yüklenirken hata oluştu.</p>';
+        return null;
+    }
+}
+
+
+// --- Belirli Bir Maçın İstatistiklerini Çeken Fonksiyon ---
+async function fetchMatchStatistics(fixtureId) {
+    const url = `${statisticsUrl}?fixture=${fixtureId}`;
+    console.log(`Maç istatistikleri çekiliyor (ID: ${fixtureId})...`, url);
+     // İstatistikler için cacheleme yapılabilir
+    try {
+        const response = await fetch(url, options);
+
+         if (!response.ok) {
+            const errorDetail = await response.text();
+            throw new Error(`İstatistik API isteği başarısız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
+        }
+
+        const data = await response.json();
+        console.log('Maç istatistikleri ham veri:', data);
+         // API yanıtı { response: [ { team: {...}, statistics: [...] }, { team: {...}, statistics: [...] } ] } formatında olmalı
+        return data;
+
+    } catch (error) {
+        console.error(`Maç istatistikleri çekme hatası (ID: ${fixtureId}):`, error);
+        return null;
+    }
 }
 
 // --- Belirli Bir Maçın Kadrolarını Çeken Fonksiyon ---
@@ -357,6 +417,30 @@ async function fetchLeagueStandings(leagueId, seasonYear) {
     }
 }
 
+// --- Belirli Bir Maçın Oyuncu İstatistiklerini Çeken Fonksiyon (Yeni) ---
+async function fetchMatchPlayerStatistics(fixtureId) {
+    const url = `${playerStatisticsUrl}?fixture=${fixtureId}`;
+    console.log(`Maç oyuncu istatistikleri çekiliyor (ID: ${fixtureId})...`, url);
+    try {
+        const response = await fetch(url, options);
+
+        if (!response.ok) {
+            const errorDetail = await response.text();
+            throw new Error(`Oyuncu İstatistikleri API isteği başarısız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
+        }
+
+        const data = await response.json();
+        console.log('Maç oyuncu istatistikleri ham veri:', data);
+        // API yanıtı { response: [ { team: {...}, players: [ { player: {...}, statistics: [...] }, ... ] }, ... ] } formatında olmalı
+        return data;
+
+    } catch (error) {
+        console.error(`Maç oyuncu istatistikleri çekme hatası (ID: ${fixtureId}):`, error);
+         if (playerStatsSectionInPane) playerStatsSectionInPane.innerHTML = '<h4>Oyuncu İstatistikleri</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: red;">Oyuncu istatistikleri yüklenirken hata oluştu.</p>';
+        return null;
+    }
+}
+
 
 // --- İstatistik Türleri İçin İngilizce'den Türkçe'ye Çeviri Haritası ---
 const statTypeTranslations = {
@@ -390,7 +474,20 @@ const statTypeTranslations = {
     "Dribble Success": "Başarılı Dribbling",
     "Dispossessed": "Top Kaybı",
     "Saves": "Kurtarışlar", // Genel kurtarışlar
-    "Passes accurate %": "Pas Başarı %" // Hem "Passes %" hem de "Passes accurate %" aynı anlama gelebilir
+    "Passes accurate %": "Pas Başarı %", // Hem "Passes %" hem de "Passes accurate %" aynı anlama gelebilir
+     "Goals": "Gol", // Oyuncu istatistiklerinde geçebilir
+     "Assists": "Asist", // Oyuncu istatistiklerinde geçebilir
+     "Saves": "Kurtarış", // Oyuncu istatistiklerinde kaleci kurtarışı
+      "Passes": "Pas", // Oyuncu istatistiklerinde toplam pas
+      "Accuracy": "Pas Başarı %", // Oyuncu istatistiklerinde pas başarısı
+      "Blocked": "Engellenen", // Oyuncu istatistiklerinde şut engelleme
+      "Total": "Toplam", // Oyuncu istatistiklerinde şut toplam
+      "Interceptions": "Top Kapma", // Oyuncu istatistiklerinde top kapma
+      "Duels": "İkili Mücadele", // Oyuncu istatistiklerinde ikili mücadele
+      "Won": "Kazanılan", // Oyuncu istatistiklerinde ikili mücadele kazanma
+      "Dribbles": "Dribbling", // Oyuncu istatistiklerinde dribbling girişimi
+      "Success": "Başarılı", // Oyuncu istatistiklerinde başarılı dribbling
+      "Attempts": "Girişim" // Oyuncu istatistiklerinde dribbling girişimi
 };
 
 
@@ -577,7 +674,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
          "Yellow Cards", "Red Cards", "Offsides", "Corner Kicks", "Goalkeeper Saves", "Saves",
          "Penalties", "Big Chance Created", "Big Chance Missed", "Clearances", "Interceptions",
          "Tackles", "Duels Total", "Duels won", "Dribble Attempts", "Dribble Success",
-         "Dispossessed", "Expected Goals (xG)", "Expected Goals against (xGA)", "Expected Points (xP)"
+         "Dispossessed", "Expected Goals (xG)", "Expected Goals against (xGA)","Expected Points (xP)"
      ];
 
       sortedStatTypes.forEach(statTypeEnglish => {
@@ -783,102 +880,18 @@ function displayMatchLineups(fixtureId, lineupsData, homeTeamName, awayTeamName)
             if(homeLineup.substitutes && homeLineup.substitutes.length > 0) {
                  homeLineupList.innerHTML += `<li><strong>Yedekler:</strong></li>`;
                  homeLineup.substitutes.forEach(player => {
-                     homeLineupList.innerHTML += `<li><span class="player-number">${player.player?.number || '-'}</span> ${player.player?.name || 'Bilinmeyen Oyuncu'}</li>`;
-                 });
-            }
-           lineupsSectionInPane.appendChild(homeLineupList);
-      }
+                     playerStatsText = playerStatsText.slice(0, -2); // Sondaki ", " işaretini sil
+                 statsDetailsSpan.textContent = statsText;
+             playerItem.appendChild(statsDetailsSpan);
 
-       // Deplasman Kadrosu
-      if (awayLineup) {
-           const awayLineupList = document.createElement('ul');
-           awayLineupList.classList.add('lineups-list');
-           awayLineupList.innerHTML = `<h5>${awayLineup.team?.name || awayTeamName} Kadrosu</h5>`;
-           awayLineup.startXI?.forEach(player => {
-               awayLineupList.innerHTML += `<li><span class="player-number">${player.player?.number || '-'}</span> ${player.player?.name || 'Bilinmeyen Oyuncu'}</li>`;
-           });
-           if(awayLineup.substitutes && awayLineup.substitutes.length > 0) {
-                 awayLineupList.innerHTML += `<li><strong>Yedekler:</strong></li>`;
-                 awayLineup.substitutes.forEach(player => {
-                     awayLineupList.innerHTML += `<li><span class="player-number">${player.player?.number || '-'}</span> ${player.player?.name || 'Bilinmeyen Oyuncu'}</li>`;
-                 });
-            }
-           lineupsSectionInPane.appendChild(awayLineupList);
-      }
+             playerStatsList.appendChild(playerItem);
+         });
+           teamPlayerListContainer.appendChild(playerStatsList);
 
-
-     console.log('Maç kadroları sağ panele yerleştirildi.');
-}
-
-
-// --- Lig Puan Durumunu sağ panele yerleştirir ---
-function displayLeagueStandings(leagueId, standingsData) {
-     console.log('Lig puan durumu sağ panele yerleştiriliyor. Veri:', standingsData);
-
-     if (!standingsTabContent || !standingsSectionInPane) {
-         console.error("HTML'de puan durumu sekmesi içeriği alanları bulunamadı!");
-         return;
-     }
-
-     standingsSectionInPane.innerHTML = ''; // İçeriği temizle
-
-      const standingsTitle = document.createElement('h4');
-      standingsTitle.textContent = standingsData.response?.[0]?.league?.name ? `${standingsData.response[0].league.name} Puan Durumu` : 'Lig Puan Durumu';
-      standingsSectionInPane.appendChild(standingsTitle);
-
-
-     const leagueStandings = standingsData.response?.[0]?.standings?.[0]; // Genellikle ilk yanıtın ilk standigns dizisi (Home/Away/Total ayrı diziler gelebilir, total olanı alıyoruz)
-
-     if (!leagueStandings || leagueStandings.length === 0) {
-         standingsSectionInPane.innerHTML += '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu lig için puan durumu bilgisi bulunamadı.</p>';
-         console.log('Puan durumu listesi boş.');
-         return;
-     }
-
-     const standingsTable = document.createElement('table');
-     standingsTable.classList.add('standings-table');
-     standingsSectionInPane.appendChild(standingsTable);
-
-     // Başlık Satırı
-     standingsTable.innerHTML += `
-         <thead>
-             <tr>
-                 <th>#</th>
-                 <th></th> <th>Takım</th>
-                 <th>OM</th>
-                 <th>G</th>
-                 <th>B</th>
-                 <th>M</th>
-                 <th>AG</th>
-                 <th>YG</th>
-                 <th>Av</th>
-                 <th>P</th>
-             </tr>
-         </thead>
-         <tbody></tbody>
-     `;
-
-     const tbody = standingsTable.querySelector('tbody');
-
-     leagueStandings.forEach(team => {
-         const teamRow = document.createElement('tr');
-         teamRow.innerHTML = `
-             <td>${team.rank || '-'}</td>
-             <td><img src="${team.team?.logo || 'placeholder-logo.png'}" alt="${team.team?.name || 'Takım'} Logo" class="team-logo"></td>
-             <td>${team.team?.name || 'Bilinmeyen Takım'}</td>
-             <td>${team.all?.played || 0}</td>
-             <td>${team.all?.win || 0}</td>
-             <td>${team.all?.draw || 0}</td>
-             <td>${team.all?.lose || 0}</td>
-             <td>${team.all?.goals?.for || 0}</td>
-             <td>${team.all?.goals?.against || 0}</td>
-             <td>${team.goalsDiff || 0}</td>
-             <td>${team.points || 0}</td>
-         `;
-         tbody.appendChild(teamRow);
      });
 
-     console.log('Lig puan durumu sağ panele yerleştirildi.');
+
+    console.log('Oyuncu istatistikleri sağ panele yerleştirildi.');
 
 }
 
@@ -1093,7 +1106,7 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
 
 
                      // Sağ panelin gerekli elementlerinin varlığını kontrol et
-                     if (detailsPanel && initialMessage && selectedMatchInfo && matchDetailTitle && matchHeaderTeams && headerHomeLogo && headerTeamNames && headerAwayLogo && eventsTabContent && statisticsTabContent && lineupsTabContent && standingsTabContent && eventsSectionInPane && statisticsSectionInPane && lineupsSectionInPane && standingsSectionInPane && tabButtons && tabPanes) { // Tüm elementleri kontrol et
+                     if (detailsPanel && initialMessage && selectedMatchInfo && matchDetailTitle && matchHeaderTeams && headerHomeLogo && headerTeamNames && headerAwayLogo && eventsTabContent && statisticsTabContent && lineupsTabContent && standingsTabContent && playerStatsTabContent && eventsSectionInPane && statisticsSectionInPane && lineupsSectionInPane && standingsSectionInPane && playerStatsSectionInPane && tabButtons && tabPanes) { // Tüm elementleri kontrol et
                          initialMessage.style.display = 'none';
                          selectedMatchInfo.style.display = 'block';
 
@@ -1124,6 +1137,7 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
                               statisticsSectionInPane.innerHTML = '<h4>İstatistikler</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">İstatistikler yükleniyor veya bulunamadı.</p>';
                                lineupsSectionInPane.innerHTML = '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Kadrolar yükleniyor veya bulunamadı.</p>';
                                standingsSectionInPane.innerHTML = '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Puan durumu yükleniyor veya bulunamadı.</p>';
+                               playerStatsSectionInPane.innerHTML = '<h4>Oyuncu İstatistikleri</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Oyuncu istatistikleri yükleniyor veya bulunamadı.</p>'; // Yeni başlangıç mesajı
 
 
                              switchTab('events'); // Varsayılan olarak Olaylar sekmesini aç
@@ -1135,9 +1149,9 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
                                   } else if (eventsSectionInPane) {
                                          eventsSectionInPane.innerHTML = '<h4>Maç Olayları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maçta henüz bir olay yok veya yüklenemedi.</p>';
                                   }
-                             });
+                             }).catch(err => { console.error("Olay çekme hatası:", err); if (eventsSectionInPane) eventsSectionInPane.innerHTML = '<h4>Maç Olayları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: red;">Olaylar yüklenirken hata oluştu.</p>'; });
 
-                             // NOT: İstatistikler, Kadrolar, Puan Durumu sekmeye ilk tıklandığında çekilecek şekilde ayarlandı (switchTab fonksiyonu içinde)
+                             // NOT: İstatistikler, Kadrolar, Puan Durumu, Oyuncu İstatistikleri sekmeye ilk tıklandığında çekilecek şekilde ayarlandı (switchTab fonksiyonu içinde)
 
                          } else {
                               matchDetailTitle.textContent = 'Maç Detayları';
@@ -1152,6 +1166,8 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
                               if(statisticsSectionInPane) statisticsSectionInPane.innerHTML = '<h4>İstatistikler</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi veya detaylar yüklenemedi.</p>';
                                if(lineupsSectionInPane) lineupsSectionInPane.innerHTML = '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi veya detaylar yüklenemedi.</p>';
                                if(standingsSectionInPane) standingsSectionInPane.innerHTML = '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi veya detaylar yüklenemedi.</p>';
+                                if(playerStatsSectionInPane) playerStatsSectionInPane.innerHTML = '<h4>Oyuncu İstatistikleri</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi veya detaylar yüklenemedi.</p>'; // Yeni temizleme
+
 
                                 switchTab('events'); // Varsayılan sekmeyi aktif yap ama içeriği boş/hata mesajlı kalsın
 
@@ -1175,12 +1191,14 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
                          if (!headerAwayLogo) console.error(" - headerAwayLogo (.away-logo)");
                           if (!eventsTabContent) console.error(" - eventsTabContent (#events-tab-content)");
                          if (!statisticsTabContent) console.error(" - statisticsTabContent (#statistics-tab-content)");
-                          if (!lineupsTabContent) console.error(" - lineupsTabContent (#lineups-tab-content)"); // Yeni kontrol
-                         if (!standingsTabContent) console.error(" - standingsTabContent (#standings-tab-content)"); // Yeni kontrol
+                          if (!lineupsTabContent) console.error(" - lineupsTabContent (#lineups-tab-content)");
+                         if (!standingsTabContent) console.error(" - standingsTabContent (#standings-tab-content)");
+                          if (!playerStatsTabContent) console.error(" - playerStatsTabContent (#player-stats-tab-content)"); // Yeni kontrol
                           if (!eventsSectionInPane) console.error(" - eventsSectionInPane (.events-section)");
                          if (!statisticsSectionInPane) console.error(" - statisticsSectionInPane (.statistics-section)");
-                          if (!lineupsSectionInPane) console.error(" - lineupsSectionInPane (.lineups-section)"); // Yeni kontrol
-                         if (!standingsSectionInPane) console.error(" - standingsSectionInPane (.standings-section)"); // Yeni kontrol
+                          if (!lineupsSectionInPane) console.error(" - lineupsSectionInPane (.lineups-section)");
+                         if (!standingsSectionInPane) console.error(" - standingsSectionInPane (.standings-section)");
+                          if (!playerStatsSectionInPane) console.error(" - playerStatsSectionInPane (.player-stats-section)"); // Yeni kontrol
 
                           if (!tabButtons) console.error(" - tabButtons (.tab-button)");
                           if (!tabPanes) console.error(" - tabPanes (.tab-pane)");
@@ -1493,7 +1511,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      if (!matchesListContainer) console.error("DOM Yükleme Hatası: #matches-list bulunamadı!");
      if (!detailsPanel) console.error("DOM Yükleme Hatası: #match-details-panel bulunamadı!");
      if (!sidebarRight) console.error("DOM Yükleme Hatası: .sidebar-right bulunamadı!");
-     if (!dateInput) console.error("DOM Yükleme Hatası: #match-date bulunamadı!"); // Yeni kontrol
+     if (!dateInput) console.error("DOM Yükleme Hatası: #match-date bulunamadı!");
      if (!initialMessage) console.error("DOM Yükleme Hatası: .initial-message bulunamadı!");
      if (!selectedMatchInfo) console.error("DOM Yükleme Hatası: .selected-match-info bulunamadı!");
      if (!matchDetailTitle) console.error("DOM Yükleme Hatası: .match-detail-title bulunamadı!");
@@ -1505,13 +1523,16 @@ document.addEventListener('DOMContentLoaded', async () => {
      if (!tabPanes || tabPanes.length === 0) console.error("DOM Yükleme Hatası: .tab-pane bulunamadı veya boş!");
      if (!eventsTabContent) console.error("DOM Yükleme Hatası: #events-tab-content bulunamadı!");
      if (!statisticsTabContent) console.error("DOM Yükleme Hatası: #statistics-tab-content bulunamadı!");
-     if (!lineupsTabContent) console.error("DOM Yükleme Hatası: #lineups-tab-content bulunamadı!"); // Yeni kontrol
-     if (!standingsTabContent) console.error("DOM Yükleme Hatası: #standings-tab-content bulunamadı!"); // Yeni kontrol
+     if (!lineupsTabContent) console.error("DOM Yükleme Hatası: #lineups-tab-content bulunamadı!");
+     if (!standingsTabContent) console.error("DOM Yükleme Hatası: #standings-tab-content bulunamadı!");
+     if (!playerStatsTabContent) console.error("DOM Yükleme Hatası: #player-stats-tab-content bulunamadı!"); // Yeni kontrol
 
      if (!eventsSectionInPane) console.error("DOM Yükleme Hatası: .events-section (eventsTabContent içinde) bulunamadı!");
      if (!statisticsSectionInPane) console.error("DOM Yükleme Hatası: .statistics-section (statisticsTabContent içinde) bulunamadı!");
-     if (!lineupsSectionInPane) console.error("DOM Yükleme Hatası: .lineups-section (lineupsTabContent içinde) bulunamadı!"); // Yeni kontrol
-     if (!standingsSectionInPane) console.error("DOM Yükleme Hatası: .standings-section (standingsTabContent içinde) bulunamadı!"); // Yeni kontrol
+     if (!lineupsSectionInPane) console.error("DOM Yükleme Hatası: .lineups-section (lineupsTabContent içinde) bulunamadı!");
+     if (!standingsSectionInPane) console.error("DOM Yükleme Hatası: .standings-section (standingsTabContent içinde) bulunamadı!");
+     if (!playerStatsSectionInPane) console.error("DOM Yükleme Hatası: .player-stats-section (playerStatsTabContent içinde) bulunamadı!"); // Yeni kontrol
+
 
      if (!closeDetailsButton) console.error("DOM Yükleme Hatası: .close-details-panel bulunamadı!");
      if (filterButtons.length === 0) console.error("DOM Yükleme Hatası: .filter-button bulunamadı veya boş!");
@@ -1540,7 +1561,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      } else {
          console.error("İlk veri çekme başarısız oldu.");
           if (matchesListContainer) {
-               matchesListContainer.innerHTML = '<p style="color:red; text-align:center;">Maç verileri yüklenemedi. Lütfen konsolu kontrol edin ve API bilgilerinizi/limitlerini kontrol edin.</p>';
+               matchesListContainer.innerHTML = '<p style="color:red; text-align:center;">Maç verileri yüklenemedi. Lütfen konsolu kontrol edin ve API bilgilerinizi/limitlerinizi kontrol edin.</p>';
           }
           if (initialMessage) initialMessage.textContent = 'Maç verileri yüklenemedi.';
           if (selectedMatchInfo) selectedMatchInfo.style.display = 'none';
