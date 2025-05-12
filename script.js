@@ -156,28 +156,26 @@ function switchTab(selectedTab) {
              pane.classList.add('active');
              // Sekme değiştiğinde ilgili API çağrısını yap (eğer detay paneli açıksa)
              if(selectedFixtureId && selectedMatchData) {
+                 // Sekme içeriği daha önce yüklenmediyse veya her zaman yeniden yüklenecekse buraya ekle
+                 // Şimdilik sekmeye ilk tıklandığında yükleyelim
                  if (selectedTab === 'events') {
-                      // Olaylar zaten maç tıklandığında çekiliyor, tekrar çekmeye gerek yok
-                      // displayMatchDetails(selectedFixtureId, eventData cache'i?); // Cache kullanmak daha iyi olurdu
-                      // veya detay panelini açan fonksiyon yeniden çağrılabilir
-                      // Şimdilik paneli açan fonksiyona bakalım tekrar çağırabiliyor muyuz
+                      // Olaylar maç tıklandığında zaten çekiliyor
                       console.log("Olaylar sekmesi seçildi. Olaylar zaten çekilmiş olmalı.");
-                      // Eğer paneli tekrar açan fonksiyonu çağırırsak, tekrar API çağrısı yapar.
-                      // İleride cacheleme eklenebilir.
-                 } else if (selectedTab === 'statistics' && statisticsSectionInPane && statisticsSectionInPane.innerHTML.trim() === '<h4>İstatistikler</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">İstatistikler yükleniyor veya bulunamadı.</p>') {
-                      // İstatistikler sekmesi seçildi ve boşsa çek
+
+                 } else if (selectedTab === 'statistics' && statisticsSectionInPane && statisticsSectionInPane.innerHTML.includes('yükleniyor veya bulunamadı.')) {
+                      // İstatistikler sekmesi seçildi ve içeriği henüz yüklenmemişse çek
                       fetchMatchStatistics(selectedFixtureId).then(statsData => {
                           if(statsData) displayMatchStatistics(selectedFixtureId, statsData, selectedMatchData.teams.home.name, selectedMatchData.teams.away.name);
                            else if (statisticsSectionInPane) statisticsSectionInPane.innerHTML = '<h4>İstatistikler</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için istatistik bilgisi bulunamadı.</p>';
                       });
-                 } else if (selectedTab === 'lineups' && lineupsSectionInPane && lineupsSectionInPane.innerHTML.trim() === '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Kadrolar yükleniyor veya bulunamadı.</p>') {
-                      // Kadrolar sekmesi seçildi ve boşsa çek
+                 } else if (selectedTab === 'lineups' && lineupsSectionInPane && lineupsSectionInPane.innerHTML.includes('yükleniyor veya bulunamadı.')) {
+                      // Kadrolar sekmesi seçildi ve içeriği henüz yüklenmemişse çek
                       fetchMatchLineups(selectedFixtureId).then(lineupsData => {
                            if(lineupsData) displayMatchLineups(selectedFixtureId, lineupsData, selectedMatchData.teams.home.name, selectedMatchData.teams.away.name);
                            else if (lineupsSectionInPane) lineupsSectionInPane.innerHTML = '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için kadro bilgisi bulunamadı.</p>';
                       });
-                 } else if (selectedTab === 'standings' && standingsSectionInPane && standingsSectionInPane.innerHTML.trim() === '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Puan durumu yükleniyor veya bulunamadı.</p>') {
-                     // Puan Durumu sekmesi seçildi ve boşsa çek
+                 } else if (selectedTab === 'standings' && standingsSectionInPane && standingsSectionInPane.innerHTML.includes('yükleniyor veya bulunamadı.')) {
+                     // Puan Durumu sekmesi seçildi ve içeriği henüz yüklenmemişse çek
                      // Puan durumu için lig ID'si ve sezon bilgisi lazım
                      const leagueId = selectedMatchData.league?.id;
                      const seasonYear = selectedMatchData.league?.season; // API'dan gelen sezon yılını kullan
@@ -221,9 +219,15 @@ if (closeDetailsButton && sidebarRight) {
          // }
          selectedFixtureId = null; // Panel kapanınca seçili maçı sıfırla
          selectedMatchData = null; // Panel kapanınca seçili maç verisini sıfırla
-          // Detay paneli içeriğini temizle (isteğe bağlı, bir sonraki açılışta yeniden yüklenir)
+          // Detay paneli içeriğini temizle (bir sonraki açılışta yeniden yüklenecek)
           if(initialMessage) initialMessage.style.display = 'block';
           if(selectedMatchInfo) selectedMatchInfo.style.display = 'none';
+           // Sekme içerik alanlarını temizle
+           if(eventsSectionInPane) eventsSectionInPane.innerHTML = '<h4>Maç Olayları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi.</p>';
+           if(statisticsSectionInPane) statisticsSectionInPane.innerHTML = '<h4>İstatistikler</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi.</p>';
+            if(lineupsSectionInPane) lineupsSectionInPane.innerHTML = '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi.</p>';
+            if(standingsSectionInPane) standingsSectionInPane.innerHTML = '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Maç seçilmedi.</p>';
+
 
     });
 }
@@ -255,7 +259,7 @@ async function fetchMatchesByDate(dateString) {
         allMatchesData = data && Array.isArray(data.response) ? data.response : [];
         console.log(`${dateString} tarihi için ${allMatchesData.length} maç çekildi.`);
         return data; // displayMatches için tüm veriyi döndür
-        // return { response: allMatchesData }; // displayMatches'in beklediği formatta döndür
+        // return { response: allMatchesData }; // displayMatches'in beklediği formatte döndür
 
     } catch (error) {
         console.error(`Maç verisi çekme hatası (${dateString}):`, error);
@@ -275,18 +279,18 @@ async function fetchLiveMatchesForUpdate() {
 
      // Eğer tarih inputu bulunamadıysa (null veya undefined) veya seçili tarih bugün değilse
      if (!dateInput || selectedDate !== todayString) {
-          console.log("Canlı güncelleme atlandı: Tarih inputu bulunamadı veya seçili tarih bugün değil.");
+          // console.log("Canlı güncelleme atlandı: Tarih inputu bulunamadı veya seçili tarih bugün değil."); // Çok fazla log olabilir, devre dışı bırakıldı
           return null;
      }
 
      // Eğer allMatchesData boşsa (ilk yükleme hatası gibi durumlarda) canlı güncelleme yapmanın anlamı yok
       if (allMatchesData.length === 0) {
-          console.log("Canlı güncelleme atlandı: allMatchesData boş.");
+           // console.log("Canlı güncelleme atlandı: allMatchesData boş."); // Çok fazla log olabilir, devre dışı bırakıldı
           return null;
       }
 
 
-     console.log('Canlı maç verileri güncellemeler için çekiliyor...', liveFixturesUrl);
+     // console.log('Canlı maç verileri güncellemeler için çekiliyor...', liveFixturesUrl); // Çok fazla log olabilir, devre dışı bırakıldı
      try {
          const response = await fetch(liveFixturesUrl, options);
 
@@ -789,7 +793,7 @@ function displayLeagueStandings(leagueId, standingsData) {
       standingsSectionInPane.appendChild(standingsTitle);
 
 
-     const leagueStandings = standingsData.response?.[0]?.standings?.[0]; // Genellikle ilk yanıtın ilk standigns dizisi
+     const leagueStandings = standingsData.response?.[0]?.standings?.[0]; // Genellikle ilk yanıtın ilk standigns dizisi (Home/Away/Total ayrı diziler gelebilir, total olanı alıyoruz)
 
      if (!leagueStandings || leagueStandings.length === 0) {
          standingsSectionInPane.innerHTML += '<h4>Lig Puan Durumu</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu lig için puan durumu bilgisi bulunamadı.</p>';
@@ -898,11 +902,12 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
 
     if (matchesToDisplay.length === 0) {
         let message = 'Seçili filtreye uygun maç bulunmuyor.';
-         if(activeFilter === 'today') message = `Seçili tarih (${dateInput.value}) için maç bulunmuyor veya yüklenemedi.`;
+         if(activeFilter === 'today' && dateInput) message = `Seçili tarih (${dateInput.value}) için maç bulunmuyor veya yüklenemedi.`;
         else if(activeFilter === 'favorites') message = 'Henüz favori maçınız yok.';
-        else if(activeFilter === 'live') message = `Seçili tarih (${dateInput.value}) için şu anda canlı maç bulunmuyor.`;
-        else if(activeFilter === 'finished') message = `Seçili tarih (${dateInput.value}) için biten maç bulunmuyor.`;
-        else if(activeFilter === 'upcoming') message = `Seçili tarih (${dateInput.value}) için başlayacak maç bulunmuyor.`;
+        else if(activeFilter === 'live' && dateInput) message = `Seçili tarih (${dateInput.value}) için şu anda canlı maç bulunmuyor.`;
+        else if(activeFilter === 'finished' && dateInput) message = `Seçili tarih (${dateInput.value}) için biten maç bulunmuyor.`;
+        else if(activeFilter === 'upcoming' && dateInput) message = `Seçili tarih (${dateInput.value}) için başlayacak maç bulunmuyor.`;
+         else if (dateInput) message = `Seçili tarih (${dateInput.value}) için uygun maç bulunmuyor.`;
 
 
         matchesListContainer.innerHTML = `<p style="text-align:center; color: var(--secondary-text-color);">${message}</p>`;
@@ -1033,7 +1038,10 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
                 // Maç öğesi tıklama olayı (detayları göstermek için)
                 matchItem.addEventListener('click', () => {
                     const clickedMatchId = matchItem.dataset.matchId;
-                    console.log(`Maç öğesine tıklandı. ID: ${clickedMatchId}`);
+                    const clickedLeagueId = matchItem.dataset.leagueId; // Lig ID'sini al
+                    const clickedSeasonYear = matchItem.dataset.seasonYear; // Sezon yılını al
+
+                    console.log(`Maç öğesine tıklandı. ID: ${clickedMatchId}, Lig ID: ${clickedLeagueId}, Sezon: ${clickedSeasonYear}`);
 
                      // Mobil görünümde sağ paneli görünür yap ve scroll'u engelle
                      if(sidebarRight && isMobileView()){
@@ -1077,6 +1085,7 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
                              headerAwayLogo.alt = `${awayTeamName} Logo`;
 
                               // Sekme içeriklerini temizle ve varsayılan sekmeyi aç
+                               // Başlangıç mesajlarını ekle
                               eventsSectionInPane.innerHTML = '<h4>Maç Olayları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Olaylar yükleniyor...</p>';
                               statisticsSectionInPane.innerHTML = '<h4>İstatistikler</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">İstatistikler yükleniyor veya bulunamadı.</p>';
                                lineupsSectionInPane.innerHTML = '<h4>Takım Kadroları</h4><p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Kadrolar yükleniyor veya bulunamadı.</p>';
@@ -1094,7 +1103,7 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
                                   }
                              });
 
-                             // NOT: İstatistikler, Kadrolar, Puan Durumu sekmeye tıklanınca çekilecek şekilde ayarlandı (switchTab fonksiyonu içinde)
+                             // NOT: İstatistikler, Kadrolar, Puan Durumu sekmeye ilk tıklandığında çekilecek şekilde ayarlandı (switchTab fonksiyonu içinde)
 
                          } else {
                               matchDetailTitle.textContent = 'Maç Detayları';
@@ -1221,18 +1230,18 @@ function startLiveUpdates() {
         const selectedDate = dateInput ? dateInput.value : todayString; // Eğer tarih inputu yoksa bugünü varsay
 
         if (!dateInput || selectedDate !== todayString) {
-             console.log("Canlı güncelleme atlandı: Tarih inputu bulunamadı veya seçili tarih bugün değil.");
+             // console.log("Canlı güncelleme atlandı: Tarih inputu bulunamadı veya seçili tarih bugün değil."); // Çok fazla log olabilir, devre dışı bırakıldı
              return; // Seçili tarih bugün değilse canlı güncellemeyi durdur
         }
 
      // Eğer allMatchesData boşsa (ilk yükleme hatası gibi durumlarda) canlı güncelleme yapmanın anlamı yok
       if (allMatchesData.length === 0) {
-          console.log("Canlı güncelleme atlandı: allMatchesData boş.");
+           // console.log("Canlı güncelleme atlandı: allMatchesData boş."); // Çok fazla log olabilir, devre dışı bırakıldı
           return; // allMatchesData boşsa canlı güncellemeyi durdur
       }
 
 
-        console.log('Canlı güncellemeler için veri çekiliyor...');
+        // console.log('Canlı güncellemeler için veri çekiliyor...', liveFixturesUrl); // Çok fazla log olabilir, devre dışı bırakıldı
         const liveData = await fetchLiveMatchesForUpdate();
 
         if (liveData && Array.isArray(liveData.response)) {
@@ -1292,8 +1301,25 @@ function startLiveUpdates() {
                            // İleride detay panelinin de otomatik güncellenmesi eklenebilir.
                            selectedMatchData = updatedSelectedMatch; // selectedMatchData'yı da güncel tut
                            console.log(`Seçili maçın durumu veya skoru değişti (ID: ${selectedFixtureId}). Detay panelinin içeriği manuel olarak güncellenmelidir.`);
-                           // Sekmelerin içeriğini yeniden çekme veya güncelleme mantığı buraya eklenebilir.
-                           // Örneğin aktif sekme 'events' ise olayları yeniden çek/güncelle gibi.
+                           // Aktif sekmeyi bul ve içeriğini yeniden yükle (basit yaklaşım)
+                           const activeTabButton = detailsPanel ? detailsPanel.querySelector('.tab-button.active') : null;
+                            if (activeTabButton) {
+                                 const activeTab = activeTabButton.dataset.tab;
+                                 // İlgili API çağrısını tekrar yap ve içeriği yeniden çiz
+                                if (activeTab === 'events') {
+                                    fetchMatchEvents(selectedFixtureId).then(eventsData => {
+                                        if(eventsData && eventsSectionInPane) displayMatchDetails(selectedFixtureId, eventsData);
+                                    });
+                                } else if (activeTab === 'statistics') {
+                                     fetchMatchStatistics(selectedFixtureId).then(statsData => {
+                                          if(statsData && statisticsSectionInPane) displayMatchStatistics(selectedFixtureId, statsData, selectedMatchData.teams.home.name, selectedMatchData.teams.away.name);
+                                     });
+                                }
+                                // Kadrolar ve Puan Durumu genellikle maç sırasında çok sık değişmez, bu yüzden canlı güncellemede yeniden çekilmeleri şart değil.
+                                // Eğer istenseydi buraya eklenebilirlerdi.
+                            }
+
+
                       } else {
                           // Seçili maç listeden kalktıysa (bitti ve filtre değişti gibi) paneli kapat
                            if (sidebarRight) {
@@ -1309,12 +1335,12 @@ function startLiveUpdates() {
                  }
 
             } else {
-                 console.log('Canlı güncelleme verisi alındı ancak ekranda gösterilen maçlarda değişiklik yok.');
+                 // console.log('Canlı güncelleme verisi alındı ancak ekranda gösterilen maçlarda değişiklik yok.'); // Çok fazla log olabilir, devre dışı bırakıldı
             }
 
 
         } else {
-            console.log('Canlı güncelleme verisi alınamadı veya format hatalı.');
+            // console.log('Canlı güncelleme verisi alınamadı veya format hatalı.'); // Çok fazla log olabilir, devre dışı bırakıldı
         }
 
     }, 10000); // Her 10 saniyede bir canlı veri çek (Daha hızlı güncelleme)
@@ -1412,6 +1438,13 @@ if (dateInput) {
             // Tarih seçici temizlenirse ne yapılmalı? Belki bugüne dönülebilir.
              // Şimdilik boş kalabilir veya bugüne dönme mantığı eklenebilir.
              // Örn: dateInput.value = getTodayDateString(); ve sonra fetchMatchesByDate(todayString) çağrılabilir.
+             // dateInput.value = getTodayDateString();
+             // fetchMatchesByDate(getTodayDateString()).then(() => {
+             //     displayMatches();
+             //     filterButtons.forEach(btn => btn.classList.remove('active'));
+             //     const todayFilterButton = document.querySelector('.filter-button[data-filter="today"]');
+             //     if(todayFilterButton) todayFilterButton.classList.add('active');
+             // });
         }
     });
 }
