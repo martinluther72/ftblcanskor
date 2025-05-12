@@ -92,21 +92,21 @@ if (!initialMessage) console.warn("HTML'de .initial-message elementi bulunamadı
 if (!selectedMatchInfo) console.warn("HTML'de .selected-match-info elementi bulunamadı.");
 if (!matchDetailTitle) console.warn("HTML'de .match-detail-title elementi bulunamadı.");
 if (!matchHeaderTeams) console.warn("HTML'de .match-header-teams elementi bulunamadı.");
-if (!headerHomeLogo) console.warn("HTML'de .home-logo elementi bulunamadı.");
-if (!headerTeamNames) console.warn("HTML'de .header-team-names elementi bulunamadı.");
-if (!headerAwayLogo) console.warn("HTML'de .away-logo elementi bulunamadı.");
+if (!headerHomeLogo) console.warn("HTML'de .home-logo bulunamadı.");
+if (!headerTeamNames) console.warn("HTML'de .header-team-names bulunamadı.");
+if (!headerAwayLogo) console.warn("HTML'de .away-logo bulunamadı.");
 
 if (!tabButtons || tabButtons.length === 0) console.warn("HTML'de sekme düğmeleri (.tab-button) bulunamadı.");
 if (!tabPanes || tabPanes.length === 0) console.warn("HTML'de sekme içerik alanları (.tab-pane) bulunamadı.");
 
-if (!eventsTabContent) console.warn("HTML'de #events-tab-content elementi bulunamadı.");
-if (!statisticsTabContent) console.warn("HTML'de #statistics-tab-content elementi bulunamadı.");
-if (!eventsSectionInPane) console.warn("HTML'de .events-section (olaylar paneli içinde) elementi bulunamadı.");
-if (!statisticsSectionInPane) console.warn("HTML'de .statistics-section (istatistikler paneli içinde) elementi bulunamadı.");
+if (!eventsTabContent) console.warn("HTML'de #events-tab-content bulunamadı!");
+if (!statisticsTabContent) console.warn("HTML'de #statistics-tab-content bulunamadı!");
+if (!eventsSectionInPane) console.warn("HTML'de .events-section (eventsTabContent içinde) bulunamadı!");
+if (!statisticsSectionInPane) console.error("DOM Yükleme Hatası: .statistics-section (statisticsTabContent içinde) bulunamadı!");
 
 
-if (!closeDetailsButton) console.warn("HTML'de .close-details-panel elementi bulunamadı.");
-if (filterButtons.length === 0) console.warn("HTML'de filtre butonları (.filter-button) bulunamadı.");
+if (!closeDetailsButton) console.warn("HTML'de .close-details-panel bulunamadı!");
+if (filterButtons.length === 0) console.warn("HTML'de filtre butonları (.filter-button) bulunamadı!");
 
 
 // Ekranın mobil görünümde olup olmadığını kontrol eden fonksiyon
@@ -415,7 +415,7 @@ function displayMatchStatistics(matchId, statisticsData, homeTeamName, awayTeamN
          }
      } else {
          console.warn('Beklenmeyen istatistik yanıt yapısı: response dizisi 2 veya daha fazla eleman içermiyor. Gelen eleman sayısı:', teamStatistics.length);
-         statisticsSectionInPane.innerHTML += '<p style="color:orange; text-align:center; font-size: 14px;">İstatistikler beklenenden farklı formatta geldi.</p>';
+         statisticsSectionInPane.innerHTML += '<p style="color:orange; text-align:center; font-size: 14px;">İstatistikler beklenenden farklı formatte geldi.</p>';
          if(teamStatistics.length > 0 && teamStatistics[0].statistics) {
              homeStats = teamStatistics[0].statistics;
              homeTeamLogo = teamStatistics[0].team.logo || 'placeholder-logo.png';
