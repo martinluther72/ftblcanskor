@@ -295,11 +295,11 @@ async function fetchMatchesByDate(dateString) {
 
 // --- Canlı Maç Verilerini Çeken Fonksiyon (Güncellemeler İçin) ---
 async function fetchLiveMatchesForUpdate() {
-     // Canlı güncellemeyi sadece bugün için yapalım
+     // Canlı den güncellemeyi sadece bugün için yapalım
      const todayString = getTodayDateString();
      const selectedDate = dateInput.value; // Tarih inputundan seçili tarihi al
 
-     // Eğer tarih inputu bulunamadysa (null veya undefined) veya seçili tarih bugün değilse
+     // Eğer tarih inputu bulunamadıysa (null veya undefined) veya seçili tarih bugün değilse
      if (!dateInput || selectedDate !== todayString) {
           // console.log("Canlı güncelleme atlandı: Tarih inputu bulunamadı veya seçili tarih bugün değil."); // Çok fazla log olabilir, devre dışı bırakıldı
           return null;
@@ -425,6 +425,370 @@ async function fetchLeagueStandings(leagueId, seasonYear) {
 }
 
 // --- Belirli Bir Maçın Oyuncu İstatistiklerini Çeken Fonksiyon (Yeni) ---
+async function fetchMatchPlayerStatistics(fixtureId) {
+    const url = `${playerStatisticsUrl}?fixture=${fixtureId}`;
+    console.log(`Maç oyuncu istatistikleri çekiliyor (ID: ${fixtureId})...`, url);
+     // İstatistikler için cacheleme yapılabilir
+    try {
+        const response = await fetch(url, options);
+
+         if (!response.ok) {
+            const errorDetail = await response.text();
+            throw new Error(`Oyuncu İstatistikleri API isteği başarısız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
+        }
+
+        const data = await response.json();
+        console.log('Maç oyuncu istatistikleri ham veri:', data);
+         // API yanıtı { response: [ { team: {...}, players: [ { player: {...}, statistics: [...] } ] } ] } formatında olmalı
+        return data;
+
+    } catch (error) {
+        console.error(`Maç oyuncu istatistikleri çekme hatası (ID: ${fixtureId}):`, error);
+        return null;
+    }
+}
+
+
+// --- Belirli Bir Maçın Olaylarını Gösteren Fonksiyon ---
+function displayMatchDetails(fixtureId, eventsData) {
+     console.log('Maç olayları sağ panele yerleştiriliyor. Veri:', eventsData);
+     if (!eventsTabContent || !eventsSectionInPane) {
+         console.error("HTML'de olaylar sekmesi içeriği alanları bulunamadı!");
+         return;
+     }
+
+     eventsSectionInPane.innerHTML = ''; // İçeriği temizle
+
+     const eventsTitle = document.createElement('h4');
+     eventsTitle.textContent = 'Maç Olayları';
+     eventsSectionInPane.appendChild(eventsTitle);
+
+
+     const events = eventsData && Array.isArray(eventsData.response) ? eventsData.response : [];
+
+     if (events.length === 0) {
+         eventsSectionInPane.innerHTML += '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maçta henüz bir olay yok.</p>';
+         console.log('Olay listesi boş.');
+         return;
+     }
+
+     const eventsList = document.createElement('ul');
+     eventsList.classList.add('match-events-list');
+     eventsSectionInPane.appendChild(eventsList);
+
+
+     events.forEach(event => {
+         if (!event.time || !event.type || !event.detail) return;
+
+         const eventTime = event.time.elapsed !== null ? `${event.time.elapsed}'` : '';
+         const eventTeam = event.team && event.team.name ? event.team.name : '';
+         const eventPlayer = event.player && event.player.name ? `(${event.player.name})` : '';
+         const eventAssist = event.assist && event.assist.name ? ` Asist: ${event.assist.name}` : ''; // Asist bilgisi
+
+         let eventDetailText = event.detail;
+         let eventClass = ''; // CSS için class adı
+
+         // Olay türüne göre detayları ve class'ı ayarla
+         if (event.type === 'Goal') {
+             eventClass = 'event-goal';
+             if (event.detail === 'Normal Goal') eventDetailText = 'Gol';
+             else if (event.detail === 'Penalty') eventDetailText = 'Penaltı Golü';
+             else if (event.detail === 'Own Goal') eventDetailText = 'Kendi Kalesine Gol';
+              else if (event.detail === 'Free Kick') eventDetailText = 'Frikik Golü';
+              // Diğer gol türleri eklenebilir
+              eventDetailText += eventAssist; // Gollerde asist bilgisini ekle
+
+         } else if (event.type === 'Card') {
+             eventClass = 'event-card';
+             if (event.detail === 'Yellow Card') {
+                 eventClass += ' event-yellow-card';
+                 eventDetailText = 'Sarı Kart';
+             } else if (event.detail === 'Red Card') {
+                 eventClass += ' event-red-card';
+                 eventDetailText = 'Kırmızı Kart';
+             } else if (event.detail === 'Second Yellow Card') { // İkinci sarıdan kırmızı
+                  eventClass += ' event-red-card'; // Kırmızı kart olarak gösterelim
+                  eventDetailText = 'İkincisi Sarı Kart → Kırmızı Kart'; // Typo here: İkincisi -> İkinci
+             }
+         } else if (event.type === 'subst') {
+             eventClass = 'event-subst';
+             const playerOut = event.player && event.player.name ? event.player.name : 'Bilinmeyen Oyuncu';
+             const playerIn = event.assist && event.assist.name ? event.assist.name : 'Bilinmeyen Oyuncu'; // API'de oyuncu giren bilgisi assist alanında olabilir
+             eventDetailText = `Oyuncu Değişikliği: ${playerOut} → ${playerIn}`;
+         } else if (event.type === 'Var') { // VAR olayları
+              eventClass = 'event-var';
+              // VAR detayları API'ye göre değişebilir
+         }
+          // Diğer olay türleri eklenebilir (Penaltı, Kaçan Penaltı vb.)
+
+
+         const eventItem = document.createElement('li');
+         eventItem.classList.add('event-item');
+         if (eventClass) eventItem.classList.add(eventClass); // Olay tipine özel class ekle
+
+         // Olay yönünü belirle (ev sahibi/deplasman)
+         // API'den gelen team.id bilgisine göre yön belirleme mantığı eklenebilir
+         // Şimdilik genel liste olarak gösterelim
+
+         eventItem.innerHTML = `
+             <span>${eventTime}</span>
+             <strong>${eventTeam}</strong>
+             ${eventPlayer}: ${eventDetailText}
+         `; // Oyuncu adı detaydan ayrıldı
+
+         eventsList.appendChild(eventItem);
+
+     }); // End of events.forEach
+
+     console.log('Olaylar sağ panele yerleştirildi.');
+
+ }
+
+// --- Belirli Bir Maçın İstatistiklerini Gösteren Fonksiyon ---
+function displayMatchStatistics(fixtureId, statisticsData, homeTeamName, awayTeamName) {
+     console.log('Maç istatistikleri sağ panele yerleştiriliyor. Veri:', statisticsData);
+
+     if (!statisticsTabContent || !statisticsSectionInPane) {
+         console.error("HTML'de istatistikler sekmesi içeriği alanları bulunamadı!");
+         return;
+     }
+
+     statisticsSectionInPane.innerHTML = ''; // İçeriği temizle
+
+     const statsTitle = document.createElement('h4');
+     statsTitle.textContent = 'Maç İstatistikleri';
+     statisticsSectionInPane.appendChild(statsTitle);
+
+
+     const teamsStats = statisticsData && Array.isArray(statisticsData.response) ? statisticsData.response : [];
+
+     if (teamsStats.length < 2 || !teamsStats[0].statistics || !teamsStats[1].statistics) {
+         statisticsSectionInPane.innerHTML += '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için istatistik bilgisi bulunamadı.</p>';
+          console.log('İstatistik listesi boş veya tam değil.');
+         return;
+     }
+
+     const homeStats = teamsStats.find(team => team.team.name === homeTeamName)?.statistics || [];
+     const awayStats = teamsStats.find(team => team.team.name === awayTeamName)?.statistics || [];
+
+
+     if (homeStats.length === 0 && awayStats.length === 0) {
+         statisticsSectionInPane.innerHTML += '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için istatistik bilgisi bulunamadı.</p>';
+          console.log('İstatistik listeleri boş.');
+         return;
+     }
+
+     const statsList = document.createElement('ul');
+     statsList.classList.add('match-statistics-list');
+     statisticsSectionInPane.appendChild(statsList);
+
+     // İstatistikleri eşleştirme ve gösterme
+     // Ortak istatistik türlerini belirleyelim ve her iki takımdaki değerlerini alalım
+     const availableStatTypes = new Set([
+         ...homeStats.map(stat => stat.type),
+         ...awayStats.map(stat => stat.type)
+     ]);
+
+     availableStatTypes.forEach(statType => {
+         const homeStat = homeStats.find(stat => stat.type === statType);
+         const awayStat = awayStats.find(stat => stat.type === statType);
+
+         const homeValue = homeStat?.value !== null ? homeStat.value : '-';
+         const awayValue = awayStat?.value !== null ? awayStat.value : '-';
+
+         if (homeValue === '-' && awayValue === '-') return; // Her iki değer de yoksa gösterme
+
+         const statItem = document.createElement('li');
+         statItem.classList.add('stat-item');
+
+         // Bazı istatistikler ProgressBar ile gösterilebilir
+         // Örneğin: Topla Oynama, Toplam Şut, İsabetli Şut, Fauller, Pas Başarı Oranı (varsa)
+         const useProgressBar = [
+             'Ball Possession',
+             'Total Shots',
+             'Shots on Goal',
+             'Fouls',
+             'Passes accurate (%)', // API'den gelen tam isim önemli
+              'Passes %' // Başka olası isim
+              // İhtiyaç duydukça eklenebilir
+         ].includes(statType);
+
+
+         if (useProgressBar && typeof homeValue === 'string' && homeValue.endsWith('%') && typeof awayValue === 'string' && awayValue.endsWith('%')) {
+              // Yüzdelik değerler için özel ProgressBar işleme (örn: Topla Oynama)
+              const homePercent = parseFloat(homeValue);
+              const awayPercent = parseFloat(awayValue);
+
+              if (!isNaN(homePercent) && !isNaN(awayPercent)) {
+                   statItem.classList.add('stat-item-bar'); // ProgressBar stili için class
+                   statItem.innerHTML = `
+                       <div class="stat-values">
+                           <span class="stat-home-value">${homeValue}</span>
+                           <span class="stat-type">${statType}</span>
+                           <span class="stat-away-value">${awayValue}</span>
+                       </div>
+                       <div class="stat-progress-bar">
+                           <div class="progress-bar-track">
+                               <div class="progress-bar-home" style="width: ${homePercent}%;"></div>
+                               <div class="progress-bar-away" style="width: ${awayPercent}%;"></div>
+                           </div>
+                       </div>
+                   `;
+              } else {
+                   // Eğer yüzdelik değerler sayıya çevrilemezse basit metin olarak göster
+                   statItem.classList.add('stat-item-simple');
+                   statItem.innerHTML = `
+                       <div class="stat-values">
+                           <span class="stat-home-value">${homeValue}</span>
+                           <span class="stat-type">${statType}</span>
+                           <span class="stat-away-value">${awayValue}</span>
+                       </div>
+                   `;
+              }
+         } else if (useProgressBar && typeof homeValue === 'number' && typeof awayValue === 'number') {
+              // Sayısal değerler için ProgressBar işleme (örn: Toplam Şut)
+              const total = homeValue + awayValue;
+              const homePercent = total > 0 ? (homeValue / total) * 100 : 0;
+              const awayPercent = total > 0 ? (awayValue / total) * 100 : 0;
+
+
+              statItem.classList.add('stat-item-bar'); // ProgressBar stili için class
+              statItem.innerHTML = `
+                   <div class="stat-values">
+                       <span class="stat-home-value">${homeValue}</span>
+                       <span class="stat-type">${statType}</span>
+                       <span class="stat-away-value">${awayValue}</span>
+                   </div>
+                   <div class="stat-progress-bar">
+                       <div class="progress-bar-track">
+                           <div class="progress-bar-home" style="width: ${homePercent}%;"></div>
+                           <div class="progress-bar-away" style="width: ${awayPercent}%;"></div>
+                       </div>
+                   </div>
+               `;
+
+         } else {
+             // Diğer istatistikler için basit metin gösterimi
+              statItem.classList.add('stat-item-simple'); // Basit metin stili için class
+             statItem.innerHTML = `
+                  <div class="stat-values">
+                     <span class="stat-home-value">${homeValue}</span>
+                     <span class="stat-type">${statType}</span>
+                     <span class="stat-away-value">${awayValue}</span>
+                 </div>
+             `;
+         }
+
+
+         statsList.appendChild(statItem);
+     }); // End of availableStatTypes.forEach
+
+     console.log('İstatistikler sağ panele yerleştirildi.');
+ }
+
+
+// --- Belirli Bir Maçın Kadrolarını Gösteren Fonksiyon ---
+function displayMatchLineups(fixtureId, lineupsData, homeTeamName, awayTeamName) {
+     console.log('Maç kadroları sağ panele yerleştiriliyor. Veri:', lineupsData);
+
+     if (!lineupsTabContent || !lineupsSectionInPane) {
+         console.error("HTML'de kadrolar sekmesi içeriği alanları bulunamadı!");
+         return;
+     }
+
+     lineupsSectionInPane.innerHTML = ''; // İçeriği temizle
+
+     const lineupsTitle = document.createElement('h4');
+     lineupsTitle.textContent = 'Takım Kadroları';
+     lineupsSectionInPane.appendChild(lineupsTitle);
+
+
+     const teamsLineups = lineupsData && Array.isArray(lineupsData.response) ? lineupsData.response : [];
+
+      if (teamsLineups.length === 0) {
+         lineupsSectionInPane.innerHTML += '<p style="text-align:center; font-style: italic; font-size: 14px; color: var(--secondary-text-color);">Bu maç için kadro bilgisi bulunamadı.</p>';
+          console.log('Kadro listesi boş.');
+         return;
+      }
+
+      teamsLineups.forEach(teamData => {
+          if (!teamData.team || !Array.isArray(teamData.startXI) || !Array.isArray(teamData.substitutes)) return;
+
+          const teamName = teamData.team.name || 'Bilinmeyen Takım';
+          const formation = teamData.formation ? ` (${teamData.formation})` : '';
+
+          const lineupListContainer = document.createElement('ul');
+          lineupListContainer.classList.add('lineups-list');
+          lineupsSectionInPane.appendChild(lineupListContainer);
+
+          const teamTitle = document.createElement('h5');
+          teamTitle.textContent = `${teamName} İlk 11${formation}`;
+          lineupListContainer.appendChild(teamTitle);
+
+          teamData.startXI.forEach(playerInfo => {
+              if (!playerInfo.player) return;
+              const playerName = playerInfo.player.name || 'Bilinmeyen Oyuncu';
+              const playerNumber = playerInfo.player.number !== null ? playerInfo.player.number : '';
+              const playerPos = playerInfo.player.pos || '';
+
+              const playerItem = document.createElement('li');
+              playerItem.innerHTML = `<span class="player-number">${playerNumber}</span> <span class="player-name">${playerName} (${playerPos})</span>`;
+              lineupListContainer.appendChild(playerItem);
+          });
+
+          if (teamData.substitutes.length > 0) {
+               const subsTitle = document.createElement('h5');
+               subsTitle.textContent = `${teamName} Yedekler`;
+               lineupsSectionInPane.appendChild(subsTitle); // Yedekler için yeni bir başlık
+
+               const subsList = document.createElement('ul');
+               subsList.classList.add('lineups-list'); // Yedekler için ayrı liste
+               lineupsSectionInPane.appendChild(subsList);
+
+
+               teamData.substitutes.forEach(playerInfo => {
+                    if (!playerInfo.player) return;
+                    const playerName = playerInfo.player.name || 'Bilinmeyen Oyuncu';
+                    const playerNumber = playerInfo.player.number !== null ? playerInfo.player.number : '';
+                     const playerPos = playerInfo.player.pos || '';
+
+
+                    const playerItem = document.createElement('li');
+                    playerItem.innerHTML = `<span class="player-number">${playerNumber}</span> <span class="player-name">${playerName} (${playerPos})</span>`;
+                    subsList.appendChild(playerItem);
+               });
+          }
+
+      }); // End of teamsLineups.forEach
+
+      console.log('Kadrolar sağ panele yerleştirildi.');
+ }
+
+// --- Belirli Bir Ligin Puan Durumunu Çeken Fonksiyon ---
+async function fetchLeagueStandings(leagueId, seasonYear) {
+    const url = `${standingsUrl}?league=${leagueId}&season=${seasonYear}`;
+    console.log(`Lig puan durumu çekiliyor (Lig: ${leagueId}, Sezon: ${seasonYear})...`, url);
+     // Puan durumu için cacheleme yapılabilir
+    try {
+        const response = await fetch(url, options);
+
+         if (!response.ok) {
+            const errorDetail = await response.text();
+            throw new Error(`Puan Durumu API isteği başarısız oldu: ${response.status} - ${response.statusText}. Detay: ${errorDetail}`);
+        }
+
+        const data = await response.json();
+        console.log('Lig puan durumu ham veri:', data);
+         // API yanıtı { response: [ { league: {...}, country: {...}, season: {...}, standings: [ [...teams], [...teams] ] } ] } formatında olabilir
+        return data;
+
+    } catch (error) {
+        console.error(`Lig puan durumu çekme hatası (Lig: ${leagueId}, Sezon: ${seasonYear}):`, error);
+        return null;
+    }
+}
+
+// --- Belirli Bir Maçın Oyuncu İstatistiklerini Gösteren Fonksiyon (Yeni) ---
 function displayMatchPlayerStatistics(fixtureId, playerStatsData, homeTeamName, awayTeamName) {
     console.log('Maç oyuncu istatistikleri sağ panele yerleştiriliyor. Veri:', playerStatsData);
 
@@ -465,7 +829,7 @@ function displayMatchPlayerStatistics(fixtureId, playerStatsData, homeTeamName, 
          teamPlayerListContainer.appendChild(playerStatsList);
 
 
-         teamData.players.forEach(playerInfo => {
+         playerData.players.forEach(playerInfo => { // Hata burada olabilir mi? playerData değil teamData.players olmalı.
              if (!playerInfo.player || !Array.isArray(playerInfo.statistics)) return;
 
              const playerName = playerInfo.player.name || 'Bilinmeyen Oyuncu';
@@ -686,7 +1050,7 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
 
             leagueData.matches.forEach(match => {
                 const matchId = String(match.fixture && match.fixture.id); // matchId string olarak saklanmalı
-                const isFavorite = isMatchFavorite(matchId, favoriteMatchIds);
+                const isFavorite = isMatchFavorite(matchId, favoriteIds);
 
                 const homeTeamName = match.teams && match.teams.home ? match.teams.home.name : 'Ev Sahibi';
                 const awayTeamName = match.teams && match.teams.away ? match.teams.away.name : 'Deplasman';
@@ -828,6 +1192,7 @@ function displayMatches() { // Artık data parametresi almıyor, global allMatch
 
 
                                 switchTab('events'); // Varsayılan sekmeyi aktif yap ama içeriği boş/hata mesajlı kalsın
+
                          }
 
                          // Maç öğesi seçili stilini ayarla
@@ -1005,7 +1370,7 @@ function startLiveUpdates() {
                  if (selectedFixtureId) {
                       const updatedSelectedMatch = allMatchesData.find(m => (m.fixture && String(m.fixture.id)) === selectedFixtureId);
                       if (updatedSelectedMatch) {
-                           // Seçili maçın durum veya skoru değiştiyse detay panelindeki görünümü de güncellemek gerekebilir
+                           // Seçili maçın durumu veya skoru değiştiyse detay panelindeki görünümü de güncellemek gerekebilir
                            // Şimdilik detay paneli açıksa manuel olarak paneli yeniden açmak gibi bir yöntem kullanılabilir.
                            // İleride detay panelinin de otomatik güncellenmesi eklenebilir.
                            selectedMatchData = updatedSelectedMatch; // selectedMatchData'yı da güncel tut
@@ -1213,7 +1578,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (initialData) {
          // allMatchesData global değişkene fetchMatchesByDate içinde zaten kaydedildi
          displayMatches(); // allMatchesData kullanılarak listeyi çiz (Varsayılan 'today' filtresi aktif olacak)
-         startLiveUpdates(); // Canlı güncellemeyi başlat (Sadece bugün için çalışacak)
+         startLiveUpdates(); // Canlı den güncellemeyi başlat (Sadece bugün için çalışacak)
      } else {
          console.error("İlk veri çekme başarısız oldu.");
           if (matchesListContainer) {
